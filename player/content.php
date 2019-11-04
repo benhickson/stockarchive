@@ -159,7 +159,7 @@ $results_projects = $db->get($table, NULL, $cols);
 	}
 
 	function loadClip() {
-      	$(mp4Vid).attr('src', "../media/?clip="+clipId+"&q=f");			
+      	$(mp4Vid).attr('src', "//creative.lonelyleap.com/archive/media/?clip="+clipId+"&q=f");			
       	player.load();
       	// player.play(); // not necessary, because of autoplay attribute?
       	updatePlayerTextOverlay();

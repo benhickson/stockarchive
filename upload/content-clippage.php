@@ -105,9 +105,7 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
 
   var clipid = <?php echo $clipid; ?>;
 
-  var videoElement = '<video onClick="playPause()" muted loop autoplay src="../media/?clip='+clipid+'&q=h" poster="../media/?clip='+clipid+'&q=t"></video>';
-  // without the poster
-  var videoElement = '<video onClick="playPause()" muted loop autoplay src="../media/?clip='+clipid+'&q=h"></video>';
+  var videoElement = '<video onClick="playPause()" muted loop autoplay src="//creative.lonelyleap.com/archive/media/?clip='+clipid+'&q=h"></video>';
 
   function loadVideo(){
     $('#videoPlaceholder').remove();
