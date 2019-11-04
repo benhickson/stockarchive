@@ -1,0 +1,47 @@
+[17-Oct-2019 21:30:36 UTC] PHP Fatal error:  Uncaught ReflectionException: Class mysqli does not exist in /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php:286
+Stack trace:
+#0 /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php(286): ReflectionClass->__construct('mysqli')
+#1 /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php(369): MysqliDb->connect('default')
+#2 /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php(1890): MysqliDb->mysqli()
+#3 /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php(1501): MysqliDb->_prepareQuery()
+#4 /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php(671): MysqliDb->_buildQuery(Array)
+#5 /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php(2285): MysqliDb->get('clips c', Array, Array)
+#6 /var/www/html/creative.lonelyleap.com/archive/search/content.php(443): MysqliDb->paginate('clips c', 1, Array)
+#7 /var/www/html/creative.lonelyleap.com/archive/includ in /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php on line 286
+[22-Oct-2019 15:16:15 UTC] PHP Fatal error:  Uncaught Exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 's' THEN 1 ELSE 0 END
+        +
+        CASE WHEN t.tagname REGEXP 'mcdonald's' T' at line 3 query: SELECT SQL_CALC_FOUND_ROWS SQL_CALC_FOUND_ROWS c.id, c.description, 
+      SUM(
+        CASE WHEN c.description REGEXP 'mcdonald's' THEN 1 ELSE 0 END
+        +
+        CASE WHEN t.tagname REGEXP 'mcdonald's' THEN 2 ELSE 0 END
+        +
+        CASE WHEN t.tagname = 'mcdonald's' THEN 3 ELSE 0 END
+        +
+        CASE WHEN c.description = 'mcdonald's' THEN 4 ELSE 0 END
+      ) AS score
+       FROM clips c, clips_x_tags cxt, tags t WHERE  published = ?  AND (todelete = 0 OR todelete IS NULL) AND c.id = cxt.clipid AND cxt.tagid = t.id AND (c.description REGEXP 'mcdonald's' OR t.tagname REGEXP 'mcdonald's') GROUP BY c.id  ORDER BY score DESC  LIMIT 0, 60 in /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php:1894
+Stack trace:
+#0 /var/www/ in /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php on line 1894
+[22-Oct-2019 15:19:29 UTC] PHP Fatal error:  Uncaught Exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 's' THEN 1 ELSE 0 END
+        +
+        CASE WHEN t.tagname REGEXP 'mcdonald's' T' at line 3 query: SELECT SQL_CALC_FOUND_ROWS SQL_CALC_FOUND_ROWS c.id, c.description, 
+      SUM(
+        CASE WHEN c.description REGEXP 'mcdonald's' THEN 1 ELSE 0 END
+        +
+        CASE WHEN t.tagname REGEXP 'mcdonald's' THEN 2 ELSE 0 END
+        +
+        CASE WHEN t.tagname = 'mcdonald's' THEN 3 ELSE 0 END
+        +
+        CASE WHEN c.description = 'mcdonald's' THEN 4 ELSE 0 END
+      ) AS score
+       FROM clips c, clips_x_tags cxt, tags t WHERE  published = ?  AND (todelete = 0 OR todelete IS NULL) AND c.id = cxt.clipid AND cxt.tagid = t.id AND (c.description REGEXP 'mcdonald's' OR t.tagname REGEXP 'mcdonald's') GROUP BY c.id  ORDER BY score DESC  LIMIT 0, 60 in /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php:1894
+Stack trace:
+#0 /var/www/ in /var/www/html/creative.lonelyleap.com/archive/includes/external/MysqliDb.php on line 1894
+[22-Oct-2019 15:51:51 UTC] PHP Notice:  Undefined variable: _SESSION in /var/www/html/creative.lonelyleap.com/archive/search/content.php on line 251
+[22-Oct-2019 15:51:51 UTC] PHP Notice:  Undefined variable: db in /var/www/html/creative.lonelyleap.com/archive/search/content.php on line 398
+[22-Oct-2019 15:51:51 UTC] PHP Fatal error:  Uncaught Error: Call to a member function where() on null in /var/www/html/creative.lonelyleap.com/archive/search/content.php:398
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/creative.lonelyleap.com/archive/search/content.php on line 398
+[29-Oct-2019 19:58:21 UTC] PHP Notice:  Undefined index: nickname in /var/www/html/creative.lonelyleap.com/archive/includes/1-html.php on line 7
