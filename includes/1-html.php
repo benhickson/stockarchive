@@ -1,5 +1,5 @@
 <?php 
-require '/var/www/html/creative.lonelyleap.com/archive/includes/0-base.php';
+require __DIR__.'/0-base.php';
 
 
 if (isset($_GET['logout'])) {
