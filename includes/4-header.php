@@ -2,7 +2,7 @@
   <div class="navbar-fixed">
     <nav class="z-depth-1 row">
       <div class="nav-wrapper col s12">
-        <a href="/archive" class="brand-logo left toolbarText">Lonelyleap Stock Archive</a>
+        <a href="/archive" class="brand-logo left toolbarText">Stock Archive</a>
         <ul id="nav-mobile" class="right">     
           <li id="playerLink"><a class="toolbarText" href="/archive/player">Player</a></li>
           <li id="searchLink"><a class="toolbarText" href="/archive/search">Search</a></li>
