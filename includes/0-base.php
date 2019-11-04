@@ -3,10 +3,10 @@
 ini_set('session.gc_maxlifetime', 172800);
 session_set_cookie_params(172800);
 session_start();
-$includepath = '/var/www/html/creative.lonelyleap.com/archive/includes/';
 
-require $includepath . 'external/MysqliDb.php';
-require $includepath . 'pass.php';
+require __DIR__.'/external/MysqliDb.php';
+require __DIR__.'/settings.php';
+
 $db = new MysqliDb('localhost','app-archive-ll', $dbpass, 'archive-ll');
 
 

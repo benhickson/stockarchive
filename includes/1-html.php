@@ -106,12 +106,12 @@ if (isset($_GET['logout'])) {
 }
 ?>
 <!doctype html>
-<?php require $includepath . '2-head.php'; ?>
+<?php require __DIR__.'/2-head.php'; ?> 
 <?php 
 if (isset($_SESSION['logged_in'])) {
-	require $includepath . '3-body.php'; 	
+	require __DIR__.'/3-body.php'; 	
 } else {
-	require $includepath . '8-loginpage.php';
+	require __DIR__.'/8-loginpage.php';
 }
 ?>
 </html>
