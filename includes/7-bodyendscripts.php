@@ -43,7 +43,11 @@
       url: '/archive/me/prefsave.php',
       success: function(msg){
         console.log(msg);
-      }
+      },
+      error: function(xhr, status, error) {
+        var err = JSON.parse(xhr.responseText);
+        console.log(err.Message);
+      }  
     });
   }
 

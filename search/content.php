@@ -244,7 +244,7 @@
       $('#clipExpandTags').text(tagstemp);
 
       // update download link and full quality link
-      $('#clipExpandDownloadUrl').attr('href','../media/?clip='+clipid+'&q=f&download');
+      $('#clipExpandDownloadUrl').attr('href','//creative.lonelyleap.com/archive/media/?clip='+clipid+'&q=f&download');
       $('#clipExpandRawFootageUrl').attr('href',responseData.rawfootageurl);
 
       <?php
@@ -259,12 +259,13 @@
       ?>
 
       // update video src and button actions
-      $('#clipExpandContent video').attr('src','../media/?clip='+clipid+'&q=h').on('loadedmetadata', function(){
+      $('#clipExpandContent video').attr('src','//creative.lonelyleap.com/archive/media/?clip='+clipid+'&q=h').on('loadedmetadata', function(){
         $('.panes').animate({'opacity':1},300);
         $(this).off('loadedmetadata');
       });
 
     } else {
+      console.log('responseObject is invalid');
       // if not successful
       // check if needs to login
       if (responseObject.data == 'triggerLogin'){
@@ -282,7 +283,11 @@
       data: data,
       success: function(response){
         continueUpdate(clipid, response);
-      }
+      },
+      error: function(xhr, status, error) {
+        var err = JSON.parse(xhr.responseText);
+        console.log(err.Message);
+      }      
     });
   }
   function updateClipExpandContent(clipid){
@@ -523,8 +528,8 @@
       <div class="searchResult flex-child" data-clipid="<?php echo $clip['id']; ?>" data-score="<?php echo $clip['score']; ?>">
         <div class="expandedCover"></div>
         <video loading="eager" class="hoverToPlay" muted loop preload="none" 
-        src="../media/?clip=<?php echo $clip['id']; ?>&q=q"
-        poster="../media/?clip=<?php echo $clip['id']; ?>&q=t">
+        src="//creative.lonelyleap.com/archive/media/?clip=<?php echo $clip['id']; ?>&q=q"
+        poster="//creative.lonelyleap.com/archive/media/?clip=<?php echo $clip['id']; ?>&q=t">
         </video>
         <div class="hoverContent">
           <span class="description truncate"><?php echo $clip['description']; ?></span>
@@ -555,7 +560,7 @@
       <div id="clipExpand" class="flex-child">
         <div id="clipExpandContent">
           <div class="panes" id="leftpane">
-            <video id="clipExpandVideo" src="../media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
+            <video id="clipExpandVideo" src="//creative.lonelyleap.com/archive/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
           </div>
           <div class="panes" id="rightpane">
             <h5 id="clipExpandDescription">Description</h5>
