@@ -342,7 +342,7 @@
 
 </script>
 <?php
-
+  
   // // old way, keywords only
   // $table = 'clips'; // table to search
   // $cols = array('id', 'description'); // columns/fields to request
@@ -439,7 +439,7 @@
         ";
       $db->where('c.id = cxt.clipid');
       $db->where('cxt.tagid = t.id');
-      $db->where('(c.description REGEXP ? OR t.tagname REGEXP ?)', Array($pipe, $pipe));
+      $db->where('(c.description REGEXP ? OR t.tagname REGEXP ? OR c.city = ? OR c.region = ?)', Array($pipe, $pipe, $pipe, $pipe));
       $db->groupBy('c.id');
       $db->orderBy('score','desc');
     } else {
