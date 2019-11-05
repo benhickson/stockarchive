@@ -144,6 +144,9 @@
       if (isset($_GET['country'])){
         echo 'document.getElementById("country").value = '.$_GET['country'];
       }
+      if (isset($_GET['project'])){
+        echo 'document.getElementById("project").value = '.$_GET['project'];
+      }
       ?>
 
       // initialize the dropdown boxes.

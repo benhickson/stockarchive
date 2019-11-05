@@ -331,74 +331,26 @@
         searchString += encodeURIComponent($(this).clone().children().remove().end().text()) + '|';
         // searchString += $(this).clone().children().remove().end().text() + '|';
       });
+
       // slice off the last "|"
       searchString = searchString.slice(0, -1);
       windowLocationString = '?s='+searchString;
+      
       var countryvalue = document.getElementById("country").value;
       if (countryvalue > 0){
         windowLocationString = windowLocationString+'&country='+countryvalue;
-      }      
+      }
+
+      var projectvalue = document.getElementById("project").value;
+      if (projectvalue > 0){
+        windowLocationString = windowLocationString+'&project='+projectvalue;
+      } 
     }
     window.location = windowLocationString;
   }
 
 </script>
 <?php
-  
-  // // old way, keywords only
-  // $table = 'clips'; // table to search
-  // $cols = array('id', 'description'); // columns/fields to request
-  // $db->where('published', 1); // published clips
-  // $db->where('(todelete = 0 OR todelete IS NULL)'); // not deleted clips
-  // if (isset($_GET['page'])) {
-  //   $page = $_GET['page'];
-  // } else {
-  //   $page = 1;
-  // }  
-  // if (isset($_GET['s'])) {
-  //   $query = $_GET['s'];
-  //   $cols[] = "MATCH(`description`) AGAINST('$query') AS relevance";
-  //   $db->where("MATCH(`description`) AGAINST('$query')");
-  //   $db->orderBy('relevance','desc');
-  // } else {
-  //   $db->orderBy('project','desc');
-  //   $db->orderBy('uploadfilename','asc');
-  // }
-
-  // // new way, keywords and tags
-  // $cols = array('c.id', 'c.description'); // columns/fields to request
-  // $db->where('published', 1); // published clips
-  // $db->where('(todelete = 0 OR todelete IS NULL)'); // not deleted clips
-  // if (isset($_GET['page'])) {
-  //   $page = $_GET['page'];
-  // } else {
-  //   $page = 1;
-  // }  
-  // if (isset($_GET['s'])) {
-  //   $query = $_GET['s'];
-  //   $table = 'clips c, clips_x_tags cxt, tags t'; // table to search
-  //   $cols[] = "
-  //   SUM(
-  //     CASE WHEN c.description LIKE '%$query%' THEN 1 ELSE 0 END
-  //     +
-  //     CASE WHEN t.tagname LIKE '%$query%' THEN 2 ELSE 0 END
-  //     +
-  //     CASE WHEN t.tagname = '$query' THEN 3 ELSE 0 END
-  //     +
-  //     CASE WHEN c.description = '$query' THEN 4 ELSE 0 END
-  //   ) AS score
-  //   ";
-  //   $db->where('c.id = cxt.clipid');
-  //   $db->where('cxt.tagid = t.id');
-  //   $db->where("(c.description LIKE '%$query%' OR t.tagname LIKE '%$query%')");
-  //   $db->groupBy('c.id');
-  //   $db->orderBy('score','desc');
-  // } else {
-  //   $table = 'clips c'; // table to search
-  //   $db->orderBy('project','desc');
-  //   $db->orderBy('uploadfilename','asc');
-  // }
-
   // new new way
   $page = 1;  // default
   $cols = array('c.id', 'c.description'); // columns/fields to request
@@ -415,9 +367,15 @@
     if (isset($_GET['country'])) {
       $db->where('c.country = '.$_GET['country']);
     }
+
+    if (isset($_GET['project'])) {
+      $db->where('c.project = '.$_GET['project']);
+    }
+
     if (isset($_GET['page'])) {
       $page = $_GET['page'];
     }
+
     $chipsexist = false; // default, if no chips set
     if (isset($_GET['s']) && $_GET['s'] != '') {
       $chipsexist = true; // setting a flag to use on the bodyendscripts.php page
@@ -428,7 +386,6 @@
       // $pipe = str_replace("'", "''", $pipe);
       $pipe = $db->escape($pipe);
       // print_r($pipe);
-
 
       $table = 'clips c, clips_x_tags cxt, tags t, projects p'; // table to search
       // $cols[] = "
@@ -499,6 +456,11 @@
     } else {
       $countrystring = '';
     }
+    if (isset($_GET['project'])){
+      $projectstring = 'project='.$_GET['project'].'&';
+    } else {
+      $projectstring = '';
+    }
     $pagecount = ceil($db->totalCount / $pageLimit);
     $i = 1;
     while ($i <= $pagecount){
@@ -512,6 +474,7 @@
 	      $paginationstring .= '><a href="?';
 	      $paginationstring .= $searchstring;
 	      $paginationstring .= $countrystring;
+        $paginationstring .= $projectstring;
 	      $paginationstring .= 'page='.$i;
 	      $paginationstring .= '">'.$i.'</a></li>';
 	      $paginationstring .= "\n";
@@ -541,6 +504,19 @@
         ?>
       </select>
     </div>    
+    <div class="input-field searchstuff">
+      <select id="project">
+        <option value="0" selected>All Projects</option>
+        <?php
+        $cols = array("id, name");
+        $db->orderBy("name","asc");
+        $projects = $db->get("projects", null, $cols);
+        foreach ($projects as $project) {
+          echo '<option value="'.$project['id'].'">'.$project['name'].'</option>'."\n";
+        }
+        ?>
+      </select>
+    </div>  
     <button id="searchButton" type="submit" class="btn searchstuff" onclick="newSearch();">Search</button>
     <!-- <p>Included Tags</p> -->
     <!-- <p>Suggested Tags</p> -->
