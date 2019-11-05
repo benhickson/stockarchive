@@ -430,7 +430,7 @@
       // print_r($pipe);
 
 
-      $table = 'clips c, clips_x_tags cxt, tags t'; // table to search
+      $table = 'clips c, clips_x_tags cxt, tags t, projects p'; // table to search
       // $cols[] = "
       // SUM(
       //   CASE WHEN c.description REGEXP '$pipe' THEN 1 ELSE 0 END
@@ -454,7 +454,16 @@
 
       $db->where('c.id = cxt.clipid');
       $db->where('cxt.tagid = t.id');
-      $db->where("(c.description REGEXP ? OR t.tagname REGEXP ? OR c.city REGEXP ? OR c.region REGEXP ?)", Array($pipe, $pipe, '^'.$pipe.'$', '^'.$pipe.'$'));
+      $db->where('c.project = p.id');
+      $db->where(
+        "(
+          c.description REGEXP ? 
+          OR t.tagname REGEXP ? 
+          OR c.city REGEXP ? 
+          OR c.region REGEXP ?
+          OR p.name REGEXP ?
+        )"
+        , Array($pipe, $pipe, '^'.$pipe.'$', '^'.$pipe.'$', $pipe));
       $db->groupBy('c.id');
       $db->orderBy('score','desc');
     } else {
