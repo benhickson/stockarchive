@@ -142,10 +142,11 @@
       // update the country dropdown if it was set
       <?php
       if (isset($_GET['country'])){
-        echo 'document.getElementById("country").value = '.$_GET['country'];
+        echo 'document.getElementById("country").value = '.$_GET['country'].';';
       }
+      // update the project dropdown if it was set
       if (isset($_GET['project'])){
-        echo 'document.getElementById("project").value = '.$_GET['project'];
+        echo 'document.getElementById("project").value = '.$_GET['project'].';';
       }
       ?>
 
