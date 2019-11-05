@@ -325,11 +325,13 @@
     if (clipIdSearchString == Number.parseInt(clipIdSearchString)) {
       windowLocationString = '?clip='+clipIdSearchString;
     } else {
-      var searchString = '';
+      var searchString = '';  
+
       $('#search .chip').each(function(){
-        searchString += $(this).clone().children().remove().end().text() + ',';
+        searchString += encodeURIComponent($(this).clone().children().remove().end().text()) + '|';
+        // searchString += $(this).clone().children().remove().end().text() + '|';
       });
-      // slice off the last "+"
+      // slice off the last "|"
       searchString = searchString.slice(0, -1);
       windowLocationString = '?s='+searchString;
       var countryvalue = document.getElementById("country").value;
@@ -342,7 +344,7 @@
 
 </script>
 <?php
-
+  
   // // old way, keywords only
   // $table = 'clips'; // table to search
   // $cols = array('id', 'description'); // columns/fields to request
@@ -400,12 +402,15 @@
   // new new way
   $page = 1;  // default
   $cols = array('c.id', 'c.description'); // columns/fields to request
+
+  //$db->setTrace(true);
   $db->where('published', 1); // published clips
   $db->where('(todelete = 0 OR todelete IS NULL)'); // not deleted clips
+
   if (isset($_GET['clip'])) {
     $table = 'clips c'; // table to search
     $db->where('c.id = '.$_GET['clip']);
-    $cols[] = 'NULL AS score';    
+    $cols[] = 'NULL AS score';
   } else {
     if (isset($_GET['country'])) {
       $db->where('c.country = '.$_GET['country']);
@@ -417,8 +422,15 @@
     if (isset($_GET['s']) && $_GET['s'] != '') {
       $chipsexist = true; // setting a flag to use on the bodyendscripts.php page
       $query = $_GET['s'];
-      $pipe = $db->escape(str_replace(',', '|', $query));
-      $table = 'clips c, clips_x_tags cxt, tags t'; // table to search
+
+      // $pipe = str_replace(',', '|', $query);
+      $pipe = $query;
+      // $pipe = str_replace("'", "''", $pipe);
+      $pipe = $db->escape($pipe);
+      // print_r($pipe);
+
+
+      $table = 'clips c, clips_x_tags cxt, tags t, projects p'; // table to search
       // $cols[] = "
       // SUM(
       //   CASE WHEN c.description REGEXP '$pipe' THEN 1 ELSE 0 END
@@ -430,16 +442,28 @@
       //   CASE WHEN c.description = '$query' THEN 4 ELSE 0 END
       // ) AS score
       // ";
+
+      // breaks when tags contain a double quote
       $cols[] = "
         SUM(
           CASE WHEN c.description REGEXP '$pipe' THEN 1 ELSE 0 END
           +
           CASE WHEN t.tagname REGEXP '$pipe' THEN 2 ELSE 0 END
         ) AS score
-        ";
+      ";
+
       $db->where('c.id = cxt.clipid');
       $db->where('cxt.tagid = t.id');
-      $db->where('(c.description REGEXP ? OR t.tagname REGEXP ?)', Array($pipe, $pipe));
+      $db->where('c.project = p.id');
+      $db->where(
+        "(
+          c.description REGEXP ? 
+          OR t.tagname REGEXP ? 
+          OR c.city REGEXP ? 
+          OR c.region REGEXP ?
+          OR p.name REGEXP ?
+        )"
+        , Array($pipe, $pipe, '^'.$pipe.'$', '^'.$pipe.'$', $pipe));
       $db->groupBy('c.id');
       $db->orderBy('score','desc');
     } else {
@@ -450,9 +474,14 @@
     }
   }
 
+  
+  // print_r($db);
+
   $pageLimit = 60; // results per page
   $db->pageLimit = $pageLimit;
   $results = $db->withTotalCount()->paginate($table, $page, $cols);
+
+  //  print_r($db->getLastQuery())
 ?> 
 <div class="col m4 l3 xl2 grey lighten-2">
   <div id="leftbar">

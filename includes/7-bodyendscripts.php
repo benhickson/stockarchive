@@ -114,10 +114,15 @@
       $('.searchChips').material_chip({<?php
         if (isset($chipsexist) && $chipsexist) {
           $datastring = 'data: [';
-          $requestedkeywords = explode(',',$_GET['s']);
+          $requestedkeywords = explode('|',$_GET['s']);
           foreach ($requestedkeywords as $keyword) {
+            // replacing double quote with backslash double
+            // can't just escape the backslash, have to escape both
+            $keyword = str_replace('"', "\\\"", $keyword);
+
             $datastring = $datastring.'{tag: "'.$keyword.'"},';
           }
+
           $datastring = substr($datastring, 0, -1); // trim that last comma
           $datastring = $datastring.']';
           echo $datastring;
