@@ -83,7 +83,7 @@ if ($_SESSION['logged_in']){
 				}
 			} else {
 				// incorrect action set.
-				exit(json_encode(array('tagsuccess' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally. 2')));				
+				exit(json_encode(array('tagsuccess' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally.')));				
 			}
 		} else {
 			// clip not taggable
@@ -91,7 +91,7 @@ if ($_SESSION['logged_in']){
 		}
 	} else {
 		// postfields not set correctly
-		exit(json_encode(array('tagsuccess' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally. 1	'.print_r($_POST))));
+		exit(json_encode(array('tagsuccess' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally.')));
 	}
 } else {
 	// not logged in
