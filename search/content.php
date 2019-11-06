@@ -484,8 +484,8 @@
     ?>
     </ul>
     <div class="input-field searchstuff">
-      <div id="search" class="searchChips"></div>
-      <label for="search">Keywords</label>
+      <div id="search" placeholder="Keywords" class="searchChips chips chips-placeholder"></div>
+      <!-- <label for="search">Keywords</label> -->
     </div>
     <div class="input-field searchstuff">
       <input id="clipIdSearch" type="text" class="validate" pattern="\d+">

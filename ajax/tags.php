@@ -1,6 +1,7 @@
 <?php
 
-require '/var/www/html/creative.lonelyleap.com/archive/includes/0-base.php';
+// require '/var/www/html/creative.lonelyleap.com/archive/includes/0-base.php';
+require __DIR__.'/../includes/0-base.php';
 
 if ($_SESSION['logged_in']){
 
@@ -82,7 +83,7 @@ if ($_SESSION['logged_in']){
 				}
 			} else {
 				// incorrect action set.
-				exit(json_encode(array('tagsuccess' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally.')));				
+				exit(json_encode(array('tagsuccess' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally. 2')));				
 			}
 		} else {
 			// clip not taggable
@@ -90,7 +91,7 @@ if ($_SESSION['logged_in']){
 		}
 	} else {
 		// postfields not set correctly
-		exit(json_encode(array('tagsuccess' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally.')));
+		exit(json_encode(array('tagsuccess' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally. 1	'.print_r($_POST))));
 	}
 } else {
 	// not logged in
