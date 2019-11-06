@@ -111,7 +111,7 @@
       // videos play/pause on hover
       $(".hoverToPlay").hover( hoverStart, hoverEnd );
 
-      $('.searchChips').material_chip({<?php
+      $('.searchChips').chips({<?php
         if (isset($chipsexist) && $chipsexist) {
           $datastring = 'data: [';
           $requestedkeywords = explode('|',$_GET['s']);
@@ -124,17 +124,12 @@
           }
 
           $datastring = substr($datastring, 0, -1); // trim that last comma
-          $datastring = $datastring.']';
+          $datastring = $datastring.'],';
           echo $datastring;
         }
       ?>
-        // data: [{
-        //   tag: 'Apple',
-        // }, {
-        //   tag: 'Microsoft',
-        // }, {
-        //   tag: 'Google',
-        // }]
+      placeholder: 'Keywords',
+      secondaryPlaceholder: "+ Add'l Keywords"
       });
 
       $('.searchstuff').animate({'opacity':1},300);
@@ -151,7 +146,7 @@
       ?>
 
       // initialize the dropdown boxes.
-      $('select').material_select();
+      $('select').formSelect();
 
     }
 
@@ -159,8 +154,8 @@
     $('li#'+currentPage+"Link").addClass("active");
 
     // binding materialize's event listeners to the chips (tags)
-    $('.chips:not(.searchChips)').on('chip.add', function(e, chip){ addTag(e.target.dataset.clipid, chip.tag); });
-    $('.chips:not(.searchChips)').on('chip.delete', function(e, chip){ removeTag(e.target.dataset.clipid, chip.tag); });
+    // $('.chips:not(.searchChips)').on('chip.add', function(e, chip){ addTag(e.target.dataset.clipid, chip.tag); });
+    // $('.chips:not(.searchChips)').on('chip.delete', function(e, chip){ removeTag(e.target.dataset.clipid, chip.tag); });
 
     // $('.chips').on('chip.select', function(e, chip){
     //   // you have the selected chip here

@@ -230,7 +230,7 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
         el.value = lastSpecs[key];        
       }
     });
-    $('select').material_select();
+    $('select').formSelect();
     $('.trigger').trigger('change');
   }
 
@@ -266,7 +266,7 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
 
   $(document).ready(function() {
     // enable any <select>s
-    $('select').material_select();
+    $('select').formSelect();
 
     <?php if (isset($_SESSION['matchSpecs'])) { echo 'updateFieldsWithLastSpecs();'; } else {
       echo '$("#description").trigger("change");';
@@ -280,7 +280,7 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
 
 
     // enable the tag field
-    $('.chips').material_chip({
+    $('.chips').chips({
       data: [
         <?php
           $tags = $db->rawQuery('SELECT t.id, t.tagname FROM clips_x_tags cxt LEFT JOIN tags t ON cxt.tagid=t.id WHERE cxt.clipid=?',array($clipid));
@@ -298,7 +298,11 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
             }
           ?>
         }
-      }
+      },
+      onChipAdd: function(e, chip){ addTag(<?php echo $clipid; ?>, chip.firstChild.textContent); },
+      onChipDelete: function(e, chip){ removeTag(<?php echo $clipid; ?>, chip.firstChild.textContent); },
+      placeholder: 'Tags',
+      secondaryPlaceholder: '+ Tag'
     });
 
     // set that tagField
@@ -581,8 +585,8 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
     <label for="description">Description</label>
   </div>  
   <div class="input-field col s12">
-    <div id="tags" class="chips" data-clipid="<?php echo $clipid; ?>"></div>
-    <label for="tags">Tags</label>
+    <div id="tags" class="chips chips-placeholder" data-clipid="<?php echo $clipid; ?>"></div>
+    <!-- <label for="tags">Tags</label> -->
   </div>
   <div class="col s12" id="recenttags">Recent tags:<?php foreach ($_SESSION['recenttags'] as $tag) {
     echo '<a onclick="addTagToField(\''.$tag.'\');">'.$tag.'</a>';
