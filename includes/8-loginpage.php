@@ -17,9 +17,7 @@ function addParams($name, $value)
 	#logincard{
 		margin-top: 20vh;
 		opacity: 0;
-		width: 50vw;
-		min-width: 300px;
-		max-width: 480px;
+		width: 480px;
 		display: inline-block;
 		text-align: left;		
 	}
