@@ -393,6 +393,23 @@
       $search = preg_quote($search);console_log($search);
       $search = $db->escape($search);console_log($search);
 
+      console_log($_SERVER['QUERY_STRING']);
+
+      $rawQuery = substr($_SERVER['QUERY_STRING'], 2);
+      function strpos_all($haystack, $needle) {
+          $offset = 0;
+          $allpos = array();
+          while (($pos = strpos($haystack, $needle, $offset)) !== FALSE) {
+              $offset   = $pos + 1;
+              $allpos[] = $pos;
+          }
+          return $allpos;
+      }console_log('raw: ');console_log($rawQuery);
+      $is = strpos_all($rawQuery, '|');console_log($is);
+      foreach($is as $i) {
+        $search = substr($search, 0, $i).substr($search, $i+3);
+      }console_log($search);
+
 
       $table = 'clips c, clips_x_tags cxt, tags t, projects p'; // table to search
       // $cols[] = "
