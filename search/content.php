@@ -388,11 +388,23 @@
       $chipsexist = true; // setting a flag to use on the bodyendscripts.php page
       $search = $_GET['s'];
 
-      // escape both regex and sql characters, do not use MysqliDb array replace functionality, 
-      // since that will double escape and mess up the proper escapping done here
-      $search = preg_quote($search);
-      $search = $db->escape($search);
+      $encodedParams = array();
+      $requestedkeywords = explode('|', substr($_SERVER['QUERY_STRING'], 2));
+      console_log('rks:');
+      console_log($requestedkeywords);
+      foreach($requestedkeywords as $rk) {
+        parse_str($rk, $temp); console_log('temp:');console_log($temp);
 
+        $rk = array_keys($temp)[0]; console_log('rks:');console_log($rk);
+
+        // escape both regex and sql characters, therefore you should not use MysqliDb array 
+        // replace functionality, since that will double escape and mess up the proper escapping 
+        // done here        
+        $rk = preg_quote($rk);
+        $rk = $db->escape($rk);
+        $encodedParams[] = $rk; console_log($encodedParams);
+      }
+      $search = implode('|', $encodedParams); console_log($search);
 
       $table = 'clips c, clips_x_tags cxt, tags t, projects p'; // table to search
       // $cols[] = "
