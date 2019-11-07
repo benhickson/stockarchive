@@ -136,13 +136,13 @@
           foreach ($requestedkeywords as $keyword) {
             $keyword = urldecode($keyword);
 
-            // replacing double quote with double backslash to backslash double quote to escape 
-            // both php and javascript, can't just escape the backslash, have to escape both
-            $keyword = str_replace('"', '\\\"', $keyword);
-
             // replacing backslash with double backslash to double backslash to escape 
             // both php and javascript, can't just escape the once, have to escape both
             $keyword = str_replace('\\', '\\\\', $keyword);
+
+            // replacing double quote with double backslash to backslash double quote to escape 
+            // both php and javascript, can't just escape the backslash, have to escape both
+            $keyword = str_replace('"', '\"', $keyword);
 
             $datastring = $datastring.'{tag: "'.$keyword.'"},';
           }
