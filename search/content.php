@@ -351,11 +351,18 @@
 
 </script>
 <?php
-  // new new way
+  function console_log($output, $with_script_tags = true) {
+    $js_code = 'console.log('.json_encode($output, JSON_HEX_TAG).');';
+    if ($with_script_tags) {
+        $js_code = '<script>' . $js_code . '</script>';
+    }     
+
+    echo $js_code;
+  }
+
   $page = 1;  // default
   $cols = array('c.id', 'c.description'); // columns/fields to request
 
-  //$db->setTrace(true);
   $db->where('published', 1); // published clips
   $db->where('(todelete = 0 OR todelete IS NULL)'); // not deleted clips
 
@@ -379,13 +386,35 @@
     $chipsexist = false; // default, if no chips set
     if (isset($_GET['s']) && $_GET['s'] != '') {
       $chipsexist = true; // setting a flag to use on the bodyendscripts.php page
-      $query = $_GET['s'];
+      $search = $_GET['s'];
 
-      // $pipe = str_replace(',', '|', $query);
-      $pipe = $query;
-      // $pipe = str_replace("'", "''", $pipe);
-      $pipe = $db->escape($pipe);
-      // print_r($pipe);
+      $sqlS = $search;
+      //$sqlS = $db->escape($sqlS);
+
+      // this server demands square brackets around special characters for some reason
+      // $sqlS = preg_quote($sqlS); <- does not work to properly escape the regex, instead:
+      // $sqlS = str_replace('\\\'', '\'', $sqlS);
+      console_log('1: '.$sqlS);
+      $sqlS = preg_quote($sqlS);
+      console_log('2: '.$sqlS);
+      $sqlS = $db->escape($sqlS);
+      $regexSpcChars = Array('\\[', '\\]','\\\\', '\\*', '\\+', '\\?', '\\|', '\\(', '\\)', '\\{', '\\}', '\\/', '\\.');
+      /*foreach ($regexSpcChars as $c) {
+        $sqlS = str_replace($c, '['.$c.']', $sqlS);
+      }*/
+      // $sqlS = str_replace('\\', '\\', $sqlS);
+
+      console_log('3: '.$sqlS);
+
+      /*$sqlS = str_replace('[', '[[]', $sqlS);           // [: [  -> [[]
+      $sqlS = str_replace('[', '[[]', $sqlS);           // ]: [  -> []] 
+      $sqlS = str_replace('\\\\', '[\\\\]', $sqlS);     // \: \\ -> [\\]
+      $sqlS = str_replace('*', '[*]', $sqlS);           // *: *  -> [*]
+      $sqlS = str_replace('+', '[+]', $sqlS);           // +: +  -> [+]
+      $sqlS = str_replace('?', '[?]', $sqlS);           // ?: ?  -> [?]
+      $sqlS = str_replace('|', '[|]', $sqlS);           // |: |  -> [|] <= breaks javascript*/
+
+
 
       $table = 'clips c, clips_x_tags cxt, tags t, projects p'; // table to search
       // $cols[] = "
@@ -403,16 +432,16 @@
       // breaks when tags contain a double quote
       $cols[] = "
         SUM(
-          CASE WHEN c.description REGEXP '$pipe' THEN 1 ELSE 0 END
+          CASE WHEN c.description REGEXP '$sqlS' THEN 1 ELSE 0 END
           +
-          CASE WHEN t.tagname REGEXP '$pipe' THEN 2 ELSE 0 END
+          CASE WHEN t.tagname REGEXP '$sqlS' THEN 2 ELSE 0 END
         ) AS score
       ";
 
       $db->where('c.id = cxt.clipid');
       $db->where('cxt.tagid = t.id');
       $db->where('c.project = p.id');
-      $db->where(
+      /*$db->where(
         "(
           c.description REGEXP ? 
           OR t.tagname REGEXP ? 
@@ -420,7 +449,15 @@
           OR c.region REGEXP ?
           OR p.name REGEXP ?
         )"
-        , Array($pipe, $pipe, '^'.$pipe.'$', '^'.$pipe.'$', $pipe));
+        , Array($sqlS, $sqlS, '^'.$sqlS.'$', '^'.$sqlS.'$', $sqlS));*/
+      $db->where(
+        "(
+          c.description REGEXP '$sqlS'
+          OR t.tagname REGEXP '$sqlS' 
+          OR c.city REGEXP '^$sqlS$' 
+          OR c.region REGEXP '^$sqlS$'
+          OR p.name REGEXP '$sqlS'
+        )");
       $db->groupBy('c.id');
       $db->orderBy('score','desc');
     } else {
@@ -437,8 +474,9 @@
   $pageLimit = 60; // results per page
   $db->pageLimit = $pageLimit;
   $results = $db->withTotalCount()->paginate($table, $page, $cols);
-
-  //  print_r($db->getLastQuery())
+  
+  console_log($db->getLastQuery());
+  console_log($results);
 ?> 
 <div class="col m4 l3 xl2 grey lighten-2">
   <div id="leftbar">
