@@ -142,7 +142,7 @@
 
             // replacing double quote with double backslash to backslash double quote to escape 
             // both php and javascript, can't just escape the backslash, have to escape both
-            $keyword = str_replace('"', '\\\"', $keyword);
+            $keyword = str_replace('"', '\"', $keyword);
 
             $datastring = $datastring.'{tag: "'.$keyword.'"},';
           }

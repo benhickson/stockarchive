@@ -413,7 +413,7 @@
         $rk = preg_quote($rk);console_log($rk);
         $rk = $db->escape($rk);
 
-        $search = $search.'|'.$rk;console_log('search: ');console_log($search);
+        $search = $search.'|'.$rk;console_log('search: ');console_log($_SERVER['QUERY_STRING']);
       }
       $search = substr($search, 1);
 
@@ -476,6 +476,12 @@
     <ul class="pagination">
     <?php
     $paginationstring = '';
+    if (isset($_GET['page'])) {
+
+    }
+
+    // question mark breaks and pipe pagination
+
     if (isset($_GET['s'])){
       $searchstring = 's='.$_GET['s'].'&';
     } else {
@@ -491,6 +497,28 @@
     } else {
       $projectstring = '';
     }
+
+    $projectstring = $_SERVER['QUERY_STRING'].'&';
+
+    $currPageUrlPos = strpos($projectstring, '&page=');
+    if(currPageUrlPos !== 0) {
+      $currPageUrlEnd = strpos($projectstring, '&', $currPageUrlPos);
+
+      if($currPageUrlEnd === false) {
+        $projectstring = substr($projectstring, 0, $currPageUrlPos);
+      }
+      else {
+        $projectstring = 
+          substr($projectstring, 0, $currPageUrlPos)
+          .substr($projectstring, $currPageUrlEnd);
+      }
+    }
+
+
+    console_log('page stuff');
+    console_log($projectstring);
+    console_log(parse_url($projectstring));
+
     $pagecount = ceil($db->totalCount / $pageLimit);
     $i = 1;
     while ($i <= $pagecount){
@@ -502,15 +530,15 @@
 	      	$paginationstring .= ' class="leftbarhidden"';
 	      }
 	      $paginationstring .= '><a href="?';
-	      $paginationstring .= $searchstring;
-	      $paginationstring .= $countrystring;
+	      // $paginationstring .= $searchstring;
+	      // $paginationstring .= $countrystring;
         $paginationstring .= $projectstring;
 	      $paginationstring .= 'page='.$i;
 	      $paginationstring .= '">'.$i.'</a></li>';
 	      $paginationstring .= "\n";
       $i++;
     }
-    echo $paginationstring;
+    echo $paginationstring;console_log($projectstring);
     ?>
     </ul>
     <div class="input-field searchstuff">
