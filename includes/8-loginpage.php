@@ -135,7 +135,7 @@ if (isset($_GET['iframe'])){
 	<?php if (isset($_GET['iframe'])) { echo 'iframe = true;'; } ?>
 	$(document).ready(function(){
 		document.getElementById('loginVideo').onloadedmetadata = function(){
-			Materialize.fadeInImage('#logincard');
+			$('#logincard').fadeTo(600, 1);
 		};
 		if (iframe) {
 			var loginButton = $('#loginButton');
