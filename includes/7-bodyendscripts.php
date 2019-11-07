@@ -111,11 +111,31 @@
       // videos play/pause on hover
       $(".hoverToPlay").hover( hoverStart, hoverEnd );
 
+      <?php
+      $encodedParams = array();
+      $obscuredQuery = str_replace('%', '#', $_SERVER['QUERY_STRING']);
+      parse_str($obscuredQuery, $encodedParams);
+      $unObscuredQuery = str_replace('#', '%', $encodedParams['s']);
+      $requestedkeywords = explode('|', $unObscuredQuery);
+      console_log($encodedParams, false);
+      console_log($requestedkeywords, false);
+      ?>
+
       $('.searchChips').chips({<?php
         if (isset($chipsexist) && $chipsexist) {
           $datastring = 'data: [';
-          $requestedkeywords = explode('|',$_GET['s']);
+
+          $encodedParams = array();
+          $obscuredQuery = str_replace('%', '#', $_SERVER['QUERY_STRING']);
+          parse_str($obscuredQuery, $encodedParams);
+          $unObscuredQuery = str_replace('#', '%', $encodedParams['s']);
+          $requestedkeywords = explode('|', $unObscuredQuery);
+          // $requestedkeywords = urldecode(requestedkeywords);
+          
+
           foreach ($requestedkeywords as $keyword) {
+            $keyword = urldecode($keyword);
+
             // replacing double quote with double backslash to backslash double quote to escape 
             // both php and javascript, can't just escape the backslash, have to escape both
             $keyword = str_replace('"', '\\\"', $keyword);

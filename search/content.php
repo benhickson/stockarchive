@@ -388,32 +388,10 @@
       $chipsexist = true; // setting a flag to use on the bodyendscripts.php page
       $search = $_GET['s'];
 
-      $sqlS = $search;
-      //$sqlS = $db->escape($sqlS);
-
-      // this server demands square brackets around special characters for some reason
-      // $sqlS = preg_quote($sqlS); <- does not work to properly escape the regex, instead:
-      // $sqlS = str_replace('\\\'', '\'', $sqlS);
-      console_log('1: '.$sqlS);
-      $sqlS = preg_quote($sqlS);
-      console_log('2: '.$sqlS);
-      $sqlS = $db->escape($sqlS);
-      $regexSpcChars = Array('\\[', '\\]','\\\\', '\\*', '\\+', '\\?', '\\|', '\\(', '\\)', '\\{', '\\}', '\\/', '\\.');
-      /*foreach ($regexSpcChars as $c) {
-        $sqlS = str_replace($c, '['.$c.']', $sqlS);
-      }*/
-      // $sqlS = str_replace('\\', '\\', $sqlS);
-
-      console_log('3: '.$sqlS);
-
-      /*$sqlS = str_replace('[', '[[]', $sqlS);           // [: [  -> [[]
-      $sqlS = str_replace('[', '[[]', $sqlS);           // ]: [  -> []] 
-      $sqlS = str_replace('\\\\', '[\\\\]', $sqlS);     // \: \\ -> [\\]
-      $sqlS = str_replace('*', '[*]', $sqlS);           // *: *  -> [*]
-      $sqlS = str_replace('+', '[+]', $sqlS);           // +: +  -> [+]
-      $sqlS = str_replace('?', '[?]', $sqlS);           // ?: ?  -> [?]
-      $sqlS = str_replace('|', '[|]', $sqlS);           // |: |  -> [|] <= breaks javascript*/
-
+      // escape both regex and sql characters, do not use MysqliDb array replace functionality, 
+      // since that will double escape and mess up the proper escapping done here
+      $search = preg_quote($search);
+      $search = $db->escape($search);
 
 
       $table = 'clips c, clips_x_tags cxt, tags t, projects p'; // table to search
@@ -432,31 +410,22 @@
       // breaks when tags contain a double quote
       $cols[] = "
         SUM(
-          CASE WHEN c.description REGEXP '$sqlS' THEN 1 ELSE 0 END
+          CASE WHEN c.description REGEXP '$search' THEN 1 ELSE 0 END
           +
-          CASE WHEN t.tagname REGEXP '$sqlS' THEN 2 ELSE 0 END
+          CASE WHEN t.tagname REGEXP '$search' THEN 2 ELSE 0 END
         ) AS score
       ";
 
       $db->where('c.id = cxt.clipid');
       $db->where('cxt.tagid = t.id');
       $db->where('c.project = p.id');
-      /*$db->where(
-        "(
-          c.description REGEXP ? 
-          OR t.tagname REGEXP ? 
-          OR c.city REGEXP ? 
-          OR c.region REGEXP ?
-          OR p.name REGEXP ?
-        )"
-        , Array($sqlS, $sqlS, '^'.$sqlS.'$', '^'.$sqlS.'$', $sqlS));*/
       $db->where(
         "(
-          c.description REGEXP '$sqlS'
-          OR t.tagname REGEXP '$sqlS' 
-          OR c.city REGEXP '^$sqlS$' 
-          OR c.region REGEXP '^$sqlS$'
-          OR p.name REGEXP '$sqlS'
+          c.description REGEXP '$search'
+          OR t.tagname REGEXP '$search' 
+          OR c.city REGEXP '^$search$' 
+          OR c.region REGEXP '^$search$'
+          OR p.name REGEXP '$search'
         )");
       $db->groupBy('c.id');
       $db->orderBy('score','desc');
