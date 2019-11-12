@@ -65,7 +65,8 @@
 			border-top: white;
 			border-top-width: 65px;
 			border-top-style: outset;
-			margin-top: -65px;    
+			margin-top: -65px;
+			padding: 20px;
 		}
 		.btn:not(#loginButton):not(#searchButton):focus{
 			background-color: #0099e4;
@@ -87,7 +88,7 @@
 		}
 		.sliderForm{
 		  display: inline-block;
-		  width: 100px;
+		  width: 150px;
 		}
 
 		/* materialize overrides */ 
