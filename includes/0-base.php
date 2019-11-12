@@ -37,5 +37,5 @@ function console_log($output, $with_script_tags = true) {
 }
 
 function consoleEcho($content){
-	console_log($content, true);
+	console_log($content);
 }
