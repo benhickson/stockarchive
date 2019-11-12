@@ -351,14 +351,27 @@
 
 </script>
 <?php
-  function console_log($output, $with_script_tags = true) {
-    $js_code = 'console.log('.json_encode($output, JSON_HEX_TAG).');';
-    if ($with_script_tags) {
-        $js_code = '<script>' . $js_code . '</script>';
-    }     
+  function realUrlGet() {
+    $s = array();
 
-    echo $js_code;
+    // gets the raw query (with encoded special characters) and
+    // replaces the % with a # to stop parse_str from decoding
+    // the url; that way the unencoded pipes are not confounded
+    // with pipes in the search terms
+    $obscuredQuery = str_replace('%', '#', $_SERVER['QUERY_STRING']);
+
+    // the query is parsed into an array, but not decoded
+    $encodedParams = array();
+    parse_str($obscuredQuery, $encodedParams); 
+
+    // the # are replaced back to hashtags, so that the query is
+    // properly encoded before seperating the terms by the unencoded
+    // pipe used in the otherwise encoded url
+    $encodedParams['s'] = str_replace('#', '%', $encodedParams['s']);
+  
+    return $encodedParams;
   }
+
 
   $page = 1;  // default
   $cols = array('c.id', 'c.description'); // columns/fields to request
@@ -387,6 +400,10 @@
     if (isset($_GET['s']) && $_GET['s'] != '') {
       $chipsexist = true; // setting a flag to use on the bodyendscripts.php page
 
+      /*$s = array();
+      parse_str($_GET['s'], $s);
+      console_log(array('Hi there: ',$_GET, $s));
+
       // gets the raw query (with encoded special characters) and
       // replaces the % with a # to stop parse_str from decoding
       // the url; that way the unencoded pipes are not confounded
@@ -395,13 +412,14 @@
 
       // the query is parsed into an array, but not decoded
       $encodedParams = array();
-      parse_str($obscuredQuery, $encodedParams);
+      parse_str($obscuredQuery, $encodedParams); 
+      console_log(array('Hi', $obscuredQuery, $encodedParams));
 
       // the # are replaced back to hashtags, so that the query is
       // properly encoded before seperating the terms by the unencoded
       // pipe used in the otherwise encoded url
-      $unObscuredQuery = str_replace('#', '%', $encodedParams['s']);
-      $requestedkeywords = explode('|', $unObscuredQuery);
+      $unObscuredQuery = str_replace('#', '%', $encodedParams['s']);*/
+      $requestedkeywords = explode('|', realUrlGet()['s']);
 
       $search = '';
       foreach($requestedkeywords as $rk) {
@@ -459,27 +477,24 @@
     }
   }
 
-  
-  // print_r($db);
-
   $pageLimit = 60; // results per page
   $db->pageLimit = $pageLimit;
   $results = $db->withTotalCount()->paginate($table, $page, $cols);
   
   console_log($db->getLastQuery());
-  console_log($results);
+  // console_log($results);
 ?> 
 <div class="col m4 l3 xl2 grey lighten-2">
   <div id="leftbar">
     <p>Found <?php echo $db->totalCount; ?> results.<br />Viewing results <?php echo (($page - 1) * $pageLimit) + 1; ?> through <?php echo min($db->totalCount, $pageLimit * $page); ?></p>
     <ul class="pagination">
     <?php
+    // TODO: not the best code on the planet
     $searchterms = $_SERVER['QUERY_STRING'].'&';
 
     $currPageUrlPos = strpos($searchterms, '&page=');
-    if(currPageUrlPos !== false) {
+    if($currPageUrlPos !== false) { 
       $currPageUrlEnd = strpos($searchterms, '&', $currPageUrlPos+1);
-
       if($currPageUrlEnd === false) {
         $searchterms = substr($searchterms, 0, $currPageUrlPos);
       }
@@ -488,6 +503,16 @@
           substr($searchterms, 0, $currPageUrlPos)
           .substr($searchterms, $currPageUrlEnd);
       }
+    }
+
+    $get = realUrlGet(); console_log(array('get', $get));
+    if (isset($get['page'])) {
+      unset($get['page']);
+    }
+
+    $searchterms = '';
+    foreach ($get as $param => $value) {
+      $searchterms = $searchterms.$param.'='.$value.'&';
     }
 
     $pagecount = ceil($db->totalCount / $pageLimit);

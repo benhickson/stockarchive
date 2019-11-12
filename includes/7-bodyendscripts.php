@@ -111,27 +111,11 @@
       // videos play/pause on hover
       $(".hoverToPlay").hover( hoverStart, hoverEnd );
 
-      <?php
-      $encodedParams = array();
-      $obscuredQuery = str_replace('%', '#', $_SERVER['QUERY_STRING']);
-      parse_str($obscuredQuery, $encodedParams);
-      $unObscuredQuery = str_replace('#', '%', $encodedParams['s']);
-      $requestedkeywords = explode('|', $unObscuredQuery);
-      console_log($encodedParams, false);
-      console_log($requestedkeywords, false);
-      ?>
-
       $('.searchChips').chips({<?php
         if (isset($chipsexist) && $chipsexist) {
           $datastring = 'data: [';
 
-          // right now, this is a copy of code in content.php
-          // the functionality should condensed
-          $encodedParams = array();
-          $obscuredQuery = str_replace('%', '#', $_SERVER['QUERY_STRING']);
-          parse_str($obscuredQuery, $encodedParams);
-          $unObscuredQuery = str_replace('#', '%', $encodedParams['s']);
-          $requestedkeywords = explode('|', $unObscuredQuery);
+          $requestedkeywords = explode('|', realUrlGet()['s']);
 
           foreach ($requestedkeywords as $keyword) {
             $keyword = urldecode($keyword);
