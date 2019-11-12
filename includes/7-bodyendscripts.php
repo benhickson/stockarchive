@@ -117,6 +117,7 @@
 
           $requestedkeywords = explode('|', realUrlGet()['s']);
 
+          // TODO: do the str_replace before the explode
           foreach ($requestedkeywords as $keyword) {
             $keyword = urldecode($keyword);
 
