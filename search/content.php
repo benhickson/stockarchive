@@ -15,7 +15,7 @@
     cursor: pointer;
   }
   .size2 .searchResult{
-    flex-basis: 33%;
+    flex-basis: 34%;
   }  
   .size3 .searchResult{
     flex-basis: 25%;
@@ -27,7 +27,7 @@
     flex-basis: 17%;
   }
   .size6 .searchResult{
-    flex-basis: 14%;
+    flex-basis: 15%;
   }
   .endSpacer{
     background: #a00;
@@ -544,9 +544,12 @@
 </div>
 <div id="mainContent" class="col m8 l9 xl10 size<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>">
   <div class="row">
+    
     <form class="sliderForm" action="#">
+      
       <p class="range-field">
-        <input type="range" id="thumbnailSizeSlider" min="2" max="6" value="<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>" />
+        <div>Thumbnail Size:</div>
+        <input type="range" id="thumbnailSizeSlider" min="2" max="6" style="direction:rtl;" value="<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>" />
       </p>
     </form>
   </div>
