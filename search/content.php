@@ -475,70 +475,42 @@
     <p>Found <?php echo $db->totalCount; ?> results.<br />Viewing results <?php echo (($page - 1) * $pageLimit) + 1; ?> through <?php echo min($db->totalCount, $pageLimit * $page); ?></p>
     <ul class="pagination">
     <?php
-    $paginationstring = '';
-    if (isset($_GET['page'])) {
+    $searchterms = $_SERVER['QUERY_STRING'].'&';
 
-    }
-
-    // question mark breaks and pipe pagination
-
-    if (isset($_GET['s'])){
-      $searchstring = 's='.$_GET['s'].'&';
-    } else {
-      $searchstring = '';
-    }    
-    if (isset($_GET['country'])){
-      $countrystring = 'country='.$_GET['country'].'&';
-    } else {
-      $countrystring = '';
-    }
-    if (isset($_GET['project'])){
-      $projectstring = 'project='.$_GET['project'].'&';
-    } else {
-      $projectstring = '';
-    }
-
-    $projectstring = $_SERVER['QUERY_STRING'].'&';
-
-    $currPageUrlPos = strpos($projectstring, '&page=');
-    if(currPageUrlPos !== 0) {
-      $currPageUrlEnd = strpos($projectstring, '&', $currPageUrlPos);
+    $currPageUrlPos = strpos($searchterms, '&page=');
+    if(currPageUrlPos !== false) {
+      $currPageUrlEnd = strpos($searchterms, '&', $currPageUrlPos+1);
 
       if($currPageUrlEnd === false) {
-        $projectstring = substr($projectstring, 0, $currPageUrlPos);
+        $searchterms = substr($searchterms, 0, $currPageUrlPos);
       }
       else {
-        $projectstring = 
-          substr($projectstring, 0, $currPageUrlPos)
-          .substr($projectstring, $currPageUrlEnd);
+        $searchterms = 
+          substr($searchterms, 0, $currPageUrlPos)
+          .substr($searchterms, $currPageUrlEnd);
       }
     }
-
-
-    console_log('page stuff');
-    console_log($projectstring);
-    console_log(parse_url($projectstring));
 
     $pagecount = ceil($db->totalCount / $pageLimit);
     $i = 1;
     while ($i <= $pagecount){
-	      $paginationstring .= '<li';
-	      if ($page == $i) {
-	        $paginationstring .= ' class="active"';
-	        // if statement to show only the five current pages
-	      } elseif (abs($page - $i) > 2) {
-	      	$paginationstring .= ' class="leftbarhidden"';
-	      }
-	      $paginationstring .= '><a href="?';
-	      // $paginationstring .= $searchstring;
-	      // $paginationstring .= $countrystring;
-        $paginationstring .= $projectstring;
-	      $paginationstring .= 'page='.$i;
-	      $paginationstring .= '">'.$i.'</a></li>';
-	      $paginationstring .= "\n";
+      $paginationstring .= '<li';
+
+      if ($page == $i) {
+        $paginationstring .= ' class="active"';
+        // if statement to show only the five current pages
+      } elseif (abs($page - $i) > 2) {
+      	$paginationstring .= ' class="leftbarhidden"';
+      }
+
+      $paginationstring .= '><a href="?';
+      $paginationstring .= $searchterms;
+      $paginationstring .= 'page='.$i;
+      $paginationstring .= '">'.$i.'</a></li>';
+      $paginationstring .= "\n";
       $i++;
     }
-    echo $paginationstring;console_log($projectstring);
+    echo $paginationstring;
     ?>
     </ul>
     <div class="input-field searchstuff">
