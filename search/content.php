@@ -141,6 +141,59 @@
   	display: inline-block;
   }
 
+  /*
+  FOR PROJECT POPUP
+  */
+  .overlay {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: rgb(238, 238, 238);
+    background-color: rgba(238, 238, 238, 0.9);
+    overflow-x: hidden;
+    transition: 0.35s;
+  }
+
+  .overlay-content {
+    position: relative;
+    top: 25%;
+    width: 100%;
+    text-align: left;
+    margin-top: 150px;
+    margin-left: 400px;
+  }
+
+  .overlay a {
+    padding: 8px;
+    text-decoration: none;
+    font-size: 36px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+  }
+
+  .overlay a:hover, .overlay a:focus {
+    color: #f1f1f1;
+  }
+
+  .overlay .closebtn {
+    position: absolute;
+    top: 20px;
+    right: 45px;
+    font-size: 60px;
+  }
+
+  @media screen and (max-height: 450px) {
+    .overlay a {font-size: 20px}
+    .overlay .closebtn {
+      font-size: 40px;
+      top: 15px;
+      right: 35px;
+    }
+  }
 
 /*  .hoverFade{
     transition: opacity 300ms ease !important;
@@ -349,6 +402,27 @@
     window.location = windowLocationString;
   }
 
+  function openProjectPopup() {
+    document.getElementById("projectPopup").style.width = "100%";
+
+    $('#overlay-content-id').append('Test');
+  }
+
+  function closeProjectPopup() {
+    document.getElementById("projectPopup").style.width = "0%";
+  }
+
+  function getProjects() {
+    var obj = 
+      <?php
+        $cols = array("id, name");
+        $db->orderBy("name","asc");
+        $projects = $db->get("projects", null, $cols);
+
+        echo json_encode($projects); 
+      ?>;
+  }
+
 </script>
 <?php
   function realUrlGet() {
@@ -374,7 +448,7 @@
 
 
   $page = 1;  // default
-  $cols = array('c.id', 'c.description'); // columns/fields to request
+  $cols = array('c.id', 'c.description', 'c.project'); // columns/fields to request
 
   $db->where('published', 1); // published clips
   $db->where('(todelete = 0 OR todelete IS NULL)'); // not deleted clips
@@ -450,7 +524,8 @@
         )");
       $db->groupBy('c.id');
       $db->orderBy('score','desc');
-    } else {
+    } 
+    else {
       $table = 'clips c'; // table to search
       $db->orderBy('project','desc');
       $db->orderBy('uploadfilename','asc');
@@ -537,6 +612,7 @@
       </select>
     </div>  
     <button id="searchButton" type="submit" class="btn searchstuff" onclick="newSearch();">Search</button>
+    <span class="btn searchstuff" onclick="openProjectPopup()">Project Search</span>
     <!-- <p>Included Tags</p> -->
     <!-- <p>Suggested Tags</p> -->
     <!-- <p>Collections</p>         -->
@@ -544,9 +620,7 @@
 </div>
 <div id="mainContent" class="col m8 l9 xl10 size<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>">
   <div class="row">
-    
     <form class="sliderForm" action="#">
-      
       <p class="range-field">
         <div>Thumbnail Size:</div>
         <input type="range" id="thumbnailSizeSlider" min="2" max="6" style="direction:rtl;" value="<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>" />
@@ -554,6 +628,10 @@
     </form>
   </div>
   <div id="resultContainer" class="row hidden flex-parent">
+    <div id="projectPopup" class="overlay">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeProjectPopup()">&times;</a>
+      <div id="overlay-content-id" class="overlay-content"></div>
+    </div>
     <?php
     foreach ($results as $clip) {
       ?>

@@ -58,7 +58,10 @@
 			border-top-style: outset;
 			top: 0;
 			left: 0;
-			padding-left: 14px;    
+			padding-left: 14px;
+
+			/*For popup project search*/
+			z-index: 2; 
 		}
 		#mainContent{
 			background-color: white;
