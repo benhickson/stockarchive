@@ -400,25 +400,6 @@
     if (isset($_GET['s']) && $_GET['s'] != '') {
       $chipsexist = true; // setting a flag to use on the bodyendscripts.php page
 
-      /*$s = array();
-      parse_str($_GET['s'], $s);
-      console_log(array('Hi there: ',$_GET, $s));
-
-      // gets the raw query (with encoded special characters) and
-      // replaces the % with a # to stop parse_str from decoding
-      // the url; that way the unencoded pipes are not confounded
-      // with pipes in the search terms
-      $obscuredQuery = str_replace('%', '#', $_SERVER['QUERY_STRING']);
-
-      // the query is parsed into an array, but not decoded
-      $encodedParams = array();
-      parse_str($obscuredQuery, $encodedParams); 
-      console_log(array('Hi', $obscuredQuery, $encodedParams));
-
-      // the # are replaced back to hashtags, so that the query is
-      // properly encoded before seperating the terms by the unencoded
-      // pipe used in the otherwise encoded url
-      $unObscuredQuery = str_replace('#', '%', $encodedParams['s']);*/
       $requestedkeywords = explode('|', realUrlGet()['s']);
 
       $search = '';
@@ -481,7 +462,7 @@
   $db->pageLimit = $pageLimit;
   $results = $db->withTotalCount()->paginate($table, $page, $cols);
   
-  console_log($db->getLastQuery());
+  // console_log($db->getLastQuery());
   // console_log($results);
 ?> 
 <div class="col m4 l3 xl2 grey lighten-2">
@@ -489,23 +470,7 @@
     <p>Found <?php echo $db->totalCount; ?> results.<br />Viewing results <?php echo (($page - 1) * $pageLimit) + 1; ?> through <?php echo min($db->totalCount, $pageLimit * $page); ?></p>
     <ul class="pagination">
     <?php
-    // TODO: not the best code on the planet
-    $searchterms = $_SERVER['QUERY_STRING'].'&';
-
-    $currPageUrlPos = strpos($searchterms, '&page=');
-    if($currPageUrlPos !== false) { 
-      $currPageUrlEnd = strpos($searchterms, '&', $currPageUrlPos+1);
-      if($currPageUrlEnd === false) {
-        $searchterms = substr($searchterms, 0, $currPageUrlPos);
-      }
-      else {
-        $searchterms = 
-          substr($searchterms, 0, $currPageUrlPos)
-          .substr($searchterms, $currPageUrlEnd);
-      }
-    }
-
-    $get = realUrlGet(); console_log(array('get', $get));
+    $get = realUrlGet();
     if (isset($get['page'])) {
       unset($get['page']);
     }
