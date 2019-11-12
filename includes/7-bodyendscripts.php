@@ -125,13 +125,13 @@
         if (isset($chipsexist) && $chipsexist) {
           $datastring = 'data: [';
 
+          // right now, this is a copy of code in content.php
+          // the functionality should condensed
           $encodedParams = array();
           $obscuredQuery = str_replace('%', '#', $_SERVER['QUERY_STRING']);
           parse_str($obscuredQuery, $encodedParams);
           $unObscuredQuery = str_replace('#', '%', $encodedParams['s']);
           $requestedkeywords = explode('|', $unObscuredQuery);
-          // $requestedkeywords = urldecode(requestedkeywords);
-          
 
           foreach ($requestedkeywords as $keyword) {
             $keyword = urldecode($keyword);
@@ -140,8 +140,8 @@
             // both php and javascript, can't just escape the once, have to escape both
             $keyword = str_replace('\\', '\\\\', $keyword);
 
-            // replacing double quote with double backslash to backslash double quote to escape 
-            // both php and javascript, can't just escape the backslash, have to escape both
+            // replacing double quote with backslash double quote to escape 
+            // both php and javascript
             $keyword = str_replace('"', '\"', $keyword);
 
             $datastring = $datastring.'{tag: "'.$keyword.'"},';

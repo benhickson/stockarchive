@@ -386,34 +386,33 @@
     $chipsexist = false; // default, if no chips set
     if (isset($_GET['s']) && $_GET['s'] != '') {
       $chipsexist = true; // setting a flag to use on the bodyendscripts.php page
-      $search = $_GET['s'];
 
-      // escape both regex and sql characters, do not use MysqliDb array replace functionality, 
-      // since that will double escape and mess up the proper escapping done here
-      $search = preg_quote($search);console_log($search);
-      $search = $db->escape($search);console_log($search);
-
-      $encodedParams = array();
+      // gets the raw query (with encoded special characters) and
+      // replaces the % with a # to stop parse_str from decoding
+      // the url; that way the unencoded pipes are not confounded
+      // with pipes in the search terms
       $obscuredQuery = str_replace('%', '#', $_SERVER['QUERY_STRING']);
+
+      // the query is parsed into an array, but not decoded
+      $encodedParams = array();
       parse_str($obscuredQuery, $encodedParams);
+
+      // the # are replaced back to hashtags, so that the query is
+      // properly encoded before seperating the terms by the unencoded
+      // pipe used in the otherwise encoded url
       $unObscuredQuery = str_replace('#', '%', $encodedParams['s']);
       $requestedkeywords = explode('|', $unObscuredQuery);
-      console_log('rks: ');
-      console_log($requestedkeywords);
 
       $search = '';
       foreach($requestedkeywords as $rk) {
-        // $encodedRk= array();
-        // $rk = str_replace('%20', ' ', $rk);console_log('wut -- '.$rk);
-        //parse_str($rk, $encodedRk);
-        console_log('encodedRk');
-        //$rk = array_keys($encodedRk)[0];
-
-        $rk = urldecode($rk); console_log($rk);
-        $rk = preg_quote($rk);console_log($rk);
+        // escape both regex and sql characters, do not use MysqliDb 
+        // array replace functionality, since that will double escape 
+        // and mess up the proper escapping done here
+        $rk = urldecode($rk);
+        $rk = preg_quote($rk);
         $rk = $db->escape($rk);
 
-        $search = $search.'|'.$rk;console_log('search: ');console_log($_SERVER['QUERY_STRING']);
+        $search = $search.'|'.$rk;
       }
       $search = substr($search, 1);
 
