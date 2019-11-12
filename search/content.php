@@ -145,7 +145,7 @@
   FOR PROJECT POPUP
   */
   .overlay {
-    height: 100%;
+    /*height: 100%;*/
     width: 0;
     position: fixed;
     z-index: 1;
@@ -405,7 +405,17 @@
   function openProjectPopup() {
     document.getElementById("projectPopup").style.width = "100%";
 
-    $('#overlay-content-id').append('Test');
+    console.log('openprojectpopup ', getProjects());
+
+    let projects = getProjects();
+    
+    $.each(projects, (id, info) => {
+      console.log('x: ', id);
+      let jn = info.jobnumber ? info.jobnumber+' - ' : '';
+      let projectStr = jn + info.name + '<br>';
+
+      $('#overlay-content-id').append(projectStr);
+    });
   }
 
   function closeProjectPopup() {
@@ -413,14 +423,21 @@
   }
 
   function getProjects() {
-    var obj = 
-      <?php
-        $cols = array("id, name");
-        $db->orderBy("name","asc");
-        $projects = $db->get("projects", null, $cols);
+    <?php
+    $cols = array("id, name, jobnumber");
+    $db->orderBy("name","asc");
+    $projects = $db->get("projects", null, $cols);
 
-        echo json_encode($projects); 
-      ?>;
+    $flattenedProjects = array(); console_log(array('1:', $projects),false);
+    foreach($projects as $i => $info) {
+      $flattenedProjects[$info['id']] = array(
+        'name' => $info['name'],
+        'jobnumber' => $info['jobnumber']
+      );
+    } console_log(array('2:', $flattenedProjects),false);
+    ?>;
+
+    return <?php echo json_encode($flattenedProjects); ?>;
   }
 
 </script>
