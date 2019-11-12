@@ -114,11 +114,20 @@
       $('.searchChips').chips({<?php
         if (isset($chipsexist) && $chipsexist) {
           $datastring = 'data: [';
-          $requestedkeywords = explode('|',$_GET['s']);
+
+          $requestedkeywords = explode('|', realUrlGet()['s']);
+
+          // TODO: do the str_replace before the explode
           foreach ($requestedkeywords as $keyword) {
-            // replacing double quote with backslash double
-            // can't just escape the backslash, have to escape both
-            $keyword = str_replace('"', "\\\"", $keyword);
+            $keyword = urldecode($keyword);
+
+            // replacing backslash with double backslash to double backslash to escape 
+            // both php and javascript, can't just escape the once, have to escape both
+            $keyword = str_replace('\\', '\\\\', $keyword);
+
+            // replacing double quote with backslash double quote to escape 
+            // both php and javascript
+            $keyword = str_replace('"', '\"', $keyword);
 
             $datastring = $datastring.'{tag: "'.$keyword.'"},';
           }

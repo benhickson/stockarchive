@@ -351,11 +351,31 @@
 
 </script>
 <?php
-  // new new way
+  function realUrlGet() {
+    $s = array();
+
+    // gets the raw query (with encoded special characters) and
+    // replaces the % with a # to stop parse_str from decoding
+    // the url; that way the unencoded pipes are not confounded
+    // with pipes in the search terms
+    $obscuredQuery = str_replace('%', '#', $_SERVER['QUERY_STRING']);
+
+    // the query is parsed into an array, but not decoded
+    $encodedParams = array();
+    parse_str($obscuredQuery, $encodedParams); 
+
+    // the # are replaced back to hashtags, so that the query is
+    // properly encoded before seperating the terms by the unencoded
+    // pipe used in the otherwise encoded url
+    $encodedParams['s'] = str_replace('#', '%', $encodedParams['s']);
+  
+    return $encodedParams;
+  }
+
+
   $page = 1;  // default
   $cols = array('c.id', 'c.description'); // columns/fields to request
 
-  //$db->setTrace(true);
   $db->where('published', 1); // published clips
   $db->where('(todelete = 0 OR todelete IS NULL)'); // not deleted clips
 
@@ -379,13 +399,21 @@
     $chipsexist = false; // default, if no chips set
     if (isset($_GET['s']) && $_GET['s'] != '') {
       $chipsexist = true; // setting a flag to use on the bodyendscripts.php page
-      $query = $_GET['s'];
 
-      // $pipe = str_replace(',', '|', $query);
-      $pipe = $query;
-      // $pipe = str_replace("'", "''", $pipe);
-      $pipe = $db->escape($pipe);
-      // print_r($pipe);
+      $requestedkeywords = explode('|', realUrlGet()['s']);
+
+      $search = '';
+      foreach($requestedkeywords as $rk) {
+        // escape both regex and sql characters, do not use MysqliDb 
+        // array replace functionality, since that will double escape 
+        // and mess up the proper escapping done here
+        $rk = urldecode($rk);
+        $rk = preg_quote($rk);
+        $rk = $db->escape($rk);
+
+        $search = $search.'|'.$rk;
+      }
+      $search = substr($search, 1);
 
       $table = 'clips c, clips_x_tags cxt, tags t, projects p'; // table to search
       // $cols[] = "
@@ -403,9 +431,9 @@
       // breaks when tags contain a double quote
       $cols[] = "
         SUM(
-          CASE WHEN c.description REGEXP '$pipe' THEN 1 ELSE 0 END
+          CASE WHEN c.description REGEXP '$search' THEN 1 ELSE 0 END
           +
-          CASE WHEN t.tagname REGEXP '$pipe' THEN 2 ELSE 0 END
+          CASE WHEN t.tagname REGEXP '$search' THEN 2 ELSE 0 END
         ) AS score
       ";
 
@@ -414,13 +442,12 @@
       $db->where('c.project = p.id');
       $db->where(
         "(
-          c.description REGEXP ? 
-          OR t.tagname REGEXP ? 
-          OR c.city REGEXP ? 
-          OR c.region REGEXP ?
-          OR p.name REGEXP ?
-        )"
-        , Array($pipe, $pipe, '^'.$pipe.'$', '^'.$pipe.'$', $pipe));
+          c.description REGEXP '$search'
+          OR t.tagname REGEXP '$search' 
+          OR c.city REGEXP '^$search$' 
+          OR c.region REGEXP '^$search$'
+          OR p.name REGEXP '$search'
+        )");
       $db->groupBy('c.id');
       $db->orderBy('score','desc');
     } else {
@@ -431,53 +458,45 @@
     }
   }
 
-  
-  // print_r($db);
-
   $pageLimit = 60; // results per page
   $db->pageLimit = $pageLimit;
   $results = $db->withTotalCount()->paginate($table, $page, $cols);
-
-  //  print_r($db->getLastQuery())
+  
+  // console_log($db->getLastQuery());
+  // console_log($results);
 ?> 
 <div class="col m4 l3 xl2 grey lighten-2">
   <div id="leftbar">
     <p>Found <?php echo $db->totalCount; ?> results.<br />Viewing results <?php echo (($page - 1) * $pageLimit) + 1; ?> through <?php echo min($db->totalCount, $pageLimit * $page); ?></p>
     <ul class="pagination">
     <?php
-    $paginationstring = '';
-    if (isset($_GET['s'])){
-      $searchstring = 's='.$_GET['s'].'&';
-    } else {
-      $searchstring = '';
-    }    
-    if (isset($_GET['country'])){
-      $countrystring = 'country='.$_GET['country'].'&';
-    } else {
-      $countrystring = '';
+    $get = realUrlGet();
+    if (isset($get['page'])) {
+      unset($get['page']);
     }
-    if (isset($_GET['project'])){
-      $projectstring = 'project='.$_GET['project'].'&';
-    } else {
-      $projectstring = '';
+
+    $searchterms = '';
+    foreach ($get as $param => $value) {
+      $searchterms = $searchterms.$param.'='.$value.'&';
     }
+
     $pagecount = ceil($db->totalCount / $pageLimit);
     $i = 1;
     while ($i <= $pagecount){
-	      $paginationstring .= '<li';
-	      if ($page == $i) {
-	        $paginationstring .= ' class="active"';
-	        // if statement to show only the five current pages
-	      } elseif (abs($page - $i) > 2) {
-	      	$paginationstring .= ' class="leftbarhidden"';
-	      }
-	      $paginationstring .= '><a href="?';
-	      $paginationstring .= $searchstring;
-	      $paginationstring .= $countrystring;
-        $paginationstring .= $projectstring;
-	      $paginationstring .= 'page='.$i;
-	      $paginationstring .= '">'.$i.'</a></li>';
-	      $paginationstring .= "\n";
+      $paginationstring .= '<li';
+
+      if ($page == $i) {
+        $paginationstring .= ' class="active"';
+        // if statement to show only the five current pages
+      } elseif (abs($page - $i) > 2) {
+      	$paginationstring .= ' class="leftbarhidden"';
+      }
+
+      $paginationstring .= '><a href="?';
+      $paginationstring .= $searchterms;
+      $paginationstring .= 'page='.$i;
+      $paginationstring .= '">'.$i.'</a></li>';
+      $paginationstring .= "\n";
       $i++;
     }
     echo $paginationstring;
