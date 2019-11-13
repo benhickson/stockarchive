@@ -3,7 +3,7 @@
 // important for this long-running script
 set_time_limit(0);
 
-require '/var/www/html/creative.lonelyleap.com/archive/includes/0-base.php';
+require __DIR__.'/../includes/0-base.php';
 
 
 
