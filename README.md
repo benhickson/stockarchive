@@ -7,6 +7,7 @@ This app is tested to be used on:
 - MySQL 5.7.27
 - PHP Version 7.3.10-1+ubuntu16.04.1+deb.sury.org+1 (loaded as apache module)
 
+
 Setup:
 1. Install all above system requirements
 2. Download blank database file (link) (or your database backup) and codebase (link to release)
