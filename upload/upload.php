@@ -57,8 +57,8 @@ if ($_SESSION['logged_in']){
 				);
 				if ($clipid = $db->insert('clips',$data)) {
 					// transcode speed, from manual testing / sql audits
-					$transcode_speed = 0.3; // 0.3x real-time (duration)
-					$rendertime_estimate = round($duration / $transcode_speed); 
+					$average_transcode_speed = 0.3; // 0.3x real-time (duration)
+					$rendertime_estimate = round($duration / $average_transcode_speed); 
 					echo 'estimate '.$rendertime_estimate.', ';
 					// add clip to queue
 					$data = array(
@@ -69,7 +69,7 @@ if ($_SESSION['logged_in']){
 						// log it
 						activitylog('upload', $_SESSION['nickname'].' uploaded a clip. Clip id='.$clipid);
 						// respond to the ajax
-						echo $fileName . ' upload is complete: clip ' . $clipid;
+						echo $fileName . ' upload is complete. The clip id is ' . $clipid;
 					} else {
 						// fail. enable this row for debugging
 						// echo 'Transcode Queue insert failed. Error: '. $db->getLastError();						
