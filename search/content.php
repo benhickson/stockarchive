@@ -164,6 +164,7 @@
     text-align: left;
     margin-top: 150px;
     margin-left: 400px;
+    /*margin-bottom: 500px;*/
   }
 
   .overlay a {
@@ -172,7 +173,7 @@
     font-size: 36px;
     color: #818181;
     display: block;
-    transition: 0.3s;
+    transition: 0.5s;
   }
 
   .overlay a:hover, .overlay a:focus {
@@ -412,7 +413,7 @@
     $.each(projects, (id, info) => {
       console.log('x: ', id);
       let jn = info.jobnumber ? info.jobnumber+' - ' : '';
-      let projectStr = jn + info.name + '<br>';
+      let projectStr = '<a href="' + "" + jn + info.name + '<br>';
 
       $('#overlay-content-id').append(projectStr);
     });
@@ -422,19 +423,21 @@
     document.getElementById("projectPopup").style.width = "0%";
   }
 
+
+
   function getProjects() {
     <?php
     $cols = array("id, name, jobnumber");
     $db->orderBy("name","asc");
     $projects = $db->get("projects", null, $cols);
 
-    $flattenedProjects = array(); console_log(array('1:', $projects),false);
+    $flattenedProjects = array();
     foreach($projects as $i => $info) {
       $flattenedProjects[$info['id']] = array(
         'name' => $info['name'],
         'jobnumber' => $info['jobnumber']
       );
-    } console_log(array('2:', $flattenedProjects),false);
+    }
     ?>;
 
     return <?php echo json_encode($flattenedProjects); ?>;
@@ -557,6 +560,7 @@
   // console_log($db->getLastQuery());
   // console_log($results);
 ?> 
+<div id="logincard" class="card" style="opacity: 1; overflow: visible;">
 <div class="col m4 l3 xl2 grey lighten-2">
   <div id="leftbar">
     <p>Found <?php echo $db->totalCount; ?> results.<br />Viewing results <?php echo (($page - 1) * $pageLimit) + 1; ?> through <?php echo min($db->totalCount, $pageLimit * $page); ?></p>
@@ -630,6 +634,9 @@
     </div>  
     <button id="searchButton" type="submit" class="btn searchstuff" onclick="newSearch();">Search</button>
     <span class="btn searchstuff" onclick="openProjectPopup()">Project Search</span>
+    <div class="card-action">
+      <a id="registerButton" class="activator">Register</a>
+    </div>  
     <!-- <p>Included Tags</p> -->
     <!-- <p>Suggested Tags</p> -->
     <!-- <p>Collections</p>         -->
@@ -644,75 +651,111 @@
       </p>
     </form>
   </div>
-  <div id="resultContainer" class="row hidden flex-parent">
-    <div id="projectPopup" class="overlay">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeProjectPopup()">&times;</a>
-      <div id="overlay-content-id" class="overlay-content"></div>
-    </div>
-    <?php
-    foreach ($results as $clip) {
-      ?>
-      <div class="searchResult flex-child" data-clipid="<?php echo $clip['id']; ?>" data-score="<?php echo $clip['score']; ?>">
-        <div class="expandedCover"></div>
-        <video loading="eager" class="hoverToPlay" muted loop preload="none" 
-        src="//creative.lonelyleap.com/archive/media/?clip=<?php echo $clip['id']; ?>&q=q"
-        poster="//creative.lonelyleap.com/archive/media/?clip=<?php echo $clip['id']; ?>&q=t">
-        </video>
-        <div class="hoverContent">
-          <span class="description truncate"><?php echo $clip['description']; ?></span>
+      <div id="logincard" class="card" style="opacity: 1; overflow: visible;">
+  <!-- <div id="logincard" class="card" style="opacity: 1; overflow: visible;"> -->
+    <!-- results -->
+    <div id="resultContainer" class="row hidden flex-parent">
+        <div id="projectPopup" class="overlay">
+          <a href="javascript:void(0)" class="closebtn" onclick="closeProjectPopup()">&times;</a>
+          <div id="overlay-content-id" class="overlay-content"></div>
         </div>
-      </div>
-      <?php
-    }
-    ?>
-      <!-- 5 spacers to fill the last row up to 6, when necessary -->
-      <div class="endSpacer searchResult flex-child" data-clipid="0a"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0b"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0c"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0d"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0e"></div>
-
-      <script type="text/javascript">
-        function playPause(){
-          var player = document.getElementById('clipExpandVideo');
-          if (player.paused) {
-            player.play();
-          } else {
-            player.pause();
-          }
+        <?php
+        foreach ($results as $clip) {
+          ?>
+          <div class="searchResult flex-child" data-clipid="<?php echo $clip['id']; ?>" data-score="<?php echo $clip['score']; ?>">
+            <div class="expandedCover"></div>
+            <video loading="eager" class="hoverToPlay" muted loop preload="none" 
+            src="//creative.lonelyleap.com/archive/media/?clip=<?php echo $clip['id']; ?>&q=q"
+            poster="//creative.lonelyleap.com/archive/media/?clip=<?php echo $clip['id']; ?>&q=t">
+            </video>
+            <div class="hoverContent">
+              <span class="description truncate"><?php echo $clip['description']; ?></span>
+            </div>
+          </div>
+          <?php
         }
-      </script>
+        ?>
+          <!-- 5 spacers to fill the last row up to 6, when necessary -->
+          <div class="endSpacer searchResult flex-child" data-clipid="0a"></div>
+          <div class="endSpacer searchResult flex-child" data-clipid="0b"></div>
+          <div class="endSpacer searchResult flex-child" data-clipid="0c"></div>
+          <div class="endSpacer searchResult flex-child" data-clipid="0d"></div>
+          <div class="endSpacer searchResult flex-child" data-clipid="0e"></div>
 
-      <!-- The div for the expanded content -->
-      <div id="clipExpand" class="flex-child">
-        <div id="clipExpandContent">
-          <div class="panes" id="leftpane">
-            <video id="clipExpandVideo" src="//creative.lonelyleap.com/archive/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
+          <script type="text/javascript">
+            function playPause(){
+              var player = document.getElementById('clipExpandVideo');
+              if (player.paused) {
+                player.play();
+              } else {
+                player.pause();
+              }
+            }
+          </script>
+
+          <!-- The div for the expanded content -->
+          <div id="clipExpand" class="flex-child">
+            <div id="clipExpandContent">
+              <div class="panes" id="leftpane">
+                <video id="clipExpandVideo" src="//creative.lonelyleap.com/archive/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
+              </div>
+              <div class="panes" id="rightpane">
+                <h5 id="clipExpandDescription">Description</h5>
+                <p>Clip # <span id="clipExpandId">Clip Id</span> <?php
+                  if($_SESSION['userid'] == 1){
+                      echo '<a id="clipExpandRetranscode" href="../upload/transcode.php?retranscode=clipid" target="_blank">RT</a>';
+                  }
+                ?><br />
+                   Tags: <span id="clipExpandTags">Tags</span></p>
+                <p>Date: <span id="clipExpandDate">Date</span><br />
+                   Project: <span id="clipExpandProject">Project</span><br />
+                   Location: <span id="clipExpandLocation">Location</span></p>
+                <p>Camera: <span id="clipExpandCamera">Camera</span><br />
+                   Resolution: <span id="clipExpandResolution">Resolution</span></p>
+                <p style="display: none;">Search Relevancy Score: <span id="clipScore"></span></p>
+                <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
+                <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
+                <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
+                  Filename: <span id="clipExpandOriginalFilename"></span></p>
+              </div>
+            </div>
+          </div>      
+      </div>
+    <!-- results -->
+
+      <div class="card-action">
+        <a id="registerButton" class="activator">Register</a>
+      </div>  
+      <div class="card-reveal" style="display: none; transform: translateY(0%);">
+        <span class="card-title grey-text text-darken-4">Register as a New User<i class="material-icons right">close</i></span>
+        <form id="registerform" action="?register=true" method="post">
+          <p>Welcome!</p>
+          <p>This is a private system for the Lonelyleap team. If you've been invited to join, please enter your email and your 2-character invite code below.</p>
+          <div class="input-field" id="regFieldEmail">
+            <input id="regemail" type="email" name="email" class="validate" required="">
+            <label for="regemail">Email</label>
           </div>
-          <div class="panes" id="rightpane">
-            <h5 id="clipExpandDescription">Description</h5>
-            <p>Clip # <span id="clipExpandId">Clip Id</span> <?php 
-
-if($_SESSION['userid'] == 1){
-    echo '<a id="clipExpandRetranscode" href="../upload/transcode.php?retranscode=clipid" target="_blank">RT</a>';
-}
-
-            ?><br />
-               Tags: <span id="clipExpandTags">Tags</span></p>
-            <p>Date: <span id="clipExpandDate">Date</span><br />
-               Project: <span id="clipExpandProject">Project</span><br />
-               Location: <span id="clipExpandLocation">Location</span></p>
-            <p>Camera: <span id="clipExpandCamera">Camera</span><br />
-               Resolution: <span id="clipExpandResolution">Resolution</span></p>
-            <p style="display: none;">Search Relevancy Score: <span id="clipScore"></span></p>
-            <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
-            <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
-            <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
-            	Filename: <span id="clipExpandOriginalFilename"></span></p>
+          <div class="input-field" id="regFieldCode">
+            <input id="code" type="text" name="code" class="validate" maxlength="2" data-length="2" required="">
+            <label for="code">Code</label>
+          </div>      
+          <p>Please create a password.</p>
+          <div class="input-field">
+            <input id="regpassword" type="password" name="password" class="validate" required="">
+            <label for="regpassword">Password</label>
           </div>
-        </div>
-      </div>      
-  </div>
+          <p>Please tell us how you'd like to be called (first name, or whatever you want, and yes, you can change this later).</p>
+          <div class="input-field">
+            <input id="nickname" type="text" name="nickname" class="validate" required="">
+            <label for="nickname">First Name</label>
+          </div>      
+          <div class="row align-right">
+            <input type="submit" value="Register" class="btn right">        
+          </div>
+        </form>   
+      </div>
+    </div>
+  <!-- </div> -->
   <div class="row" id="afterResultContainer">
     <ul class="pagination">
       <?php 
@@ -721,3 +764,4 @@ if($_SESSION['userid'] == 1){
     </ul>
   </div>
 </div>    
+</div>
