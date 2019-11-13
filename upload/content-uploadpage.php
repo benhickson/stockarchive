@@ -38,7 +38,7 @@
       }
     }
 
-    function continueUpload(file, item){
+    function doTheUpload(file, item){
         file.name = item.originalFilename;
         // console.log(file, item);
         var formdata = new FormData();
@@ -58,8 +58,8 @@
     function progressHandler(bar, event){
         changeProgressBarValue(bar, (event.loaded / event.total))
     }
-    function completeHandler(event){        
-        console.log(event.target.responseText);
+    function completeHandler(event){
+        // after upload is complete, start the transcoding queue
         $.ajax({ url: 'transcode.php', success: countThenRedirect });
 
     }
@@ -70,7 +70,7 @@
         console.log('Upload Aborted');
     }
 
-    function objectURLtoFile(item){ // this is how you reconstruct the file object
+    function objectURLtoFileThenUpload(item){ // this is how you reconstruct the file object
         var myObjectURL = item.DOM.src;
         var xhr = new XMLHttpRequest();
         xhr.open('GET', myObjectURL, true);
@@ -80,7 +80,7 @@
                 type: item.fileType, 
                 lastModified: item.lastModified
             });
-            continueUpload(myFile, item);
+            doTheUpload(myFile, item);
         };
         xhr.send();
     }
@@ -90,7 +90,7 @@
         fileCount = theUpload.length;
         theUpload.forEach(function(item, index){
             console.log("item # "+(index+1));
-            objectURLtoFile(item);
+            objectURLtoFileThenUpload(item);
         });
     }
 
