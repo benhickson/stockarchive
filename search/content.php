@@ -163,7 +163,7 @@
     width: 100%;
     text-align: left;
     margin-top: 120px;
-    margin-left: 340px;
+    margin-left: 380px;
     /*margin-bottom: 500px;*/
     padding-right: 500px;
     overflow: scroll;
@@ -464,23 +464,17 @@
       }
     } // console.log('rows', rows);
 
-    /*for(const [id, info] of projects.entries()) {
-      if(info === undefined) { continue; }
-
-      $('#overlay-row').append(buildCard(id, info.jobnumber, info.name));
-    }*/
-
     for(const row in rows){
       const projectIds = rows[row]; // console.log('pid', projectIds);
       const cards = projectIds.map(id => {
         const p = projectsObj[id]; // console.log('return', buildCard(id, p.jobnumber || '', p.name));
 
-        return buildCard(p.id, p.jobnumber || '', p.name); 
+        return buildCard(id, p.jobnumber || '', p.name); 
       }); // console.log('cards', cards);
 
-      const str = `<div class="row"><p>Row ${row}</p>${cards.join('')}</div>`;
+      const str = `<div class="row"><p style="margin-left: 50px">Row ${row}</p>${cards.join('')}</div>`;
 
-      $('#overlay-content-id').append(str);
+      $('#overlay-content-id').prepend(str);
     }
 
     console.log(projects);
