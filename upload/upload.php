@@ -22,10 +22,9 @@ if ($_SESSION['logged_in']){
 		
 		// figure out a destination folder path
 		$basepath = __DIR__.'/../media/';
-		$volumeid = 1; // 1 is arc01
-		$volume = $db->rawQuery('SELECT mountname FROM volumes WHERE id=?',array($volumeid))[0]['mountname'];
+		$volume = $db->rawQuery('SELECT id, mountname FROM volumes WHERE uploadtarget=1')[0];
 		$datestring = date('Y-md'); // today's date (UTC) - the FOLDER name
-		$directorypath = $basepath.$volume.'/'.$datestring;
+		$directorypath = $basepath.$volume['mountname'].'/'.$datestring;
 
 		// creat the folder if it doesn't exit
 		if (!file_exists($directorypath)) {
@@ -41,7 +40,7 @@ if ($_SESSION['logged_in']){
 
 		// save the info to the database
 		$data = array(
-			'volume' => $volumeid,
+			'volume' => $volume['id'],
 			'folder' => $datestring,
 			'filetype' => $fileTypeid,
 			'bytesize' => $fileSize,
