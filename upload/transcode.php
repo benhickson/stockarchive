@@ -5,10 +5,6 @@ set_time_limit(0);
 
 require __DIR__.'/../includes/0-base.php';
 
-
-
-
-
 // responding to the AJAX
 // Buffer all upcoming output...
 ob_start();
@@ -106,7 +102,8 @@ while ($db->count == 0){
 		$sourcefilepath = $sourcedirectorypath.'/'.$fileids['full'].'.'.$sourceextension;
 
 		// figure out a destination folder path
-		$targetmountname = $db->rawQuery('SELECT mountname FROM volumes WHERE uploadtarget=1')[0]['mountname'];
+		$targetvolume = $db->rawQuery('SELECT id, mountname FROM volumes WHERE uploadtarget=1')[0];
+		$targetmountname = $targetvolume['mountname'];
 		$targetfolder = date('Y-md'); // today's date (UTC) - the `folder` name
 		$targetdirectorypath = $basepath.$targetmountname.'/'.$targetfolder;
 
@@ -123,7 +120,7 @@ while ($db->count == 0){
 
 		// assign some new file id's
 		$data = array(
-			'volume' => $targetvolume,
+			'volume' => $targetvolume['id'],
 			'folder' => $targetfolder,
 			'filetype' => $targetfiletype
 		);
@@ -168,7 +165,7 @@ while ($db->count == 0){
 		// make the thumbnail
 		// get a thumbnail file ID
 		$data = array(
-			'volume' => $targetvolume,
+			'volume' => $targetvolume['id'],
 			'folder' => $targetfolder,
 			'filetype' => 2, // jpg
 			'resolution' => 2 // 960x540
