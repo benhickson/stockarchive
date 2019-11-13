@@ -105,10 +105,8 @@ while ($db->count == 0){
 		$sourcedirectorypath = $basepath.$sourcemountname.'/'.$sourcefolder;
 		$sourcefilepath = $sourcedirectorypath.'/'.$fileids['full'].'.'.$sourceextension;
 
-		// destination volume for the transcodes
-		$targetvolume = 1; // 1 is arc01
 		// figure out a destination folder path
-		$targetmountname = $db->rawQuery('SELECT mountname FROM volumes WHERE id=?',array($targetvolume))[0]['mountname'];
+		$targetmountname = $db->rawQuery('SELECT mountname FROM volumes WHERE uploadtarget=1')[0]['mountname'];
 		$targetfolder = date('Y-md'); // today's date (UTC) - the `folder` name
 		$targetdirectorypath = $basepath.$targetmountname.'/'.$targetfolder;
 
@@ -119,6 +117,7 @@ while ($db->count == 0){
 			// echo "\n folder already exists."; 
 		}
 
+		// TODO: Store this config-type-of-stuff in the database, similar to how target volume is stored, using a unique field.
 		$targetfiletype = 4; // 4 is h264, 6 is VP9 (safari doesnt do vp9)
 		$targetextension = $db->rawQuery('SELECT extension FROM opt_filetypes WHERE id=?',array($targetfiletype))[0]['extension'];
 
@@ -139,31 +138,28 @@ while ($db->count == 0){
 		$processorprefix = 'nice -19 cpulimit -l 50 -- ';
 		$command = $processorprefix . 'ffmpeg -hide_banner -i ' . $sourcefilepath;
 
-		// set the output resolutions
+		// setup the output details
 		// TODO: refactor to pull this info from the database, maybe
-		// TODO: I'm not using the width and height variables anymore, it's hard coded. Refactor and cleanup.
 		$outputs = array(
-			array('width' => '960', 'height' => '540', 'outputid' => $fileids['half'], 'scalepadandcrop' => 'scale=iw*sar*min(960/(iw*sar)\,540/ih):ih*min(960/(iw*sar)\,540/ih),pad=960:540:(ow-iw)/2:(oh-ih)/2:white'),
-			array('width' => '480', 'height' => '270', 'outputid' => $fileids['quarter'], 'scalepadandcrop' => 'scale=-1:270,crop=480:270')
+			array('outputid' => $fileids['half'],'scalepadandcrop' => 'scale=iw*sar*min(960/(iw*sar)\,540/ih):ih*min(960/(iw*sar)\,540/ih),pad=960:540:(ow-iw)/2:(oh-ih)/2:white'),
+			array('outputid' => $fileids['quarter'],'scalepadandcrop' => 'scale=-1:270,crop=480:270')
 		);
 
 		// open a variable to append to
 		$outputstring = '';
 
+		// loop over the outputs desired and build the strings for the ffmpeg command
 		foreach ($outputs as $output) {
 			$outputstring .= ' -vf "'.$output['scalepadandcrop'].'"';
-			// $outputstring .= ' -s';
-			// $outputstring .= ' '.$output['width'].'x'.$output['height'];
 			$outputstring .= ' -threads 1'; // limit processor threads. important on multi-cpu servers.
 			$outputstring .= ' '.$targetdirectorypath.'/'.$output['outputid'].'.'.$targetextension;
 		}
 
-		// append the output string
+		// append the output string to the ffmpeg command
 		$command .= $outputstring;
 
 		// add this ending thing to quiet the output (or something, shell scripts are so confusing.)
 		$command .= ' 2>&1';
-		$fullpathin = '';
 
 		// make the transcodes
 		$error = shell_exec($command);
@@ -179,11 +175,6 @@ while ($db->count == 0){
 		);
 		$fileids['thumbnail'] = $db->insert('files', $data);
 
-		// dont need this i think
-		// // get the thumbnail dimensions
-		// $thumbsize = $db->rawQuery('SELECT width, height FROM opt_resolutions WHERE id=?',array($data['resolution']))[0];
-
-
 		// make a path of the source video and output jpg
 		// need the thumbnail file extension
 		$thumbextension = $db->rawQuery('SELECT extension FROM opt_filetypes WHERE id=?',array($data['filetype']))[0]['extension'];
@@ -195,35 +186,8 @@ while ($db->count == 0){
 		// open a variable to save errors to
 		$exec_error = '';
 
-		// $duration =  exec("ffmpeg -i $thumbnailsourcepath 2>&1 | grep Duration", $exec_error);
-		// error_log('line 186: '.print_r($exec_error));
-
-		// learning to parse response
-		// error_log('$duration:');
-		// error_log(print_r($duration));
-		// $actualDuration = substr($duration, 11, 12);
-		// error_log('$actualDuration:');
-		// error_log(print_r($actualDuration));
-		// $hourminsec = explode(":", $actualDuration);
-		// error_log('$hourminsec:');
-		// error_log(print_r($hourminsec));
-		// $seconds = $hourminsec[2] + $hourminsec[1]*60 + $hourminsec[0]*3600;
-		// error_log('$seconds:');
-		// error_log(print_r($seconds));
-		// $halfduration = round($seconds/2);
-		// error_log('$halfduration:');
-		// error_log(print_r($halfduration));
-		// echo 'midpoint of this video: '. $halfduration;
-
-		// disabled because of midpoint issue
-		// exec($processorprefix."ffmpeg -i $thumbnailsourcepath -y -ss 00:00:$halfduration -vframes 1 $thumbnailoutputpath 2>&1", $exec_error);
-		// still failing
-		// exec($processorprefix."ffmpeg -i $thumbnailsourcepath -y -ss 00:00:01 -vframes 1 -vf \"scale=-1:540,crop=960:540\" $thumbnailoutputpath 2>&1", $exec_error);
 		// new "thumbnail" filter
 		exec($processorprefix."ffmpeg -i $thumbnailsourcepath -vf \"thumbnail,scale=-1:540,crop=960:540\" -frames:v 1 $thumbnailoutputpath", $exec_error);
-		// error_log('command: '.$processorprefix."ffmpeg -i $thumbnailsourcepath -vf \"thumbnail,scale=-1:540,crop=960:540\" -frames:v 1 $thumbnailoutputpath");
-		// error_log('line 223: '.print_r($exec_error));
-
 
 		// update the bytesizes and creation dates
 		// put them in an array for looping
