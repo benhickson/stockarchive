@@ -21,7 +21,7 @@ if ($_SESSION['logged_in']){
 		}
 		
 		// figure out a destination folder path
-		$basepath = '/var/www/html/creative.lonelyleap.com/archive/media/';
+		$basepath = __DIR__.'/../media/';
 		$volumeid = 1; // 1 is arc01
 		$volume = $db->rawQuery('SELECT mountname FROM volumes WHERE id=?',array($volumeid))[0]['mountname'];
 		$datestring = date('Y-md'); // today's date (UTC) - the FOLDER name
