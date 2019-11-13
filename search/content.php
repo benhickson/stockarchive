@@ -399,7 +399,16 @@
   function openProjectPopup() {
     document.getElementById("projectPopup").style.width = "100%";
 
-    let projects = getProjects();
+    let projectsObj = getProjects();
+
+    let projects = new Array();
+    for(id in projectsObj) {
+      projects[Number(id)] = {
+        id: id,
+        name: projectsObj[id].name, 
+        jobnumber: projectsObj[id].jobnumber || ''
+      };
+    }
 
     let buildCard = ((id, jobnumber, name) => {
       jobnumber = jobnumber || '<br>'; 
@@ -421,12 +430,6 @@
         </div>`
       );
     });
-    
-    for(const [id, info] of projects.entries()) {
-      if(info === undefined) { continue; }
-
-      $('#overlay-row').append(buildCard(id, info.jobnumber, info.name));
-    }
 
     projects.sort((a, b) => {
       if(a.jobnumber === '' && b.jobnumber === '') {
@@ -435,6 +438,50 @@
 
       return b.jobnumber.localeCompare(a.jobnumber);
     });
+
+    const rows = {0: [], UK: []};
+    for(const [i, info] of projects.entries()) {
+      if(info === undefined) { continue; }
+
+      const jn = info.jobnumber;
+      const id = info.id;
+
+      if(jn.substring(0, 2) === 'NY') {
+        const n = Number(jn.substring(2, 3)) || 0;
+
+        if(rows.hasOwnProperty(n)) {
+          rows[n].push(id); // console.log('rows', n, '-> ', jn, id);
+        }
+        else {
+          rows[n] = [id]; // console.log('rows', n, ' + ', jn, id);
+        }
+      }
+      else if(jn.substring(0, 2) === 'UK') {
+        rows['UK'].push(id); // console.log('rows', 'uk', '->', jn, id);
+      }
+      else {
+        rows[0].push(id); // console.log('rows', 0, '->', jn, id);
+      }
+    } // console.log('rows', rows);
+
+    /*for(const [id, info] of projects.entries()) {
+      if(info === undefined) { continue; }
+
+      $('#overlay-row').append(buildCard(id, info.jobnumber, info.name));
+    }*/
+
+    for(const row in rows){
+      const projectIds = rows[row]; // console.log('pid', projectIds);
+      const cards = projectIds.map(id => {
+        const p = projectsObj[id]; // console.log('return', buildCard(id, p.jobnumber || '', p.name));
+
+        return buildCard(p.id, p.jobnumber || '', p.name); 
+      }); // console.log('cards', cards);
+
+      const str = `<div class="row"><p>Row ${row}</p>${cards.join('')}</div>`;
+
+      $('#overlay-content-id').append(str);
+    }
 
     console.log(projects);
   }
@@ -461,12 +508,7 @@
 
     ?>
 
-    let projectsArray = new Array();
-    for(prop in projects) {
-      projectsArray[Number(prop)] = {name: projects[prop].name, jobnumber: projects[prop].jobnumber || ''};
-    }
-
-    return projectsArray;
+    return projects;
   }
 
 </script>
