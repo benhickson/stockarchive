@@ -1,6 +1,7 @@
 # stockarchive
+Description.
 
-This app is tested to be used on:
+# System requirements (currently built on):
 - Ubuntu 16.04.6 LTS
 - Apache/2.4.18 (Ubuntu)
 - ffmpeg version 3.4.4-1~16.04.york0
@@ -8,7 +9,7 @@ This app is tested to be used on:
 - PHP Version 7.3.10-1+ubuntu16.04.1+deb.sury.org+1 (loaded as apache module)
 
 
-Setup:
+# Setup:
 1. Install all above system requirements
 2. Download blank database file (link) (or your database backup) and codebase (link to release)
 3. Setup user and password for MySQL
@@ -18,3 +19,6 @@ Setup:
 7. Setup folders to upload and transcode to, including setting permissions for your www-data (or other) web-server-user.
 7. In MySQL, add a row to the users table to provision an account for a user, filling in the fields `email`, `firstname`, `lastname`, set `registastration_open`=1, and `registration_code`=any_two_character_code
 8. Visit the URL in the browser, register an account (creating password) and log in.
+
+
+(we should continue to update this file as our codebase gets more complex. should the system crash, we want to be able to put it back online as rapidly as possible)
