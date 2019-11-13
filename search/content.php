@@ -402,10 +402,10 @@
     let projects = getProjects();
 
     let buildCard = ((id, jobnumber, name) => {
-      jobnumber = jobnumber || '<br>';
+      jobnumber = jobnumber || '<br>'; 
 
       return (
-        `<div class="col s3" id="project-card-id">
+        `<div class="col" id="project-card-id">
           <div class="card blue-grey darken-1">
             <div class="card-content white-text" style="padding: 8px 0px 0px 0px;">
               <span class="card-title" style="text-align: center;">
@@ -421,25 +421,22 @@
         </div>`
       );
     });
-
-    let ps = Array.from(projects, (p) => {
-
-    });
-
-    /*projects.sort((a, b) =>{
-      let ajn = a.jobnumber;
-      let bjn = b.jobnumber;
-
-      console.log(ajn, bjn, ajb || bjn || 'hi');
-
-      return 1;
-    });*/
     
-    for(const [id, info] of projects.entries()) { console.log(id, info, info === undefined);
+    for(const [id, info] of projects.entries()) {
       if(info === undefined) { continue; }
 
       $('#overlay-row').append(buildCard(id, info.jobnumber, info.name));
     }
+
+    projects.sort((a, b) => {
+      if(a.jobnumber === '' && b.jobnumber === '') {
+        return a.name.localeCompare(b.name);
+      };
+
+      return b.jobnumber.localeCompare(a.jobnumber);
+    });
+
+    console.log(projects);
   }
 
   function closeProjectPopup() {
