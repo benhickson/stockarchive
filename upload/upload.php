@@ -1,6 +1,6 @@
 <?php
 
-require '/var/www/html/creative.lonelyleap.com/archive/includes/0-base.php';
+require __DIR__.'/../includes/0-base.php';
 
 if ($_SESSION['logged_in']){
 	if (isset($_FILES['file'])){
