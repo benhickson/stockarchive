@@ -366,7 +366,7 @@
 
     }
   }
-  function newSearch(){
+  function newSearch(projectId = null){ console.log('projectId', projectId);
     var windowLocationString = '';
     var clipIdSearchString = document.getElementById('clipIdSearch').value;
     if (clipIdSearchString == Number.parseInt(clipIdSearchString)) {
@@ -387,12 +387,13 @@
       if (countryvalue > 0){
         windowLocationString = windowLocationString+'&country='+countryvalue;
       }
-
-      var projectvalue = document.getElementById("project").value;
-      if (projectvalue > 0){
+      console.log('pId', projectId);
+      var projectvalue = projectId || <?php echo isset($_GET['project']) && $_GET['project'].length > 0 ? $_GET['project'] : -1; ?>;
+      if (projectvalue > 0) {
         windowLocationString = windowLocationString+'&project='+projectvalue;
       } 
     }
+
     window.location = windowLocationString;
   }
 
@@ -412,85 +413,7 @@
   }
 
   function setProjectPopup() {
-    let projectsObj = getProjects();
-
-    let projects = new Array();
-    for(id in projectsObj) {
-      projects[Number(id)] = {
-        id: id,
-        name: projectsObj[id].name, 
-        jobnumber: projectsObj[id].jobnumber || ''
-      };
-    }
-
-    let buildCard = ((id, jobnumber, name) => {
-      jobnumber = jobnumber ? jobnumber+' - ' : ''; 
-
-      return (
-        `<div class="col" id="project-card-id">
-          <div class="card blue-grey darken-1">
-            <div class="card-content white-text" style="padding: 8px 0px 0px 0px;">
-              <span class="card-title" style="text-align: center; padding: 0px 8px 0px 8px;">
-                ${jobnumber}${name}
-              </span>
-              <div class="card-action">
-                <a class="waves-effect waves-light btn-small" href="?project=${id}">Filter by project</a>
-                <a class="waves-effect waves-light btn-small" href="?project=${id}">See all</a>
-              </div>
-            </div>
-          </div>
-        </div>`
-      );
-    });
-
-    projects.sort((a, b) => {
-      if(a.jobnumber === '' && b.jobnumber === '') {
-        return a.name.localeCompare(b.name);
-      }
-
-      return b.jobnumber.localeCompare(a.jobnumber);
-    });
-
-    /*const rows = {0: [], 'UK': []};*/
-    const rows = {0: []};
-    for(const [i, info] of projects.entries()) {
-      if(info === undefined) { continue; }
-
-      const jn = info.jobnumber;
-      const id = info.id;
-
-      if(jn.substring(0, 2) === 'NY') {
-        const n = Number(jn.substring(2, 3)) || 0;
-
-        if(rows.hasOwnProperty(n)) {
-          rows[n].push(id); // console.log('rows', n, '-> ', jn, id);
-        }
-        else {
-          rows[n] = [id]; // console.log('rows', n, ' + ', jn, id);
-        }
-      }
-      /*else if(jn.substring(0, 2) === 'UK') {
-        rows['UK'].push(id); // console.log('rows', 'uk', '->', jn, id);
-      }*/
-      else {
-        rows[0].push(id); // console.log('rows', 0, '->', jn, id);
-      }
-    } // console.log('rows', rows);
-
-    for(const row in rows) {
-      const projectIds = rows[row]; // console.log('pid', projectIds);
-      const cards = projectIds.map(id => {
-        const p = projectsObj[id]; // console.log('return', buildCard(id, p.jobnumber || '', p.name));
-
-        return buildCard(id, p.jobnumber || '', p.name); 
-      }); // console.log('cards', cards);
-
-      const str = `<div class="row"><p style="margin-left: 50px">${row == 0 ? 'Other Projects' : 'Projects '+row+'XX'}</p>${cards.join('')}</div>`;
-
-      $('#overlay-content-id').prepend(str);
-    }
-
-    console.log(projects);
+    $('#overlay-content-id').prepend(getProjects());
   }
 
   function closeProjectPopup() {
@@ -498,43 +421,68 @@
   }
 
   function getProjects() {
+    document.addEventListener('keydown', function(e) {
+      const key = e.key;
+      if (key === "Escape") {
+          closeProjectPopup();
+      }
+    });
+
     <?php
       $cols = array("id, name, jobnumber, datedelivered");
       $db->orderBy("datedelivered","desc");
       $db->orderBy("name","asc");
 
-      $projects = $db->get("projects", null, $cols);
+      $projects = $db->get("projects", null, $cols); multilog('projects', $projects);
 
-      $flattenedProjects = array();
-      foreach($projects as $i => $info) {
-        $flattenedProjects[$info['id']] = array(
-          'name' => $info['name'],
-          'jobnumber' => $info['jobnumber'] ? $info['jobnumber'] : '',
-          'datedelivered' => $info['datedelivered']
-        );
-      } multilog('flattenedProjects', $flattenedProjects, $projects);
+      $searchAll = array(id => -1, name => "All Projects", jobnumber => "", datedelivered => "");
+      array_unshift($projects, $searchAll);
 
-      /*$ buildCard = ((id, jobnumber, name) => {
-        jobnumber = jobnumber ? jobnumber+' - ' : ''; 
+      $buildCard = function($id, $jobnumber, $name) {
+        $jobnumber = $jobnumber ? $jobnumber.' - ' : ''; 
 
-        return (
-          `<div class="col" id="project-card-id">
-            <div class="card blue-grey darken-1">
-              <div class="card-content white-text" style="padding: 8px 0px 0px 0px;">
-                <span class="card-title" style="text-align: center; padding: 0px 8px 0px 8px;">
-                  ${jobnumber}${name}
+        $projectIdStr = 'projectId='.$id; // $id > 0 ? 'projectId='.$id : '';
+
+        $str = "<div class=\"col\" id=\"project-card-id\">
+            <div class=\"card blue-grey darken-1\">
+              <div class=\"card-content white-text\" style=\"padding: 8px 0px 0px 0px;\">
+                <span class=\"card-title\" style=\"text-align: center; padding: 0px 8px 0px 8px;\">
+                  $jobnumber $name
                 </span>
-                <div class="card-action">
-                  <a class="waves-effect waves-light btn-small" href="?project=${id}">Filter by project</a>
-                  <a class="waves-effect waves-light btn-small" href="?project=${id}">See all</a>
+                <div class=\"card-action\">
+                  <a class=\"waves-effect waves-light btn-small\" onClick=\"newSearch($projectIdStr)\">Filter by project</a>
+                  <a class=\"waves-effect waves-light btn-small\" href=\"?$projectIdStr\">See all</a>
                 </div>
               </div>
             </div>
-          </div>`
-        );
-      });*/
+          </div>";
 
-      echo 'let projects ='.json_encode($flattenedProjects).';';
+        return $str;
+      };
+
+      $overlayHtml = '<div class="row">';
+      $rowYear = '';
+      foreach($projects as $p) {
+        $card = $buildCard($p['id'], $p['jobnumber'], $p['name']);
+
+        $cardYear = substr($p['datedelivered'], 0, 4);
+        if($rowYear !== $cardYear) { // multilog('rowYear', $rowYear);
+          $rowYear = $cardYear;
+
+          $overlayHtml = $overlayHtml .  
+            "</div>
+            <div class=\"row\">
+              <p>
+                $rowYear
+              </p>";
+        }
+
+        $str = $card;
+
+        $overlayHtml = $overlayHtml . $str;
+      }
+
+      echo 'let projects ='.json_encode($overlayHtml).';';
     ?>
 
     return projects;
@@ -570,20 +518,20 @@
   $db->where('published', 1); // published clips
   $db->where('(todelete = 0 OR todelete IS NULL)'); // not deleted clips
 
-  if (isset($_GET['clip'])) {
+  if (isset($_GET['clip']) && $_GET['clip'].length > 0) {
     $table = 'clips c'; // table to search
     $db->where('c.id = '.$_GET['clip']);
     $cols[] = 'NULL AS score';
   } else {
-    if (isset($_GET['country'])) {
+    if (isset($_GET['country']) && $_GET['country'].length > 0) {
       $db->where('c.country = '.$_GET['country']);
     }
 
-    if (isset($_GET['project'])) {
+    if (isset($_GET['project']) && $_GET['project'].length > 0) {
       $db->where('c.project = '.$_GET['project']);
     }
 
-    if (isset($_GET['page'])) {
+    if (isset($_GET['page']) && $_GET['page'].length > 0) {
       $page = $_GET['page'];
     }
 
@@ -714,25 +662,21 @@
         }
         ?>
       </select>
-    </div>    
-    <div class="input-field searchstuff">
-      <select id="project">
-        <option value="0" selected>All Projects</option>
-        <?php
-        $cols = array("id, name");
-        $db->orderBy("name","asc");
-        $projects = $db->get("projects", null, $cols);
-        foreach ($projects as $project) {
-          echo '<option value="'.$project['id'].'">'.$project['name'].'</option>'."\n";
+    </div>
+    <div class="input-field searchstuff" onclick="togglePopup();">
+      <input id="project" type="text" class="" value="<?php
+        if(isset($_GET['project']) && $_GET['project'].length > 0) {
+          $cols = array("name");
+          $db->where("id = ?", array($_GET['project']));
+          echo $db->get("projects", null, $cols)[0]['name'];
         }
-        ?>
-      </select>
-    </div>  
+      ?>">
+      <label for="clipIdSearch">Project</label>
+    </div>
     <button id="searchButton" type="submit" class="btn searchstuff" onclick="newSearch();">Search</button>
-    <span class="btn searchstuff" onclick="togglePopup()">Project Search</span>
     <!-- <p>Included Tags</p> -->
     <!-- <p>Suggested Tags</p> -->
-    <!-- <p>Collections</p>         -->
+    <!-- <p>Collections</p> -->
   </div>
 </div>
 <div id="mainContent" class="col m8 l9 xl10 size<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>">

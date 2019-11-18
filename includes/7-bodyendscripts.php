@@ -148,10 +148,14 @@
       if (isset($_GET['country'])){
         echo 'document.getElementById("country").value = '.$_GET['country'].";\n";
       }
-      // update the project dropdown if it was set
+      /*// update the project dropdown if it was set
       if (isset($_GET['project'])){
-        echo 'document.getElementById("project").value = '.$_GET['project'].";\n";
-      }
+        $cols = array("name");
+        $db->where("id = ?", array($_GET['project']));
+        $p = $db->get("projects", null, $cols)[0]['name'];
+
+        echo "document.getElementById(\"project\").value = '".$p."';\n";
+      }*/
       ?>
 
       // initialize the dropdown boxes.
