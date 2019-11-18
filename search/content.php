@@ -477,7 +477,7 @@
       }
     } // console.log('rows', rows);
 
-    for(const row in rows){
+    for(const row in rows) {
       const projectIds = rows[row]; // console.log('pid', projectIds);
       const cards = projectIds.map(id => {
         const p = projectsObj[id]; // console.log('return', buildCard(id, p.jobnumber || '', p.name));
@@ -485,7 +485,7 @@
         return buildCard(id, p.jobnumber || '', p.name); 
       }); // console.log('cards', cards);
 
-      const str = `<div class="row"><p style="margin-left: 50px">Row ${row}</p>${cards.join('')}</div>`;
+      const str = `<div class="row"><p style="margin-left: 50px">${row == 0 ? 'Other Projects' : 'Projects '+row+'XX'}</p>${cards.join('')}</div>`;
 
       $('#overlay-content-id').prepend(str);
     }
@@ -499,20 +499,42 @@
 
   function getProjects() {
     <?php
-    $cols = array("id, name, jobnumber");
-    $db->orderBy("name","asc");
-    $projects = $db->get("projects", null, $cols);
+      $cols = array("id, name, jobnumber, datedelivered");
+      $db->orderBy("datedelivered","desc");
+      $db->orderBy("name","asc");
 
-    $flattenedProjects = array();
-    foreach($projects as $i => $info) {
-      $flattenedProjects[$info['id']] = array(
-        'name' => $info['name'],
-        'jobnumber' => $info['jobnumber']
-      );
-    }
+      $projects = $db->get("projects", null, $cols);
 
-    echo 'let projects ='.json_encode($flattenedProjects).';';
+      $flattenedProjects = array();
+      foreach($projects as $i => $info) {
+        $flattenedProjects[$info['id']] = array(
+          'name' => $info['name'],
+          'jobnumber' => $info['jobnumber'] ? $info['jobnumber'] : '',
+          'datedelivered' => $info['datedelivered']
+        );
+      } multilog('flattenedProjects', $flattenedProjects, $projects);
 
+      /*$ buildCard = ((id, jobnumber, name) => {
+        jobnumber = jobnumber ? jobnumber+' - ' : ''; 
+
+        return (
+          `<div class="col" id="project-card-id">
+            <div class="card blue-grey darken-1">
+              <div class="card-content white-text" style="padding: 8px 0px 0px 0px;">
+                <span class="card-title" style="text-align: center; padding: 0px 8px 0px 8px;">
+                  ${jobnumber}${name}
+                </span>
+                <div class="card-action">
+                  <a class="waves-effect waves-light btn-small" href="?project=${id}">Filter by project</a>
+                  <a class="waves-effect waves-light btn-small" href="?project=${id}">See all</a>
+                </div>
+              </div>
+            </div>
+          </div>`
+        );
+      });*/
+
+      echo 'let projects ='.json_encode($flattenedProjects).';';
     ?>
 
     return projects;
