@@ -145,7 +145,7 @@
   FOR PROJECT POPUP
   */
   .overlay {
-    /*height: 100%;*/
+    height: 100%;
     width: 0;
     position: fixed;
     z-index: 1;
@@ -159,12 +159,12 @@
 
   .overlay-content {
     position: relative;
-    top: 25%;
+    /*top: 25%;*/
     width: 100%;
     text-align: left;
     margin-top: 120px;
     margin-left: 380px;
-    /*margin-bottom: 500px;*/
+    margin-bottom: 250px;
     padding-right: 500px;
     overflow: scroll;
   }
@@ -396,9 +396,22 @@
     window.location = windowLocationString;
   }
 
-  function openProjectPopup() {
-    document.getElementById("projectPopup").style.width = "100%";
+  function togglePopup() {
+    if(document.getElementById("projectPopup").style.width === "100%") {
+      closeProjectPopup();
+    }
+    else {
+      document.getElementById("projectPopup").style.width = "100%";
 
+      if(document.getElementById("overlay-content-id").getAttribute('data-set') === 'false') {
+        setProjectPopup();
+
+        document.getElementById("overlay-content-id").setAttribute('data-set', 'true');
+      }
+    }
+  }
+
+  function setProjectPopup() {
     let projectsObj = getProjects();
 
     let projects = new Array();
@@ -411,16 +424,15 @@
     }
 
     let buildCard = ((id, jobnumber, name) => {
-      jobnumber = jobnumber || '<br>'; 
+      jobnumber = jobnumber ? jobnumber+' - ' : ''; 
 
       return (
         `<div class="col" id="project-card-id">
           <div class="card blue-grey darken-1">
             <div class="card-content white-text" style="padding: 8px 0px 0px 0px;">
-              <span class="card-title" style="text-align: center;">
-              <p>${jobnumber}</p>
-              <p>${name}</p>
-            </span>
+              <span class="card-title" style="text-align: center; padding: 0px 8px 0px 8px;">
+                ${jobnumber}${name}
+              </span>
               <div class="card-action">
                 <a class="waves-effect waves-light btn-small" href="?project=${id}">Filter by project</a>
                 <a class="waves-effect waves-light btn-small" href="?project=${id}">See all</a>
@@ -434,12 +446,13 @@
     projects.sort((a, b) => {
       if(a.jobnumber === '' && b.jobnumber === '') {
         return a.name.localeCompare(b.name);
-      };
+      }
 
       return b.jobnumber.localeCompare(a.jobnumber);
     });
 
-    const rows = {0: [], UK: []};
+    /*const rows = {0: [], 'UK': []};*/
+    const rows = {0: []};
     for(const [i, info] of projects.entries()) {
       if(info === undefined) { continue; }
 
@@ -456,9 +469,9 @@
           rows[n] = [id]; // console.log('rows', n, ' + ', jn, id);
         }
       }
-      else if(jn.substring(0, 2) === 'UK') {
+      /*else if(jn.substring(0, 2) === 'UK') {
         rows['UK'].push(id); // console.log('rows', 'uk', '->', jn, id);
-      }
+      }*/
       else {
         rows[0].push(id); // console.log('rows', 0, '->', jn, id);
       }
@@ -694,7 +707,7 @@
       </select>
     </div>  
     <button id="searchButton" type="submit" class="btn searchstuff" onclick="newSearch();">Search</button>
-    <span class="btn searchstuff" onclick="openProjectPopup()">Project Search</span>
+    <span class="btn searchstuff" onclick="togglePopup()">Project Search</span>
     <!-- <p>Included Tags</p> -->
     <!-- <p>Suggested Tags</p> -->
     <!-- <p>Collections</p>         -->
@@ -712,7 +725,7 @@
   <div id="resultContainer" class="row hidden flex-parent">
     <div id="projectPopup" class="overlay">
       <a href="javascript:void(0)" class="closebtn" onclick="closeProjectPopup()">&times;</a>
-      <div id="overlay-content-id" class="overlay-content">
+      <div id="overlay-content-id" class="overlay-content" data-set="false">
         <div class="row" id="overlay-row">
         </div>
       </div>
