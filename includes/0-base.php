@@ -36,6 +36,18 @@ function console_log($output, $with_script_tags = true) {
 	echo $js_code;
 }
 
+function multilog(...$items) {
+	foreach($items as $i) {
+		console_log($i, false);
+	}
+}
+
+function multilogscript(...$items) {
+	foreach($items as $i) {
+		console_log($i, true);
+	}
+}
+
 function consoleEcho($content){
 	console_log($content);
 }
