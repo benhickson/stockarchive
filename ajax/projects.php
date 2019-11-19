@@ -10,7 +10,11 @@ if (isset($_SESSION['logged_in'])){
   $projects = $db->get("projects", null, $cols); // multilog('projects', $projects);
 
   if(!isset($_GET['html'])) {
-    echo json_encode($projects);
+    ?>
+      <p>Hi</p>
+    <?php
+
+    // echo json_encode($projects);
   } else {
     $searchAll = array(id => -1, name => "All Projects", jobnumber => "", datedelivered => "");
     array_unshift($projects, $searchAll);
@@ -59,7 +63,7 @@ if (isset($_SESSION['logged_in'])){
       $overlayHtml = $overlayHtml . $str;
     }
 
-    echo json_encode($overlayHtml);
+    echo $overlayHtml;
   }
 } else {
 	$success = false;
