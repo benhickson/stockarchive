@@ -400,11 +400,15 @@
       closeProjectPopup();
     }
     else {
-      document.getElementById("projectPopup").style.width = "100%";
+      openPopup();
+    }
+  }
 
-      if(document.getElementById("overlay-content-id").getAttribute('data-set') === 'false') {
-        setProjectPopup();
-      }
+  function openPopup() {
+    document.getElementById("projectPopup").style.width = "100%";
+
+    if(document.getElementById("overlay-content-id").getAttribute('data-set') === 'false') {
+      setProjectPopup();
     }
   }
 
@@ -608,7 +612,7 @@
         ?>
       </select>
     </div>
-    <div class="input-field searchstuff" onclick="togglePopup();">
+    <div class="input-field searchstuff" onclick="openPopup();">
       <input id="project" type="text" class="" value="<?php
         if(isset($_GET['project']) && $_GET['project'].length > 0) {
           $cols = array("name");
@@ -637,8 +641,6 @@
     <div id="projectPopup" class="overlay">
       <a href="javascript:void(0)" class="closebtn" onclick="closeProjectPopup()">&times;</a>
       <div id="overlay-content-id" class="overlay-content" data-set="false">
-        <div class="row" id="overlay-row">
-        </div>
       </div>
     </div>
     <?php
