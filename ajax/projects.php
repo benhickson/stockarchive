@@ -12,7 +12,7 @@ if (isset($_SESSION['logged_in'])){
   if(!isset($_GET['html'])) {
     echo json_encode($projects);
   } else {
-    $buildCard = function($id, $jobnumber, $name, $filterText = 'Filter by project') {
+    $buildCard = function($id, $jobnumber, $name, $filterText = 'Search in project', $allText = 'Project clips') {
       $jobnumber = $jobnumber ? $jobnumber.' - ' : '';
 
       $projectUrl = $id > 0 ? "?project=$id" : '../';
@@ -25,8 +25,8 @@ if (isset($_SESSION['logged_in'])){
                 <?php echo $jobnumber.$name ?>
               </span>
               <div class="card-action">
+                <a class="waves-effect waves-light btn-small" href="<?php echo $projectUrl; ?>"><?php echo $allText; ?></a>                
                 <a class="waves-effect waves-light btn-small" onClick="newSearch(projectId=<?php echo $id; ?>)"><?php echo $filterText; ?></a>
-                <a class="waves-effect waves-light btn-small" href="<?php echo $projectUrl; ?>">See all</a>
               </div>
             </div>
           </div>
@@ -36,7 +36,7 @@ if (isset($_SESSION['logged_in'])){
 
     echo '<div class="row">'; 
 
-    $buildCard(-1, '', 'All Projects', 'Filter by all projects');
+    $buildCard(-1, '', 'All Projects', 'Search through all projects', 'All clips');
 
     $rowYear = '';
     foreach($projects as $p) {
