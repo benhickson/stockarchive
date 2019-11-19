@@ -1,0 +1,9 @@
+[19-Nov-2019 18:41:50 UTC] PHP Parse error:  syntax error, unexpected '}' in /var/www/html/benhickson.com/archive/upload/ai-tagging.php on line 64
+[19-Nov-2019 18:42:18 UTC] PHP Notice:  Undefined offset: 0 in /var/www/html/benhickson.com/archive/upload/ai-tagging.php on line 47
+[19-Nov-2019 18:48:43 UTC] PHP Parse error:  syntax error, unexpected '}' in /var/www/html/benhickson.com/archive/upload/ai-tagging.php on line 50
+[19-Nov-2019 18:48:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined method MysqliDb::count() in /var/www/html/benhickson.com/archive/upload/ai-tagging.php:48
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/benhickson.com/archive/upload/ai-tagging.php on line 48
+[19-Nov-2019 18:52:27 UTC] PHP Notice:  Array to string conversion in /var/www/html/benhickson.com/archive/upload/ai-tagging.php on line 66
+[19-Nov-2019 18:52:50 UTC] PHP Notice:  Undefined index: clipid in /var/www/html/benhickson.com/archive/upload/ai-tagging.php on line 66
