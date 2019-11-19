@@ -159,7 +159,6 @@
 
   .overlay-content {
     position: relative;
-    /*top: 25%;*/
     width: 100%;
     text-align: left;
     margin-top: 120px;
@@ -409,15 +408,11 @@
     }
   }
 
-  function setProjectPopup() {
-    getProjects();
-  }
-
   function closeProjectPopup() {
     document.getElementById("projectPopup").style.width = "0%";
   }
 
-  function getProjects() {
+  function setProjectPopup() {
     $.ajax('../ajax/projects.php?html', {
       type: 'GET',
       success: function(res) {
@@ -540,8 +535,7 @@
         )");
       $db->groupBy('c.id');
       $db->orderBy('score','desc');
-    } 
-    else {
+    } else {
       $table = 'clips c'; // table to search
       $db->orderBy('project','desc');
       $db->orderBy('uploadfilename','asc');

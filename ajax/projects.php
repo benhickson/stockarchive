@@ -3,7 +3,7 @@
 require __DIR__.'/../includes/0-base.php';
 
 if (isset($_SESSION['logged_in'])){
-	$cols = array("id, name, jobnumber, datedelivered");
+  $cols = array("id, name, jobnumber, datedelivered");
   $db->orderBy("datedelivered","desc");
   $db->orderBy("name","asc");
 
