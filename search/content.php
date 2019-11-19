@@ -425,9 +425,22 @@
         document.getElementById("overlay-content-id").setAttribute('data-set', 'true');
 
         document.addEventListener('keydown', function(e) {
-          const key = e.key;
+          var key = e.key;
           if (key === "Escape") {
               closeProjectPopup();
+          }
+        });
+
+        var options = {
+            valueNames: ['name']
+        };
+
+        var projectList = new List('project-list', options); console.log('hi');
+
+        $('#project').on('input', function() {
+          if (this.value.length >= 0) { 
+            // projectList.search();
+            projectList.search(this.value); // Only item with name Jonny is shown (also returns this item)                
           }
         });
       },
@@ -437,6 +450,7 @@
       }    
     });
   }
+
 </script>
 
 <?php
