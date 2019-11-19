@@ -366,7 +366,7 @@
 
     }
   }
-  function newSearch(projectId = null){ console.log('projectId', projectId);
+  function newSearch(projectId = null){
     var windowLocationString = '';
     var clipIdSearchString = document.getElementById('clipIdSearch').value;
     if (clipIdSearchString == Number.parseInt(clipIdSearchString)) {
@@ -376,7 +376,6 @@
 
       $('#search .chip').each(function(){
         searchString += encodeURIComponent($(this).clone().children().remove().end().text()) + '|';
-        // searchString += $(this).clone().children().remove().end().text() + '|';
       });
 
       // slice off the last "|"
@@ -387,7 +386,7 @@
       if (countryvalue > 0){
         windowLocationString = windowLocationString+'&country='+countryvalue;
       }
-      console.log('pId', projectId);
+      
       var projectvalue = projectId || <?php echo isset($_GET['project']) && $_GET['project'].length > 0 ? $_GET['project'] : -1; ?>;
       if (projectvalue > 0) {
         windowLocationString = windowLocationString+'&project='+projectvalue;
@@ -411,7 +410,7 @@
   }
 
   function setProjectPopup() {
-    $('#overlay-content-id').prepend(getProjects());
+    getProjects();
   }
 
   function closeProjectPopup() {
@@ -421,8 +420,17 @@
   function getProjects() {
     $.ajax('../ajax/projects.php?html', {
       type: 'GET',
-      success: function(response) { console.log(response);
-        $('#overlay-content-id').prepend(response);
+      success: function(res) {
+        $('#overlay-content-id').prepend(res);
+
+        document.getElementById("overlay-content-id").setAttribute('data-set', 'true');
+
+        document.addEventListener('keydown', function(e) {
+          const key = e.key;
+          if (key === "Escape") {
+              closeProjectPopup();
+          }
+        });
       },
       error: function(xhr, status, error) {
         var err = JSON.parse(xhr.responseText);
@@ -430,8 +438,8 @@
       }    
     });
   }
-
 </script>
+
 <?php
   function realUrlGet() {
     $s = array();

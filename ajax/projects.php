@@ -10,60 +10,47 @@ if (isset($_SESSION['logged_in'])){
   $projects = $db->get("projects", null, $cols); // multilog('projects', $projects);
 
   if(!isset($_GET['html'])) {
-    ?>
-      <p>Hi</p>
-    <?php
-
-    // echo json_encode($projects);
+    echo json_encode($projects);
   } else {
-    $searchAll = array(id => -1, name => "All Projects", jobnumber => "", datedelivered => "");
-    array_unshift($projects, $searchAll);
-  
-    $buildCard = function($id, $jobnumber, $name) {
-      $jobnumber = $jobnumber ? $jobnumber.' - ' : ''; 
-  
-      $projectIdStr = 'projectId='.$id; // $id > 0 ? 'projectId='.$id : '';
-  
-      $str = "<div class=\"col\" id=\"project-card-id\">
-          <div class=\"card blue-grey darken-1\">
-            <div class=\"card-content white-text\" style=\"padding: 8px 0px 0px 0px;\">
-              <span class=\"card-title\" style=\"text-align: center; padding: 0px 8px 0px 8px;\">
-                $jobnumber $name
+    $buildCard = function($id, $jobnumber, $name, $filterText = 'Filter by project') {
+      $jobnumber = $jobnumber ? $jobnumber.' - ' : '';
+
+      $projectUrl = $id > 0 ? "?project=$id" : '../';
+
+      ?>
+        <div class="col" id="project-card-id">
+          <div class="card blue-grey darken-1">
+            <div class="card-content white-text" style="padding: 8px 0px 0px 0px;">
+              <span class="card-title" style="text-align: center; padding: 0px 8px 0px 8px;">
+                <?php echo $jobnumber.$name ?>
               </span>
-              <div class=\"card-action\">
-                <a class=\"waves-effect waves-light btn-small\" onClick=\"newSearch($projectIdStr)\">Filter by project</a>
-                <a class=\"waves-effect waves-light btn-small\" href=\"?$projectIdStr\">See all</a>
+              <div class="card-action">
+                <a class="waves-effect waves-light btn-small" onClick="newSearch(projectId=<?php echo $id; ?>)"><?php echo $filterText; ?></a>
+                <a class="waves-effect waves-light btn-small" href="<?php echo $projectUrl; ?>">See all</a>
               </div>
             </div>
           </div>
-        </div>";
-  
-      return $str;
+        </div>
+      <?php
     };
-  
-    $overlayHtml = '<div class="row">';
+
+    echo '<div class="row">'; 
+
+    $buildCard(-1, '', 'All Projects', 'Filter by all projects');
+
     $rowYear = '';
     foreach($projects as $p) {
-      $card = $buildCard($p['id'], $p['jobnumber'], $p['name']);
-  
       $cardYear = substr($p['datedelivered'], 0, 4);
       if($rowYear !== $cardYear) { // multilog('rowYear', $rowYear);
         $rowYear = $cardYear;
   
-        $overlayHtml = $overlayHtml .  
-          "</div>
-          <div class=\"row\">
-            <p>
-              $rowYear
-            </p>";
+        echo "</div> <div class=\"row\"> <p>$rowYear</p>";
       }
-  
-      $str = $card;
-  
-      $overlayHtml = $overlayHtml . $str;
+
+      $card = $buildCard($p['id'], $p['jobnumber'], $p['name']);
     }
 
-    echo $overlayHtml;
+    echo '</div>';
   }
 } else {
 	$success = false;
