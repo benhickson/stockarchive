@@ -110,7 +110,7 @@
     z-index: 1;
   }
   .searchResult.expanded .expandedCover + video.hoverToPlay{
-  	opacity: 0.3;
+    opacity: 0.3;
   }
   .searchResult.expanded .expandedCover{
     height: 100%;
@@ -127,18 +127,18 @@
     width: calc(100% - 14px);
   }
   #clipExpandFullQualityReveal{
-  	padding: 19px;
-  	white-space: nowrap;
-  	cursor: pointer;
+    padding: 19px;
+    white-space: nowrap;
+    cursor: pointer;
   }
   #clipExpandFullQuality, #clipExpandFullQualityReveal{
-  	font-size: 80%;
+    font-size: 80%;
   }
   .pagination li.leftbarhidden{
-  	display: none;
+    display: none;
   }
   #afterResultContainer .pagination li.leftbarhidden{
-  	display: inline-block;
+    display: inline-block;
   }
 
   /*
@@ -432,15 +432,44 @@
         });
 
         var options = {
-            valueNames: ['name']
+            valueNames: ['name', 'year', {data: ['id']}]
         };
 
-        var projectList = new List('project-list', options); console.log('hi');
+        var projectList = new List('project-list', options);
 
         $('#project').on('input', function() {
-          if (this.value.length >= 0) { 
-            // projectList.search();
-            projectList.search(this.value); // Only item with name Jonny is shown (also returns this item)                
+          if (this.value.length >= 0) {
+            var search = this.value;
+
+            projectList.filter(function(item) { return true });
+            var nameList = projectList.search(this.value);
+            projectList.search();
+
+            let uniqueYears = new Set(nameList.map(item => {
+              console.log('years', item['_values']['year'], item);
+              return item['_values']['year'];
+            }));
+            uniqueYears = [...uniqueYears]; console.log(uniqueYears);
+
+            projectList.filter(function(item) { console.log('-------- includes', item['_values']['name'], !uniqueYears.includes(item['_values']['year']));
+              if(item['_values']['name'] === 'All Projects') {
+                return true;
+              }
+
+              if(!uniqueYears.includes(item['_values']['year'])) {
+                return false;
+              } console.log('year', item['_values']['name'], item['_values']['name'] === 'divider');
+
+              if(item['_values']['name'] === 'divider') {
+                return true;
+              } console.log('search', search, item['_values']['name'].search(search));
+
+              if(item['_values']['name'].toLowerCase().search(search) >= 0) {
+                return true;
+              }
+
+              return false;
+            });
           }
         });
       },
@@ -592,7 +621,7 @@
         $paginationstring .= ' class="active"';
         // if statement to show only the five current pages
       } elseif (abs($page - $i) > 2) {
-      	$paginationstring .= ' class="leftbarhidden"';
+        $paginationstring .= ' class="leftbarhidden"';
       }
 
       $paginationstring .= '><a href="?';
@@ -714,7 +743,7 @@
             <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
             <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
             <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
-            	Filename: <span id="clipExpandOriginalFilename"></span></p>
+              Filename: <span id="clipExpandOriginalFilename"></span></p>
           </div>
         </div>
       </div>      
@@ -722,7 +751,7 @@
   <div class="row" id="afterResultContainer">
     <ul class="pagination">
       <?php 
-      	echo $paginationstring; 
+        echo $paginationstring; 
       ?>
     </ul>
   </div>
