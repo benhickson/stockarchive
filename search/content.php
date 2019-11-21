@@ -110,7 +110,7 @@
     z-index: 1;
   }
   .searchResult.expanded .expandedCover + video.hoverToPlay{
-  	opacity: 0.3;
+    opacity: 0.3;
   }
   .searchResult.expanded .expandedCover{
     height: 100%;
@@ -127,18 +127,18 @@
     width: calc(100% - 14px);
   }
   #clipExpandFullQualityReveal{
-  	padding: 19px;
-  	white-space: nowrap;
-  	cursor: pointer;
+    padding: 19px;
+    white-space: nowrap;
+    cursor: pointer;
   }
   #clipExpandFullQuality, #clipExpandFullQualityReveal{
-  	font-size: 80%;
+    font-size: 80%;
   }
   .pagination li.leftbarhidden{
-  	display: none;
+    display: none;
   }
   #afterResultContainer .pagination li.leftbarhidden{
-  	display: inline-block;
+    display: inline-block;
   }
 
   /*
@@ -148,7 +148,7 @@
     height: 100%;
     width: 0;
     position: fixed;
-    z-index: 1;
+    z-index: 2;
     top: 0;
     left: 0;
     background-color: rgb(238, 238, 238);
@@ -396,7 +396,7 @@
   }
 
   function togglePopup() {
-    if(document.getElementById("projectPopup").style.width === "100%") {
+    if($('#projectPopup').style.width === "100%") {
       closeProjectPopup();
     }
     else {
@@ -421,13 +421,65 @@
       type: 'GET',
       success: function(res) {
         $('#overlay-content-id').prepend(res);
+        $('#overlay-content-id').attr('data-set', 'true');
 
-        document.getElementById("overlay-content-id").setAttribute('data-set', 'true');
-
-        document.addEventListener('keydown', function(e) {
-          const key = e.key;
+        $('body').on('keydown', function(e) {
+          var key = e.key;
           if (key === "Escape") {
-              closeProjectPopup();
+            closeProjectPopup();
+          }
+        });
+
+        $('#bottomleftbar').click(function(e) {
+          closeProjectPopup();
+        });
+
+        var options = {
+            valueNames: ['name', 'year']
+        };
+
+        var projectList = new List('project-list', options);
+
+        $('#project').on('input', function() {
+          if (this.value.length >= 0) {
+            var search = this.value.toLowerCase();
+
+            // the filter on the list is totaly cleared by returning true on all
+            // items (you have to clear the later filter with another filter
+            // search doesn't work), then an initial search is done that is used
+            // to get all the projects that make the search so that can be the
+            // basis of what years dividers to leave in the later filter
+            projectList.filter(function(item) { return true });
+            var nameList = projectList.search(this.value);
+            projectList.search();
+
+            // a list of years is generated so we can tell what dividers should stay
+            // and to make the list only contain distinct years, the array is converted
+            // to a Set (a data type that only holds distint values)
+            let uniqueYears = new Set(nameList.map(item => {
+              return item['_values']['year'];
+            }));
+
+            projectList.filter(function(item) {
+              var name = item['_values']['name'];
+              var year = item['_values']['year'];
+
+              if(name === 'All Projects') {
+                return true;
+              }
+
+              if(!uniqueYears.has(year)) {
+                return false;
+              }
+
+              if(name === 'divider'
+              || name.toLowerCase().search(search) >= 0
+              || year === search) {
+                return true;
+              }
+
+              return false;
+            });
           }
         });
       },
@@ -437,6 +489,7 @@
       }    
     });
   }
+
 </script>
 
 <?php
@@ -578,7 +631,7 @@
         $paginationstring .= ' class="active"';
         // if statement to show only the five current pages
       } elseif (abs($page - $i) > 2) {
-      	$paginationstring .= ' class="leftbarhidden"';
+        $paginationstring .= ' class="leftbarhidden"';
       }
 
       $paginationstring .= '><a href="?';
@@ -626,6 +679,9 @@
     <!-- <p>Included Tags</p> -->
     <!-- <p>Suggested Tags</p> -->
     <!-- <p>Collections</p> -->
+    <div id="bottomleftbar">
+      <br />
+    </div>      
   </div>
 </div>
 <div id="mainContent" class="col m8 l9 xl10 size<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>">
@@ -700,7 +756,7 @@
             <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
             <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
             <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
-            	Filename: <span id="clipExpandOriginalFilename"></span></p>
+              Filename: <span id="clipExpandOriginalFilename"></span></p>
           </div>
         </div>
       </div>      
@@ -708,7 +764,7 @@
   <div class="row" id="afterResultContainer">
     <ul class="pagination">
       <?php 
-      	echo $paginationstring; 
+        echo $paginationstring; 
       ?>
     </ul>
   </div>
