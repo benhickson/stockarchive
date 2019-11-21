@@ -52,7 +52,8 @@
 		    margin-top: -18px;
 		}*/
 		#leftbar{
-			position: fixed;
+			position: absolute;
+			height: 100%;
 			width: inherit;
 			border-top: white;
 			border-top-width: 65px;
@@ -60,9 +61,16 @@
 			top: 0;
 			left: 0;
 			padding-left: 14px;
+			padding-right: 14px;
 
 			/*For popup project search*/
 			z-index: 2; 
+		}
+		#bottomleftbar{
+			height: 100%; 
+			width: 110%; 
+			z-index: 2; 
+			margin-left: -14px;
 		}
 		#mainContent{
 			background-color: white;

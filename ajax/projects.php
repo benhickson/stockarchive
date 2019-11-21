@@ -7,7 +7,7 @@ if (isset($_SESSION['logged_in'])){
   $db->orderBy("datedelivered","desc");
   $db->orderBy("name","asc");
 
-  $projects = $db->get("projects", null, $cols); // multilog('projects', $projects);
+  $projects = $db->get("projects", null, $cols);
 
   if(!isset($_GET['html'])) {
     echo json_encode($projects);
@@ -37,20 +37,21 @@ if (isset($_SESSION['logged_in'])){
       <?php
     };
 
-    echo '<div id="project-list"><ul class="row list">';
-    // echo '<div class="row">'; 
+    ?>
+      <div id="project-list">
+        <ul class="row list">
+    <?php
 
     $buildCard(-1, '', 'All Projects', '', 'Search through all projects', 'All clips');
 
     $rowYear = '';
     foreach($projects as $p) {
       $cardYear = substr($p['datedelivered'], 0, 4);
-      if($rowYear !== $cardYear) { // multilog('rowYear', $rowYear);
+      if($rowYear !== $cardYear) {
         $rowYear = $cardYear;
-  
-        // echo "<li><p><br />$rowYear<br /></p></li>";
+        
         ?>
-          <!-- <li> -->
+          <li>
             <div class="col m12" id="project-card-id">
               <div class="card blue-grey darken-1">
                 <div class="card-content white-text" style="padding: 8px 0px 0px 0px;">
@@ -61,14 +62,17 @@ if (isset($_SESSION['logged_in'])){
                 </div>
               </div>
             </div>
-          <!-- </li> -->
+          </li>
         <?php
       }
 
       $card = $buildCard($p['id'], $p['jobnumber'], $p['name'], $cardYear);
     }
 
-    echo '</ul> </div>';
+    ?>
+        </ul> 
+      </div>
+    <?php
   }
 } else {
 	$success = false;

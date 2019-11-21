@@ -396,7 +396,7 @@
   }
 
   function togglePopup() {
-    if(document.getElementById("projectPopup").style.width === "100%") {
+    if($('#projectPopup').style.width === "100%") {
       closeProjectPopup();
     }
     else {
@@ -421,18 +421,21 @@
       type: 'GET',
       success: function(res) {
         $('#overlay-content-id').prepend(res);
+        $('#overlay-content-id').attr('data-set', 'true');
 
-        document.getElementById("overlay-content-id").setAttribute('data-set', 'true');
-
-        document.addEventListener('keydown', function(e) {
+        $('body').on('keydown', function(e) {
           var key = e.key;
           if (key === "Escape") {
-              closeProjectPopup();
+            closeProjectPopup();
           }
         });
 
+        $('#bottomleftbar').click(function(e) {
+          closeProjectPopup();
+        });
+
         var options = {
-            valueNames: ['name', 'year', {data: ['id']}]
+            valueNames: ['name', 'year']
         };
 
         var projectList = new List('project-list', options);
@@ -441,30 +444,37 @@
           if (this.value.length >= 0) {
             var search = this.value;
 
+            // the filter on the list is totaly cleared by returning true on all
+            // items (you have to clear the later filter with another filter
+            // search doesn't work), then an initial search is done that is used
+            // to get all the projects that make the search so that can be the
+            // basis of what years dividers to leave in the later filter
             projectList.filter(function(item) { return true });
             var nameList = projectList.search(this.value);
             projectList.search();
 
+            // a list of years is generated so we can tell what dividers should stay
+            // and to make the list only contain distinct years, the array is converted
+            // to a Set (a data type that only holds distint values)
             let uniqueYears = new Set(nameList.map(item => {
-              console.log('years', item['_values']['year'], item);
               return item['_values']['year'];
             }));
-            uniqueYears = [...uniqueYears]; console.log(uniqueYears);
 
-            projectList.filter(function(item) { console.log('-------- includes', item['_values']['name'], !uniqueYears.includes(item['_values']['year']));
-              if(item['_values']['name'] === 'All Projects') {
+            projectList.filter(function(item) {
+              var name = item['_values']['name'];
+              var year = item['_values']['year'];
+
+              if(name === 'All Projects') {
                 return true;
               }
 
-              if(!uniqueYears.includes(item['_values']['year'])) {
+              if(!uniqueYears.has(year)) {
                 return false;
-              } console.log('year', item['_values']['name'], item['_values']['name'] === 'divider');
+              }
 
-              if(item['_values']['name'] === 'divider') {
-                return true;
-              } console.log('search', search, item['_values']['name'].search(search));
-
-              if(item['_values']['name'].toLowerCase().search(search) >= 0) {
+              if(name === 'divider'
+              || name.toLowerCase().search(search) >= 0
+              || year === search) {
                 return true;
               }
 
@@ -669,6 +679,9 @@
     <!-- <p>Included Tags</p> -->
     <!-- <p>Suggested Tags</p> -->
     <!-- <p>Collections</p> -->
+    <div id="bottomleftbar">
+      <br />
+    </div>      
   </div>
 </div>
 <div id="mainContent" class="col m8 l9 xl10 size<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>">
