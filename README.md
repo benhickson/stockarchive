@@ -17,7 +17,7 @@ Description.
 5. Expand codebase into a directory accessible by the public at yourdomain.dom/archive
 6. Create file `includes/settings.php` and enter the text below.
 7. Setup folders to upload and transcode to, including setting permissions for your www-data (or other) web-server-user.
-8. (new databases) In MySQL, add a row to the users table to provision an account for a user, filling in the fields `email`, `firstname`, `lastname`, set `registastration_open`=1, and `registration_code`=any_two_character_code
+8. (new databases) In MySQL, add a row to the users table to provision an account for a user, filling in the fields `email`, `firstname`, `lastname`, set `registration_open`=1, and `registration_code`=any_two_character_code
 9. (new databases) Visit the URL in the browser, register an account (creating password) and log in.
 
 
