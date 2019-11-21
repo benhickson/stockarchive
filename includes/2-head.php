@@ -64,12 +64,12 @@
 			padding-right: 14px;
 
 			/*For popup project search*/
-			z-index: 2; 
+			z-index: 3; 
 		}
 		#bottomleftbar{
 			height: 100%; 
 			width: 110%; 
-			z-index: 2; 
+			z-index: 3; 
 			margin-left: -14px;
 		}
 		#mainContent{
