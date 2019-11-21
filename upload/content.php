@@ -2,7 +2,7 @@
 
 if (isset($_GET['clip'])){
     if ($_GET['clip'] == 'first'){
-        $result = $db->rawQuery('SELECT id FROM clips WHERE published=0 AND uploader=? AND todelete=0 ORDER BY id ASC LIMIT 1', array($_SESSION['userid']));
+        $result = $db->rawQuery('SELECT id FROM clips WHERE published=0  AND todelete=0 AND ((uploader=? AND editor=NULL) OR (editor=?)) ORDER BY id ASC LIMIT 1', array($_SESSION['userid'], $_SESSION['userid']));
         if ($db->count == 1){
             $clipid = $result[0]['id'];
             $clippage = true;      

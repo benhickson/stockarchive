@@ -126,12 +126,12 @@
     opacity: 0;
     width: calc(100% - 14px);
   }
-  #clipExpandFullQualityReveal{
+  #clipExpandFullQualityReveal, #clipUnpublish{
     padding: 19px;
     white-space: nowrap;
     cursor: pointer;
   }
-  #clipExpandFullQuality, #clipExpandFullQualityReveal{
+  #clipExpandFullQuality, #clipExpandFullQualityReveal, #clipUnpublish{
     font-size: 80%;
   }
   .pagination li.leftbarhidden{
@@ -310,6 +310,8 @@
         $(this).off('loadedmetadata');
       });
 
+      $('#clipUnpublish').attr('onClick','unpublish('+clipid+');');
+
     } else {
       console.log('responseObject is invalid');
       // if not successful
@@ -318,8 +320,26 @@
         triggerLogin();
       }
     }
-
   }
+
+  function unpublish(clipid) { /*console.log('clipid', clipid);*/
+    $.ajax('../ajax/publish.php?clipid='+clipid+'&unpublish', {
+      type: 'POST',
+      data: {clipid: clipid, unpublish: ''},
+      success: function(res){
+        res = JSON.parse(res);
+
+        var msg = res['message'];
+
+        $(clipUnpublish).text(msg);
+      },
+      error: function(xhr, status, error) {
+        var err = JSON.parse(xhr.responseText);
+        console.log(err.Message);
+      }      
+    });
+  }
+
   function getClipData(clipid){
     var data = new Object();
     data.clipid = clipid;
@@ -755,6 +775,7 @@
             <p style="display: none;">Search Relevancy Score: <span id="clipScore"></span></p>
             <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
             <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
+            <a id="clipUnpublish">Edit clip</a>
             <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
               Filename: <span id="clipExpandOriginalFilename"></span></p>
           </div>
