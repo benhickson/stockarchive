@@ -442,7 +442,7 @@
 
         $('#project').on('input', function() {
           if (this.value.length >= 0) {
-            var search = this.value;
+            var search = this.value.toLowerCase();
 
             // the filter on the list is totaly cleared by returning true on all
             // items (you have to clear the later filter with another filter
