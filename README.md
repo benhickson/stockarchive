@@ -1,1 +1,29 @@
 # stockarchive
+Description.
+
+# System requirements (currently built on):
+- Ubuntu 16.04.6 LTS
+- Apache/2.4.18 (Ubuntu)
+- ffmpeg version 3.4.4-1~16.04.york0
+- MySQL 5.7.27
+- PHP Version 7.3.10-1+ubuntu16.04.1+deb.sury.org+1 (loaded as apache module)
+
+
+# Setup:
+1. Install all above system requirements
+2. Download blank database file (link) (or your database backup) and codebase (link to release)
+3. Setup user and password for MySQL
+4. Import blank database (or database backup) into MySQL
+5. Expand codebase into a directory accessible by the public at yourdomain.dom/archive
+6. Create file `includes/settings.php` and enter the text below.
+7. Setup folders to upload and transcode to, including setting permissions for your www-data (or other) web-server-user.
+8. (new databases) In MySQL, add a row to the users table to provision an account for a user, filling in the fields `email`, `firstname`, `lastname`, set `registration_open`=1, and `registration_code`=any_two_character_code
+9. (new databases) Visit the URL in the browser, register an account (creating password) and log in.
+
+
+(we should continue to update this file as our codebase gets more complex. should the system crash, we want to be able to put it back online as rapidly as possible)
+
+# Content of file `includes/settings.php`
+`<?php
+$dbpass = 'your_database_password'; 
+`

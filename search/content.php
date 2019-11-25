@@ -110,7 +110,7 @@
     z-index: 1;
   }
   .searchResult.expanded .expandedCover + video.hoverToPlay{
-  	opacity: 0.3;
+    opacity: 0.3;
   }
   .searchResult.expanded .expandedCover{
     height: 100%;
@@ -127,20 +127,66 @@
     width: calc(100% - 14px);
   }
   #clipExpandFullQualityReveal{
-  	padding: 19px;
-  	white-space: nowrap;
-  	cursor: pointer;
+    padding: 19px;
+    white-space: nowrap;
+    cursor: pointer;
   }
   #clipExpandFullQuality, #clipExpandFullQualityReveal{
-  	font-size: 80%;
+    font-size: 80%;
   }
   .pagination li.leftbarhidden{
-  	display: none;
+    display: none;
   }
   #afterResultContainer .pagination li.leftbarhidden{
-  	display: inline-block;
+    display: inline-block;
   }
 
+  /*
+  FOR PROJECT POPUP
+  */
+  .overlay {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    background-color: rgb(238, 238, 238);
+    background-color: rgba(238, 238, 238, 0.9);
+    overflow-x: hidden;
+    transition: 0.35s;
+  }
+
+  .overlay-content {
+    position: relative;
+    width: 100%;
+    text-align: left;
+    margin-top: 120px;
+    margin-left: 380px;
+    margin-bottom: 250px;
+    padding-right: 500px;
+    overflow: scroll;
+  }
+
+  .overlay a:hover, .overlay a:focus {
+    color: #f1f1f1;
+  }
+
+  .overlay .closebtn {
+    position: absolute;
+    top: 20px;
+    right: 45px;
+    font-size: 60px;
+  }
+
+  @media screen and (max-height: 450px) {
+    .overlay a {font-size: 20px}
+    .overlay .closebtn {
+      font-size: 40px;
+      top: 15px;
+      right: 35px;
+    }
+  }
 
 /*  .hoverFade{
     transition: opacity 300ms ease !important;
@@ -319,7 +365,7 @@
 
     }
   }
-  function newSearch(){
+  function newSearch(projectId = null){
     var windowLocationString = '';
     var clipIdSearchString = document.getElementById('clipIdSearch').value;
     if (clipIdSearchString == Number.parseInt(clipIdSearchString)) {
@@ -329,7 +375,6 @@
 
       $('#search .chip').each(function(){
         searchString += encodeURIComponent($(this).clone().children().remove().end().text()) + '|';
-        // searchString += $(this).clone().children().remove().end().text() + '|';
       });
 
       // slice off the last "|"
@@ -340,16 +385,113 @@
       if (countryvalue > 0){
         windowLocationString = windowLocationString+'&country='+countryvalue;
       }
-
-      var projectvalue = document.getElementById("project").value;
-      if (projectvalue > 0){
+      
+      var projectvalue = projectId || <?php echo isset($_GET['project']) && $_GET['project'].length > 0 ? $_GET['project'] : -1; ?>;
+      if (projectvalue > 0) {
         windowLocationString = windowLocationString+'&project='+projectvalue;
       } 
     }
+
     window.location = windowLocationString;
   }
 
+  function togglePopup() {
+    if($('#projectPopup').style.width === "100%") {
+      closeProjectPopup();
+    }
+    else {
+      openPopup();
+    }
+  }
+
+  function openPopup() {
+    document.getElementById("projectPopup").style.width = "100%";
+
+    if(document.getElementById("overlay-content-id").getAttribute('data-set') === 'false') {
+      setProjectPopup();
+    }
+  }
+
+  function closeProjectPopup() {
+    document.getElementById("projectPopup").style.width = "0%";
+  }
+
+  function setProjectPopup() {
+    $.ajax('../ajax/projects.php?html', {
+      type: 'GET',
+      success: function(res) {
+        $('#overlay-content-id').prepend(res);
+        $('#overlay-content-id').attr('data-set', 'true');
+
+        $('body').on('keydown', function(e) {
+          var key = e.key;
+          if (key === "Escape") {
+            closeProjectPopup();
+          }
+        });
+
+        $('#bottomleftbar').click(function(e) {
+          closeProjectPopup();
+        });
+
+        var options = {
+            valueNames: ['name', 'year']
+        };
+
+        var projectList = new List('project-list', options);
+
+        $('#project').on('input', function() {
+          if (this.value.length >= 0) {
+            var search = this.value.toLowerCase();
+
+            // the filter on the list is totaly cleared by returning true on all
+            // items (you have to clear the later filter with another filter
+            // search doesn't work), then an initial search is done that is used
+            // to get all the projects that make the search so that can be the
+            // basis of what years dividers to leave in the later filter
+            projectList.filter(function(item) { return true });
+            var nameList = projectList.search(this.value);
+            projectList.search();
+
+            // a list of years is generated so we can tell what dividers should stay
+            // and to make the list only contain distinct years, the array is converted
+            // to a Set (a data type that only holds distint values)
+            let uniqueYears = new Set(nameList.map(item => {
+              return item['_values']['year'];
+            }));
+
+            projectList.filter(function(item) {
+              var name = item['_values']['name'];
+              var year = item['_values']['year'];
+
+              if(name === 'All Projects') {
+                return true;
+              }
+
+              if(!uniqueYears.has(year)) {
+                return false;
+              }
+
+              if(name === 'divider'
+              || name.toLowerCase().search(search) >= 0
+              || year === search) {
+                return true;
+              }
+
+              return false;
+            });
+          }
+        });
+      },
+      error: function(xhr, status, error) {
+        var err = JSON.parse(xhr.responseText);
+        console.log(err.Message);
+      }    
+    });
+  }
+
 </script>
+
 <?php
   function realUrlGet() {
     $s = array();
@@ -364,9 +506,9 @@
     $encodedParams = array();
     parse_str($obscuredQuery, $encodedParams); 
 
-    // the # are replaced back to hashtags, so that the query is
-    // properly encoded before seperating the terms by the unencoded
-    // pipe used in the otherwise encoded url
+    // the # are replaced back to %, so that the query is
+    // properly encoded except for the unencoded
+    // pipe to seperate the keywords
     $encodedParams['s'] = str_replace('#', '%', $encodedParams['s']);
   
     return $encodedParams;
@@ -374,25 +516,25 @@
 
 
   $page = 1;  // default
-  $cols = array('c.id', 'c.description'); // columns/fields to request
+  $cols = array('c.id', 'c.description', 'c.project'); // columns/fields to request
 
   $db->where('published', 1); // published clips
   $db->where('(todelete = 0 OR todelete IS NULL)'); // not deleted clips
 
-  if (isset($_GET['clip'])) {
+  if (isset($_GET['clip']) && $_GET['clip'].length > 0) {
     $table = 'clips c'; // table to search
     $db->where('c.id = '.$_GET['clip']);
     $cols[] = 'NULL AS score';
   } else {
-    if (isset($_GET['country'])) {
+    if (isset($_GET['country']) && $_GET['country'].length > 0) {
       $db->where('c.country = '.$_GET['country']);
     }
 
-    if (isset($_GET['project'])) {
+    if (isset($_GET['project']) && $_GET['project'].length > 0) {
       $db->where('c.project = '.$_GET['project']);
     }
 
-    if (isset($_GET['page'])) {
+    if (isset($_GET['page']) && $_GET['page'].length > 0) {
       $page = $_GET['page'];
     }
 
@@ -489,7 +631,7 @@
         $paginationstring .= ' class="active"';
         // if statement to show only the five current pages
       } elseif (abs($page - $i) > 2) {
-      	$paginationstring .= ' class="leftbarhidden"';
+        $paginationstring .= ' class="leftbarhidden"';
       }
 
       $paginationstring .= '><a href="?';
@@ -522,31 +664,29 @@
         }
         ?>
       </select>
-    </div>    
-    <div class="input-field searchstuff">
-      <select id="project">
-        <option value="0" selected>All Projects</option>
-        <?php
-        $cols = array("id, name");
-        $db->orderBy("name","asc");
-        $projects = $db->get("projects", null, $cols);
-        foreach ($projects as $project) {
-          echo '<option value="'.$project['id'].'">'.$project['name'].'</option>'."\n";
+    </div>
+    <div class="input-field searchstuff" onclick="openPopup();">
+      <input id="project" type="text" class="" value="<?php
+        if(isset($_GET['project']) && $_GET['project'].length > 0) {
+          $cols = array("name");
+          $db->where("id = ?", array($_GET['project']));
+          echo $db->get("projects", null, $cols)[0]['name'];
         }
-        ?>
-      </select>
-    </div>  
+      ?>">
+      <label for="clipIdSearch">Project</label>
+    </div>
     <button id="searchButton" type="submit" class="btn searchstuff" onclick="newSearch();">Search</button>
     <!-- <p>Included Tags</p> -->
     <!-- <p>Suggested Tags</p> -->
-    <!-- <p>Collections</p>         -->
+    <!-- <p>Collections</p> -->
+    <div id="bottomleftbar">
+      <br />
+    </div>      
   </div>
 </div>
 <div id="mainContent" class="col m8 l9 xl10 size<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>">
   <div class="row">
-    
     <form class="sliderForm" action="#">
-      
       <p class="range-field">
         <div>Thumbnail Size:</div>
         <input type="range" id="thumbnailSizeSlider" min="2" max="6" style="direction:rtl;" value="<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>" />
@@ -554,6 +694,11 @@
     </form>
   </div>
   <div id="resultContainer" class="row hidden flex-parent">
+    <div id="projectPopup" class="overlay">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeProjectPopup()">&times;</a>
+      <div id="overlay-content-id" class="overlay-content" data-set="false">
+      </div>
+    </div>
     <?php
     foreach ($results as $clip) {
       ?>
@@ -597,11 +742,9 @@
           <div class="panes" id="rightpane">
             <h5 id="clipExpandDescription">Description</h5>
             <p>Clip # <span id="clipExpandId">Clip Id</span> <?php 
-
-if($_SESSION['userid'] == 1){
-    echo '<a id="clipExpandRetranscode" href="../upload/transcode.php?retranscode=clipid" target="_blank">RT</a>';
-}
-
+              if($_SESSION['userid'] == 1){
+                  echo '<a id="clipExpandRetranscode" href="../upload/transcode.php?retranscode=clipid" target="_blank">RT</a>';
+              }
             ?><br />
                Tags: <span id="clipExpandTags">Tags</span></p>
             <p>Date: <span id="clipExpandDate">Date</span><br />
@@ -613,7 +756,7 @@ if($_SESSION['userid'] == 1){
             <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
             <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
             <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
-            	Filename: <span id="clipExpandOriginalFilename"></span></p>
+              Filename: <span id="clipExpandOriginalFilename"></span></p>
           </div>
         </div>
       </div>      
@@ -621,7 +764,7 @@ if($_SESSION['userid'] == 1){
   <div class="row" id="afterResultContainer">
     <ul class="pagination">
       <?php 
-      	echo $paginationstring; 
+        echo $paginationstring; 
       ?>
     </ul>
   </div>

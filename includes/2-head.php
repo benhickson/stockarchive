@@ -19,6 +19,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.min.css" />
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
 	<style type="text/css">
 
 		input:-webkit-autofill {
@@ -51,14 +52,25 @@
 		    margin-top: -18px;
 		}*/
 		#leftbar{
-			position: fixed;
+			position: absolute;
+			height: 100%;
 			width: inherit;
 			border-top: white;
 			border-top-width: 65px;
 			border-top-style: outset;
 			top: 0;
 			left: 0;
-			padding-left: 14px;    
+			padding-left: 14px;
+			padding-right: 14px;
+
+			/*For popup project search*/
+			z-index: 3; 
+		}
+		#bottomleftbar{
+			height: 100%; 
+			width: 110%; 
+			z-index: 3; 
+			margin-left: -14px;
 		}
 		#mainContent{
 			background-color: white;
