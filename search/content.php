@@ -319,11 +319,36 @@
       if (responseObject.data == 'triggerLogin'){
         triggerLogin();
       }
+      else {
+        var status = getPublishStatus(clipid, function(status) {
+          if(status['tagsuccess'] && !status['published']) {
+            $('#clipExpandDescription').text('Clip has been unpublished.');
+          }
+        });
+      }
     }
   }
 
-  function unpublish(clipid) { /*console.log('clipid', clipid);*/
-    $.ajax('../ajax/publish.php?clipid='+clipid+'&unpublish', {
+  function getPublishStatus(clipid, callback) {
+    $.ajax('../ajax/publish.php', {
+      type: 'POST',
+      data: {clipid: clipid, status: ''},
+      success: function(res){
+        res = JSON.parse(res);
+
+        console.log(res);
+
+        callback(res);
+      },
+      error: function(xhr, status, error) {
+        var err = JSON.parse(xhr.responseText);
+        console.log(err.Message);
+      }      
+    });
+  }
+
+  function unpublish(clipid) {
+    $.ajax('../ajax/publish.php', {
       type: 'POST',
       data: {clipid: clipid, unpublish: ''},
       success: function(res){
@@ -331,7 +356,9 @@
 
         var msg = res['message'];
 
-        $(clipUnpublish).text(msg);
+        $('#clipUnpublish').text(msg);
+        $('#clipUnpublish').attr('href','/archive/upload?clip='+clipid);
+        document.getElementById('clipUnpublish').removeAttribute('onclick');
       },
       error: function(xhr, status, error) {
         var err = JSON.parse(xhr.responseText);

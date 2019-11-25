@@ -10,7 +10,18 @@ if ($_SESSION['logged_in']){
   // check if all necessary fields set
   if (isset($_POST['clipid']) && $_POST['clipid'].length > 0) {
 
-    if(isset($_POST['unpublish'])) {
+  	if(isset($_POST['status'])) {
+	  $db->where('id', $_POST['clipid']);
+	  $status = $db->get('clips', null, 'clips.published');
+
+      if(count($status) === 1) {
+        echo json_encode(array('tagsuccess' => true, 'published' => $status['published'] === 0));
+      }
+      else {
+      	echo json_encode(array('tagsuccess' => true, 'published' => 'status get failed: '.json_encode($status)));
+      }
+  	}
+    else if(isset($_POST['unpublish'])) {
       $data = array(
         'published' => 0,
         'editor' => $userid,
