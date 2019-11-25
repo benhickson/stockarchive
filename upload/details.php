@@ -1,6 +1,6 @@
 <?php
 
-require '/var/www/html/creative.lonelyleap.com/archive/includes/0-base.php';
+require __DIR__.'/../includes/0-base.php';
 
 function ableToPublish(){
 	// bring in the variables needed
