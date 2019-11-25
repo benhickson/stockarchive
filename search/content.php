@@ -326,7 +326,16 @@
 
             $('#clipExpandContent video').attr('src','');
             $('.panes').animate({'opacity':1},300);
-            $(this).off('loadedmetadata');
+            $('#clipExpandId').text(clipid);
+            $('#clipExpandDescription').text('');
+            $('#clipExpandLocation').text('');
+            $('#clipExpandDate').text('');
+            $('#clipExpandProject').text('');
+            $('#clipExpandCamera').text('');
+            $('#clipExpandResolution').text('');
+            $('#clipExpandOriginalFilename').text('');
+            $('#clipExpandTags').text('');
+            
           }
         });
       }
