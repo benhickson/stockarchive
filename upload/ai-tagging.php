@@ -9,12 +9,9 @@ ob_start();
 
 if (isset($_GET['start'])){
 	// just start the queue
+	echo json_encode(['success' => true, 'message' => 'Attempting to start queue. Request status instead of start to check status.']);
+	// skip beyond the rest of this flow control
 	
-	// 1. check to see if it's already running
-	//
-
-
-
 } else if (isset($_SESSION['logged_in'])) {
 
 	if (isset($_GET['add'])) {
@@ -43,7 +40,7 @@ if (isset($_GET['start'])){
 	} else if (isset($_GET['status'])) {
 
 		// query database for status = 1
-		$currentqueueitem = $db->where('status = 1')->get('ai_queue', null, array('id', 'clipid'));
+		$currentqueueitem = $db->where('status',1)->get('ai_queue', null, array('id', 'clipid'));
 		if ($db->count == 1){
 			$currentqueueitem = $currentqueueitem[0];
 		} else if ($db->count == 0){
@@ -96,4 +93,57 @@ if (session_id()) session_write_close();
 
 // if clarafai responds with a failure, record their response (or the critical subset of it) in the `failuremessage` field and set status to 3
 
+// the work.
 
+// check to see if it's already running
+$db->where('status',1)->get('ai_queue', null, array('id'));
+if ($db->count == 1){
+	// already running in another process, do nothing.
+} else if ($db->count == 0){
+	// not running, so let's do it!
+
+	// some functions
+	function updateCurrentQueueItem(){
+		global $currentqueueitem, $db;
+		$currentqueueitem = $db->where('status',0)->orderBy('id','asc')->getOne('ai_queue', null, array('id','clipid'));	
+	}
+	function statusUpdate($id, $status){
+		global $db;
+		$db->where('id', $id)->update('ai_queue', array('status' => $status));
+	}
+
+
+	// get the first one to autotag with status=0
+	updateCurrentQueueItem();
+	// keep looping as long as there is still a row with status 0
+	while ($db->count == 1){
+		// mark as running
+		statusUpdate($currentqueueitem['id'], 1);
+
+		// get the publicly accessible URI of the image to send to clarifai
+		$imageuri = $db->where('active',1)->getValue('ai_connections', 'uri_base').'media/?clip='.$currentqueueitem['clipid'].'&q=t';
+
+		// set the options for the api request
+		$opts = array('http' => array(
+		    'method'  => 'POST',
+		    'header'  => "Content-Type: application/json\r\n".
+		      "Authorization: Key 97f8c254b3c947e4b913f3047dbb6149\r\n",
+		    'content' => '{"inputs": [{"data": {"image": {"url": "'.$imageuri.'"}}}]}'
+		  )
+		);
+		                       
+		$context  = stream_context_create($opts);
+		$url = 'https://api.clarifai.com/v2/models/aaa03c23b3724a16a56b629203edc62c/outputs';
+		// $result = file_get_contents($url, false, $context, -1, 40000);	
+		$result = file_get_contents($url, false, $context);
+
+		// $db->where('id', $currentqueueitem['id'])->update('ai_queue', array('failuremessage' => $result));
+		error_log(print_r($result));
+
+		// mark as complete
+		statusUpdate($currentqueueitem['id'], 2);
+
+		// get the next queue item, if exists
+		updateCurrentQueueItem();
+	}
+} 
