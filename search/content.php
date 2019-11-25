@@ -310,6 +310,9 @@
         $(this).off('loadedmetadata');
       });
 
+      $('#clipUnpublish').text('Unpublish/edit clip')
+      //if the last clp was unpublished, it'll have an href that needs to be removed
+      $('#clipUnpublish').removeAttr("href");
       $('#clipUnpublish').attr('onClick','unpublish('+clipid+');');
 
     } else {
@@ -322,12 +325,10 @@
       else {
         var status = getPublishStatus(clipid, function(status) {
           if(status['tagsuccess'] && !status['published']) {
-            $('#clipExpandDescription').text('Clip has been unpublished.');
-
             $('#clipExpandContent video').attr('src','');
             $('.panes').animate({'opacity':1},300);
             $('#clipExpandId').text(clipid);
-            $('#clipExpandDescription').text('');
+            $('#clipExpandDescription').text('Clip has been unpublished.');
             $('#clipExpandLocation').text('');
             $('#clipExpandDate').text('');
             $('#clipExpandProject').text('');
@@ -335,7 +336,6 @@
             $('#clipExpandResolution').text('');
             $('#clipExpandOriginalFilename').text('');
             $('#clipExpandTags').text('');
-            
           }
         });
       }
@@ -815,7 +815,7 @@
             <p style="display: none;">Search Relevancy Score: <span id="clipScore"></span></p>
             <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
             <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
-            <a id="clipUnpublish">Edit clip</a>
+            <a id="clipUnpublish"></a>
             <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
               Filename: <span id="clipExpandOriginalFilename"></span></p>
           </div>
