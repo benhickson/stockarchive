@@ -323,6 +323,10 @@
         var status = getPublishStatus(clipid, function(status) {
           if(status['tagsuccess'] && !status['published']) {
             $('#clipExpandDescription').text('Clip has been unpublished.');
+
+            $('#clipExpandContent video').attr('src','');
+            $('.panes').animate({'opacity':1},300);
+            $(this).off('loadedmetadata');
           }
         });
       }
