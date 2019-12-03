@@ -19,30 +19,38 @@ if ($_SESSION['logged_in']){
 
         $db->where('id', $_POST['clipid']);
         $status = $db->get('clips', null, 'clips.editor');
-        $editor = $status[0]['editor'] == $userid; // ['editor']; // $editor ? $editor['editor'] : null;
+        $editor = $status[0]['editor'] == $userid;
 
         echo json_encode(array('success' => true, 'published' => $published, 'editor' => $editor));
-      }
-      else {
+      } else {
         echo json_encode(array('success' => true, 'published' => 'status get failed: '.json_encode($status)));
       }
     }
     else if(isset($_POST['unpublish'])) {
+
+      $db->where('id', $_POST['clipid']);
+
+      // $hist = $db->get('clips', null, 'clips.edithistory');
+      // $hist = json_decode($hist);
+
+      /* if(count($array) > 10) {
+        $_ = array_shift($array);
+      } */
+
       $data = array(
         'published' => 0,
-        'editor' => $userid,
+        'editor' => $userid // ,
+        // 'edithistory' => $userid.''.$db->now()
       );
 
       $db->where('id', $_POST['clipid']);
 
       if($db->update('clips', $data)) {
         echo json_encode(array('success' => true, 'message' => 'Clip in Upload Queue (click to see page)'));
-      }
-      else {
+      } else {
         echo 'update failed: '.$db->getLastError();  
       }
-    }
-    else {
+    } else {
       exit(json_encode(array('success' => false, 'message' => 'Only unpublishing is implemented.')));
     }
   } else {

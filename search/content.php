@@ -342,7 +342,7 @@
       console.log('responseObject is invalid');
       // if not successful
       // check if needs to login
-      if (responseObject.data == 'triggerLogin'){
+      if (responseObject.data == 'triggerLogin') {
         triggerLogin();
       }
       else {
