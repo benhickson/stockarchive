@@ -196,8 +196,8 @@
   }
   .buttonbox{
     position: absolute;
-    right: 8px;
-    top: 9px;
+    right: 9px;
+    top: 10px;
   }
   .buttonbox a{
     box-shadow: none;
