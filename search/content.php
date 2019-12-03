@@ -333,7 +333,7 @@
         $(this).off('loadedmetadata');
       });
 
-      $('#clipUnpublish').text('Unpublish/edit clip')
+      $('#clipUnpublish').text('Unpublish/Edit Clip')
       //if the last clp was unpublished, it'll have an href that needs to be removed
       $('#clipUnpublish').removeAttr("href");
       $('#clipUnpublish').attr('onClick','unpublish('+clipid+');');
@@ -347,7 +347,7 @@
       }
       else {
         var status = getPublishStatus(clipid, function(status) {
-          if(status['tagsuccess'] && !status['published']) {
+          if(status['success'] && !status['published']) {
             $('#clipExpandContent video').attr('src','');
             $('.panes').animate({'opacity':1},300);
             $('#clipExpandId').text(clipid);
@@ -360,6 +360,16 @@
             $('#clipExpandOriginalFilename').text('');
             $('#clipExpandTags').text('');
           }
+
+          if(status['editor']) {
+            $('#clipUnpublish').text('This Clip is in Your Upload Queue');
+            $('#clipUnpublish').attr('href','/archive/upload?clip='+clipid);
+
+            document.getElementById('clipUnpublish').removeAttribute('onclick');
+          }
+          else {
+            $('#clipUnpublish').text('');
+          }
         });
       }
     }
@@ -371,8 +381,6 @@
       data: {clipid: clipid, status: ''},
       success: function(res){
         res = JSON.parse(res);
-
-        console.log(res);
 
         callback(res);
       },

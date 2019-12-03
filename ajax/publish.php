@@ -10,17 +10,23 @@ if ($_SESSION['logged_in']){
   // check if all necessary fields set
   if (isset($_POST['clipid']) && $_POST['clipid'].length > 0) {
 
-  	if(isset($_POST['status'])) {
-	  $db->where('id', $_POST['clipid']);
-	  $status = $db->get('clips', null, 'clips.published');
+    if(isset($_POST['status'])) {
+    $db->where('id', $_POST['clipid']);
+    $status = $db->get('clips', null, 'clips.published');
 
       if(count($status) === 1) {
-        echo json_encode(array('tagsuccess' => true, 'published' => $status['published'] === 0));
+        $published = $status['published'] === 0;
+
+        $db->where('id', $_POST['clipid']);
+        $status = $db->get('clips', null, 'clips.editor');
+        $editor = $status[0]['editor'] == $userid; // ['editor']; // $editor ? $editor['editor'] : null;
+
+        echo json_encode(array('success' => true, 'published' => $published, 'editor' => $editor));
       }
       else {
-      	echo json_encode(array('tagsuccess' => true, 'published' => 'status get failed: '.json_encode($status)));
+        echo json_encode(array('success' => true, 'published' => 'status get failed: '.json_encode($status)));
       }
-  	}
+    }
     else if(isset($_POST['unpublish'])) {
       $data = array(
         'published' => 0,
@@ -30,20 +36,20 @@ if ($_SESSION['logged_in']){
       $db->where('id', $_POST['clipid']);
 
       if($db->update('clips', $data)) {
-        echo json_encode(array('tagsuccess' => true, 'message' => 'Clip put in your edit queue'));
+        echo json_encode(array('success' => true, 'message' => 'Clip in Upload Queue (click to see page)'));
       }
       else {
         echo 'update failed: '.$db->getLastError();  
       }
     }
     else {
-      exit(json_encode(array('tagsuccess' => false, 'message' => 'Only unpublishing is implemented.')));
+      exit(json_encode(array('success' => false, 'message' => 'Only unpublishing is implemented.')));
     }
   } else {
     // postfields not set correctly
-    exit(json_encode(array('tagsuccess' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally.')));
+    exit(json_encode(array('success' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally.')));
   }
 } else {
   // not logged in
-  exit(json_encode(array('tagsuccess' => false, 'message' => 'Not logged in.')));
+  exit(json_encode(array('success' => false, 'message' => 'Not logged in.')));
 }
