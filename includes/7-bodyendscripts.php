@@ -5,8 +5,8 @@
 
   // hide for browsers other than chrome
   function isNotChrome(){
-      $('#notChrome').show();
-      $('header, main, footer').hide();
+      // $('#notChrome').show();
+      // $('header, main, footer').hide();
       console.log('is not chrome.');
     }
   var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
@@ -157,19 +157,6 @@
 
     // highlight the current page in the toolbar
     $('li#'+currentPage+"Link").addClass("active");
-
-    // binding materialize's event listeners to the chips (tags)
-    // $('.chips:not(.searchChips)').on('chip.add', function(e, chip){ addTag(e.target.dataset.clipid, chip.tag); });
-    // $('.chips:not(.searchChips)').on('chip.delete', function(e, chip){ removeTag(e.target.dataset.clipid, chip.tag); });
-
-    // $('.chips').on('chip.select', function(e, chip){
-    //   // you have the selected chip here
-    //   // console.log('e: ',e);
-    //   // console.log('chip: ',chip);
-
-    //   // nothing, this is for if a chip is selected. don't use for now.
-    // });
-
 
   });
 </script>

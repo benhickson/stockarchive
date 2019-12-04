@@ -669,27 +669,29 @@
     echo $paginationstring;
     ?>
     </ul>
-    <div class="input-field searchstuff">
-      <div id="search" placeholder="Keywords" class="searchChips chips chips-placeholder"></div>
+    <!-- <div class="input-field searchstuff"> -->
+      <!-- <div id="search" placeholder="Keywords" class="searchChips chips chips-placeholder"></div> -->
       <!-- <label for="search">Keywords</label> -->
-    </div>
+    <!-- </div> -->
+    <div id="search" class="searchstuff chips chips-placeholder"></div>
     <div class="input-field searchstuff">
       <input id="clipIdSearch" type="text" class="validate" pattern="\d+">
       <label for="clipIdSearch">Clip Number</label>
     </div>
-    <div class="input-field searchstuff">
+    <!-- Country Search Field Disabled -->
+<!--     <div class="input-field searchstuff">
       <select id="country">
         <option value="0" selected>All Countries</option>
         <?php
-        $cols = array("id, countryname");
-        $db->orderBy("countryname","asc");
-        $countries = $db->get("opt_countries", null, $cols);
-        foreach ($countries as $country) {
-          echo '<option value="'.$country['id'].'">'.$country['countryname'].'</option>'."\n";
-        }
+        // $cols = array("id, countryname");
+        // $db->orderBy("countryname","asc");
+        // $countries = $db->get("opt_countries", null, $cols);
+        // foreach ($countries as $country) {
+        //   echo '<option value="'.$country['id'].'">'.$country['countryname'].'</option>'."\n";
+        // }
         ?>
       </select>
-    </div>
+    </div> -->
     <div class="input-field searchstuff" onclick="openPopup();">
       <input id="project" type="text" class="" value="<?php
         if(isset($_GET['project']) && $_GET['project'].length > 0) {
