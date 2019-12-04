@@ -12,24 +12,20 @@ if (isset($_SESSION['logged_in'])){
   if(!isset($_GET['html'])) {
     echo json_encode($projects);
   } else {
-    $buildCard = function($id, $jobnumber, $name, $year, $filterText = 'Search in project', $allText = 'Project clips') {
+    $buildCard = function($id, $jobnumber, $name, $year, $filterText = 'Filter Search Results by Project', $allText = 'View All Clips in Project') {
       $jobnumber = $jobnumber ? $jobnumber.' - ' : '';
 
       $projectUrl = $id > 0 ? "?project=$id" : '../';
       
       ?>
         <li>
-          <div class="col" id="project-card-id">
-            <div class="card blue-grey darken-1">
-              <div class="card-content white-text" style="padding: 8px 0px 0px 0px;">
-                <span class="card-title" style="text-align: center; padding: 0px 8px 0px 8px;">
-                  <div class="name"><?php echo $jobnumber.$name ?></div>
-                  <div hidden class="year"><?php echo $year ?></div>
-                </span>
-                <div class="card-action">
-                  <a class="waves-effect waves-light btn-small" href="<?php echo $projectUrl; ?>"><?php echo $allText; ?></a>                
-                  <a class="waves-effect waves-light btn-small" onClick="newSearch(projectId=<?php echo $id; ?>)"><?php echo $filterText; ?></a>
-                </div>
+          <div class="col">
+            <div class="projectcard card-panel">
+              <div class="name"><?php echo $jobnumber.$name ?></div>
+              <div hidden class="year"><?php echo $year ?></div>
+              <div class="buttonbox">
+                <a class="waves-effect waves-light btn-small tooltipped" data-position="bottom" data-tooltip="<?php echo $allText; ?>" href="<?php echo $projectUrl; ?>"><i class="material-icons">burst_mode</i></a>
+                <a class="waves-effect waves-light btn-small tooltipped" data-position="bottom" data-tooltip="<?php echo $filterText; ?>" onClick="newSearch(projectId=<?php echo $id; ?>)"><i class="material-icons">image_search</i></a>
               </div>
             </div>
           </div>
@@ -42,7 +38,7 @@ if (isset($_SESSION['logged_in'])){
         <ul class="row list">
     <?php
 
-    $buildCard(-1, '', 'All Projects', '', 'Search through all projects', 'All clips');
+    $buildCard(-1, '', 'All Projects', '', 'Show Search Results from All Projects', 'Show All Clips');
 
     $rowYear = '';
     foreach($projects as $p) {
@@ -52,14 +48,10 @@ if (isset($_SESSION['logged_in'])){
         
         ?>
           <li>
-            <div class="col m12" id="project-card-id">
-              <div class="card blue-grey darken-1">
-                <div class="card-content white-text" style="padding: 8px 0px 0px 0px;">
-                  <span class="card-title" style="text-align: center; padding: 0px 8px 0px 8px;">
-                    <div hidden class="name">divider</div>
-                    <div class="year"><?php echo $rowYear ?></div>
-                  </span>
-                </div>
+            <div class="col s12">
+              <div class="yearcard card-panel">
+                <div hidden class="name">divider</div>
+                <div class="year"><?php echo $rowYear ?></div>
               </div>
             </div>
           </li>
@@ -72,6 +64,14 @@ if (isset($_SESSION['logged_in'])){
     ?>
         </ul> 
       </div>
+      <script type="text/javascript">
+        // Initialize the tooltips
+        $(document).ready(function(){
+          $('.tooltipped').tooltip({
+            enterDelay: 250     // Delay after user hovers before tooltip shows
+          });
+        });
+      </script>
     <?php
   }
 } else {

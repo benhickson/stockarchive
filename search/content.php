@@ -148,11 +148,11 @@
     height: 100%;
     width: 0;
     position: fixed;
-    z-index: 2;
+    z-index: -1;
     top: 0;
     left: 0;
     background-color: rgb(238, 238, 238);
-    background-color: rgba(238, 238, 238, 0.9);
+    background-color: rgba(238, 238, 238, 0.97);
     overflow-x: hidden;
     transition: 0.35s;
   }
@@ -162,10 +162,9 @@
     width: 100%;
     text-align: left;
     margin-top: 120px;
-    margin-left: 380px;
     margin-bottom: 250px;
-    padding-right: 500px;
     overflow: scroll;
+    padding: 0 70px !important;
   }
 
   .overlay a:hover, .overlay a:focus {
@@ -174,9 +173,10 @@
 
   .overlay .closebtn {
     position: absolute;
-    top: 20px;
-    right: 45px;
-    font-size: 60px;
+    top: 80px;
+    right: 23px;
+    cursor: pointer;
+    padding: 20px;
   }
 
   @media screen and (max-height: 450px) {
@@ -186,6 +186,29 @@
       top: 15px;
       right: 35px;
     }
+  }
+
+
+  /* For Project Cards */
+  .projectcard{
+    position: relative;
+    padding: 15px 115px 15px 15px;
+  }
+  .buttonbox{
+    position: absolute;
+    right: 9px;
+    top: 10px;
+  }
+  .buttonbox a{
+    box-shadow: none;
+    padding: 0 11px;
+  }
+  .yearcard{
+    background: transparent;
+    box-shadow: none;
+    font-size: 17pt;
+    margin-bottom: -13px;
+    padding-left: 0;
   }
 
 /*  .hoverFade{
@@ -406,6 +429,7 @@
 
   function openPopup() {
     document.getElementById("projectPopup").style.width = "100%";
+    document.getElementById("projectPopup").style.opacity = "1";
 
     if(document.getElementById("overlay-content-id").getAttribute('data-set') === 'false') {
       setProjectPopup();
@@ -414,6 +438,7 @@
 
   function closeProjectPopup() {
     document.getElementById("projectPopup").style.width = "0%";
+    document.getElementById("projectPopup").style.opacity = "0";
   }
 
   function setProjectPopup() {
@@ -681,7 +706,12 @@
     <!-- <p>Collections</p> -->
     <div id="bottomleftbar">
       <br />
-    </div>      
+    </div>
+    <div id="projectPopup" class="overlay">
+      <div class="col m4 l3 xl2" data-note="This is a spacer column."></div>
+      <i class="material-icons closebtn" onclick="closeProjectPopup()">close</i>
+      <div id="overlay-content-id" class="col m8 l9 xl10 overlay-content" data-set="false"></div>
+    </div> 
   </div>
 </div>
 <div id="mainContent" class="col m8 l9 xl10 size<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>">
@@ -694,11 +724,6 @@
     </form>
   </div>
   <div id="resultContainer" class="row hidden flex-parent">
-    <div id="projectPopup" class="overlay">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeProjectPopup()">&times;</a>
-      <div id="overlay-content-id" class="overlay-content" data-set="false">
-      </div>
-    </div>
     <?php
     foreach ($results as $clip) {
       ?>
