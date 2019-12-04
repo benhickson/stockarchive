@@ -116,8 +116,8 @@
     height: 100%;
     width: 100%;
   }
-  #search{
-    margin-top: 40px;
+  #leftbar .pagination{
+    margin-bottom: 30px;
   }
   #search:not(.focus) input {
     width: 0px !important;
@@ -666,20 +666,26 @@
       $paginationstring .= "\n";
       $i++;
     }
-    echo $paginationstring;
+    // echo a single "1" if there are zero page returned (if the $paginationstring is blank)
+    // there isn't "1" page, per se, but this prevents browser jank.
+    echo $paginationstring ? $paginationstring : '<li class="active"><a href="?'.$searchterms.'page=1">1</a></li>';
     ?>
     </ul>
-    <!-- <div class="input-field searchstuff"> -->
-      <!-- <div id="search" placeholder="Keywords" class="searchChips chips chips-placeholder"></div> -->
-      <!-- <label for="search">Keywords</label> -->
-    <!-- </div> -->
-    <div id="search" class="searchstuff chips chips-placeholder"></div>
+<!--     <div id="search" class="input-field searchstuff search">
+      <input id="searchInput" type="text" class="">
+      <label for="searchInput">Keywords</label>
+    </div> -->
+    <div id="search" class="searchChips searchstuff input-field">
+    	<input class="custom-class">
+  	</div>
+    <!-- <div id="search" class="searchstuff chips chips-placeholder"></div> -->
     <div class="input-field searchstuff">
       <input id="clipIdSearch" type="text" class="validate" pattern="\d+">
       <label for="clipIdSearch">Clip Number</label>
     </div>
     <!-- Country Search Field Disabled -->
-<!--     <div class="input-field searchstuff">
+    <!-- Should put this in a "more filters" hidden area -->
+    <div class="input-field searchstuff hide">
       <select id="country">
         <option value="0" selected>All Countries</option>
         <?php
@@ -691,7 +697,7 @@
         // }
         ?>
       </select>
-    </div> -->
+    </div>
     <div class="input-field searchstuff" onclick="openPopup();">
       <input id="project" type="text" class="" value="<?php
         if(isset($_GET['project']) && $_GET['project'].length > 0) {

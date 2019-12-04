@@ -133,12 +133,13 @@
           }
 
           $datastring = substr($datastring, 0, -1); // trim that last comma
-          $datastring = $datastring.'],';
+          $datastring = $datastring.']';
           echo $datastring;
         }
       ?>
-      placeholder: 'Keywords',
-      secondaryPlaceholder: "+ Add'l Keywords"
+      // ,
+      // placeholder: 'Keywords',
+      // secondaryPlaceholder: "+ Add'l Keywords"
       });
 
       $('.searchstuff').animate({'opacity':1},300);
