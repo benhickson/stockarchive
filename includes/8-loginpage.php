@@ -118,16 +118,16 @@ if (isset($_GET['iframe'])){
 	</div>
 </div>
 </div>
-<div id="notChromeLoginDiv" style="display: none;"><h3>This site is only built to run on Chrome.</h3></div>
+<!-- <div id="notChromeLoginDiv" style="display: none;"><h3>This site is only built to run on Chrome.</h3></div> -->
 <script type="text/javascript">
 	// hide for browsers other than chrome
-	function isNotChrome(){
-		$('#notChromeLoginDiv').show();
-		$('.loginrow').hide();
-		console.log('is not chrome.');
-	}
-	var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-	if (!isChrome) isNotChrome();
+	// function isNotChrome(){
+	// 	$('#notChromeLoginDiv').show();
+	// 	$('.loginrow').hide();
+	// 	console.log('is not chrome.');
+	// }
+	// var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+	// if (!isChrome) isNotChrome();
 
 	var iframe = false;
 	<?php if (isset($_GET['iframe'])) { echo 'iframe = true;'; } ?>
