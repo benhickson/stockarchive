@@ -146,10 +146,13 @@
     color: black;
   }  
   .searchstuff:not(#searchButton){
-    height: 52px;
+    height: 46px;
   }
   div#search{
     margin-bottom: 30px;
+  }
+  #chiptarget{
+    margin-bottom: 41px;      
   }
   /* end shitty alignment */
 
@@ -416,6 +419,9 @@
     }
   }
   function newSearch(projectId = null){
+    if (document.querySelector('#keywordEntry').value != ''){
+      addChip(document.querySelector('#keywordEntry').value);
+    }
     var windowLocationString = '';
     var clipIdSearchString = document.getElementById('clipIdSearch').value;
     if (clipIdSearchString == Number.parseInt(clipIdSearchString)) {
@@ -423,7 +429,7 @@
     } else {
       var searchString = '';  
 
-      $('#search .chip').each(function(){
+      $('#chiptarget .chip').each(function(){
         searchString += encodeURIComponent($(this).clone().children().remove().end().text()) + '|';
       });
 
@@ -698,9 +704,14 @@
     echo $paginationstring ? $paginationstring : '<li class="active"><a href="?'.$searchterms.'page=1">1</a></li>';
     ?>
     </ul>
-    <div id="search" class="searchChips searchstuff">
+    <div id="chiptarget"></div>
+    <div class="input-field searchstuff">
+      <input id="keywordEntry" type="text">
+      <label for="keywordEntry">Keywords</label>
+    </div>    
+<!--     <div id="search" class="searchChips searchstuff">
     	<input id="searchInput" type="text" class="validate">
-  	</div>
+  	</div> -->
     <div class="input-field searchstuff">
       <input id="clipIdSearch" type="text" class="validate" pattern="\d+">
       <label for="clipIdSearch">Clip Number</label>

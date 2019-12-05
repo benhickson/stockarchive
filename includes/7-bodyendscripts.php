@@ -74,6 +74,11 @@
 
   function removeTag(tagclipid, tag){
     tagUpdate(tagclipid, tag, 'remove'); 
+  }
+
+  // add text as chip
+  function addChip(chip){
+    $('#chiptarget').append('<div class="chip">'+chip+'<i class="close material-icons">close</i></div>');
   }  
 
   // startup stuff
@@ -111,14 +116,19 @@
       // videos play/pause on hover
       $(".hoverToPlay").hover( hoverStart, hoverEnd );
 
-      $('.searchChips').chips({<?php
+
+
+      <?php
+      // load up the chips from the last search request
+
         if (isset($chipsexist) && $chipsexist) {
-          $datastring = 'data: [';
+          $datastring = '[';
 
           $requestedkeywords = explode('|', realUrlGet()['s']);
 
           // TODO: do the str_replace before the explode
           foreach ($requestedkeywords as $keyword) {
+
             $keyword = urldecode($keyword);
 
             // replacing backslash with double backslash to double backslash to escape 
@@ -129,42 +139,51 @@
             // both php and javascript
             $keyword = str_replace('"', '\"', $keyword);
 
-            $datastring = $datastring.'{tag: "'.$keyword.'"},';
+            // echo it as a addChip() javascript command
+            echo 'addChip("'.$keyword.'");'."\n";
           }
-
-          $datastring = substr($datastring, 0, -1); // trim that last comma
-          $datastring = $datastring.'],';
-          echo $datastring;
         }
       ?>
-      // placeholder: 'Keywords',
-      // secondaryPlaceholder: "+ Add'l Keywords"
+
+      // enter key adds text as chip
+      $('#keywordEntry').keypress(function(event){
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if(keycode == '13'){
+          if (event.target.value == '') {
+            if ($('#chiptarget .chip').length > 0){
+              newSearch();  
+            }
+          } else {
+            addChip(event.target.value);
+            event.target.value = null;            
+          }
+        }
       });
 
-      // hack to add the label for Keywords search input.
-      $('#search').append('<label for="searchInput">Keywords</label>');
+      // // hack to add the label for Keywords search input.
+      // $('#search').append('<label for="searchInput">Keywords</label>');
 
-      // when the class changes on the label, change it back if there are chips present
-      function chipsPresentInSearch(){
-        if ($('#search .chip').length > 0){
-          return true;
-        } else {
-          return false;
-        }
-      }
-      function updateLabel(){
-        if (chipsPresentInSearch()){
-          $('#search label').addClass('active');
-        }
-      }
-      var targetNode = document.querySelector('#search label');
-      var observerOptions = {
-        childList: true,
-        attributes: true,
-        subtree: true //Omit or set to false to observe only changes to the parent node.
-      }
-      var observer = new MutationObserver(updateLabel);
-      observer.observe(targetNode, observerOptions);  
+      // // when the class changes on the label, change it back if there are chips present
+      // function chipsPresentInSearch(){
+      //   if ($('#search .chip').length > 0){
+      //     return true;
+      //   } else {
+      //     return false;
+      //   }
+      // }
+      // function updateLabel(){
+      //   if (chipsPresentInSearch()){
+      //     $('#search label').addClass('active');
+      //   }
+      // }
+      // var targetNode = document.querySelector('#search label');
+      // var observerOptions = {
+      //   childList: true,
+      //   attributes: true,
+      //   subtree: true //Omit or set to false to observe only changes to the parent node.
+      // }
+      // var observer = new MutationObserver(updateLabel);
+      // observer.observe(targetNode, observerOptions);  
       
 
 
