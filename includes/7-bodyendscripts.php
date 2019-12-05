@@ -144,6 +144,30 @@
       // hack to add the label for Keywords search input.
       $('#search').append('<label for="searchInput">Keywords</label>');
 
+      // when the class changes on the label, change it back if there are chips present
+      function chipsPresentInSearch(){
+        if ($('#search .chip').length > 0){
+          return true;
+        } else {
+          return false;
+        }
+      }
+      function updateLabel(){
+        if (chipsPresentInSearch()){
+          $('#search label').addClass('active');
+        }
+      }
+      var targetNode = document.querySelector('#search label');
+      var observerOptions = {
+        childList: true,
+        attributes: true,
+        subtree: true //Omit or set to false to observe only changes to the parent node.
+      }
+      var observer = new MutationObserver(updateLabel);
+      observer.observe(targetNode, observerOptions);  
+      
+
+
       $('.searchstuff').animate({'opacity':1},300);
 
       // update the country dropdown if it was set

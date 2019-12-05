@@ -672,7 +672,7 @@
     ?>
     </ul>
     <div id="search" class="searchChips searchstuff">
-    	<input id="searchInput" type="text">
+    	<input id="searchInput" type="text" class="validate">
   	</div>
     <!-- <div id="search" class="searchstuff chips chips-placeholder"></div> -->
     <div class="input-field searchstuff">
