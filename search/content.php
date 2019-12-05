@@ -116,8 +116,8 @@
     height: 100%;
     width: 100%;
   }
-  #search{
-    margin-top: 40px;
+  #leftbar .pagination{
+    margin-bottom: 30px;
   }
   #search:not(.focus) input {
     width: 0px !important;
@@ -126,6 +126,36 @@
     opacity: 0;
     width: calc(100% - 14px);
   }
+
+  /* Shitty alignment for searchstuff */
+  .searchstuff input {
+    height: 23px !important;
+    padding-top: 9px !important;
+  }
+  .searchstuff label {
+    line-height: 15px;
+  }
+  .searchstuff label.active {
+    padding-top: 5px;
+  }
+  #search.searchstuff label {
+    padding-top: 18px;
+  }
+  input#searchInput {
+    margin-top: 26px;
+    color: black;
+  }
+  .searchstuff:not(#searchButton){
+    height: 46px;
+  }
+  div#search{
+    margin-bottom: 30px;
+  }
+  #chiptarget{
+    margin-bottom: 41px;
+  }
+  /* end shitty alignment */
+
   #clipExpandFullQualityReveal, #clipUnpublish, #clipUnpublishCancel {
     padding: 19px;
     white-space: nowrap;
@@ -211,12 +241,6 @@
     padding-left: 0;
   }
 
-/*  .hoverFade{
-    transition: opacity 300ms ease !important;
-  }
-  .searchResult:not(:hover) .hoverFade{
-    opacity: 0.4;
-  }*/
 </style>
 <script type="text/javascript">
   var lastClipExpandMove = false;
@@ -485,6 +509,9 @@
     }
   }
   function newSearch(projectId = null){
+    if (document.querySelector('#keywordEntry').value != ''){
+      addChip(document.querySelector('#keywordEntry').value);
+    }
     var windowLocationString = '';
     var clipIdSearchString = document.getElementById('clipIdSearch').value;
     if (clipIdSearchString == Number.parseInt(clipIdSearchString)) {
@@ -492,7 +519,7 @@
     } else {
       var searchString = '';  
 
-      $('#search .chip').each(function(){
+      $('#chiptarget .chip').each(function(){
         searchString += encodeURIComponent($(this).clone().children().remove().end().text()) + '|';
       });
 
@@ -500,10 +527,10 @@
       searchString = searchString.slice(0, -1);
       windowLocationString = '?s='+searchString;
       
-      var countryvalue = document.getElementById("country").value;
-      if (countryvalue > 0){
-        windowLocationString = windowLocationString+'&country='+countryvalue;
-      }
+      // var countryvalue = document.getElementById("country").value;
+      // if (countryvalue > 0){
+        // windowLocationString = windowLocationString+'&country='+countryvalue;
+      // }
       
       var projectvalue = projectId || <?php echo isset($_GET['project']) && $_GET['project'].length > 0 ? $_GET['project'] : -1; ?>;
       if (projectvalue > 0) {
@@ -762,30 +789,35 @@
       $paginationstring .= "\n";
       $i++;
     }
-    echo $paginationstring;
+    // echo a single "1" if there are zero page returned (if the $paginationstring is blank)
+    // there isn't "1" page, per se, but this prevents browser jank.
+    echo $paginationstring ? $paginationstring : '<li class="active"><a href="?'.$searchterms.'page=1">1</a></li>';
     ?>
     </ul>
+    <div id="chiptarget"></div>
     <div class="input-field searchstuff">
-      <div id="search" placeholder="Keywords" class="searchChips chips chips-placeholder"></div>
-      <!-- <label for="search">Keywords</label> -->
+      <input id="keywordEntry" type="text">
+      <label for="keywordEntry">Keywords</label>
     </div>
     <div class="input-field searchstuff">
       <input id="clipIdSearch" type="text" class="validate" pattern="\d+">
       <label for="clipIdSearch">Clip Number</label>
     </div>
-    <div class="input-field searchstuff">
-      <select id="country">
-        <option value="0" selected>All Countries</option>
+    <!-- Country Search Field Disabled -->
+    <!-- Should put this in a "more filters" hidden area -->
+    <!-- <div class="input-field searchstuff"> -->
+      <!-- <select id="country"> -->
+        <!-- <option value="0" selected>All Countries</option> -->
         <?php
-        $cols = array("id, countryname");
-        $db->orderBy("countryname","asc");
-        $countries = $db->get("opt_countries", null, $cols);
-        foreach ($countries as $country) {
-          echo '<option value="'.$country['id'].'">'.$country['countryname'].'</option>'."\n";
-        }
+        // $cols = array("id, countryname");
+        // $db->orderBy("countryname","asc");
+        // $countries = $db->get("opt_countries", null, $cols);
+        // foreach ($countries as $country) {
+        //   echo '<option value="'.$country['id'].'">'.$country['countryname'].'</option>'."\n";
+        // }
         ?>
-      </select>
-    </div>
+      <!-- </select> -->
+    <!-- </div> -->
     <div class="input-field searchstuff" onclick="openPopup();">
       <input id="project" type="text" class="" value="<?php
         if(isset($_GET['project']) && $_GET['project'].length > 0) {
@@ -794,7 +826,7 @@
           echo $db->get("projects", null, $cols)[0]['name'];
         }
       ?>">
-      <label for="clipIdSearch">Project</label>
+      <label for="project">Project</label>
     </div>
     <button id="searchButton" type="submit" class="btn searchstuff" onclick="newSearch();">Search</button>
     <!-- <p>Included Tags</p> -->
