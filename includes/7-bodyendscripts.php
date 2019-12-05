@@ -5,8 +5,8 @@
 
   // hide for browsers other than chrome
   function isNotChrome(){
-      $('#notChrome').show();
-      $('header, main, footer').hide();
+      // $('#notChrome').show();
+      // $('header, main, footer').hide();
       console.log('is not chrome.');
     }
   var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
@@ -74,6 +74,11 @@
 
   function removeTag(tagclipid, tag){
     tagUpdate(tagclipid, tag, 'remove'); 
+  }
+
+  // add text as chip
+  function addChip(chip){
+    $('#chiptarget').append('<div class="chip">'+chip+'<i class="close material-icons">close</i></div>');
   }  
 
   // startup stuff
@@ -111,14 +116,19 @@
       // videos play/pause on hover
       $(".hoverToPlay").hover( hoverStart, hoverEnd );
 
-      $('.searchChips').chips({<?php
+
+
+      <?php
+      // load up the chips from the last search request
+
         if (isset($chipsexist) && $chipsexist) {
-          $datastring = 'data: [';
+          $datastring = '[';
 
           $requestedkeywords = explode('|', realUrlGet()['s']);
 
           // TODO: do the str_replace before the explode
           foreach ($requestedkeywords as $keyword) {
+
             $keyword = urldecode($keyword);
 
             // replacing backslash with double backslash to double backslash to escape 
@@ -129,25 +139,36 @@
             // both php and javascript
             $keyword = str_replace('"', '\"', $keyword);
 
-            $datastring = $datastring.'{tag: "'.$keyword.'"},';
+            // echo it as a addChip() javascript command
+            echo 'addChip("'.$keyword.'");'."\n";
           }
-
-          $datastring = substr($datastring, 0, -1); // trim that last comma
-          $datastring = $datastring.'],';
-          echo $datastring;
         }
       ?>
-      placeholder: 'Keywords',
-      secondaryPlaceholder: "+ Add'l Keywords"
+
+      // enter key adds text as chip
+      $('#keywordEntry').keypress(function(event){
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if(keycode == '13'){
+          if (event.target.value == '') {
+            if ($('#chiptarget .chip').length > 0){
+              newSearch();  
+            }
+          } else {
+            addChip(event.target.value);
+            event.target.value = null;            
+          }
+        }
       });
 
+      // fade in the search boxes
       $('.searchstuff').animate({'opacity':1},300);
 
       // update the country dropdown if it was set
+      // disabled because country is disabled
       <?php
-        if (isset($_GET['country'])){
-          echo 'document.getElementById("country").value = '.$_GET['country'].";\n";
-        }
+        // if (isset($_GET['country'])){
+        //   echo 'document.getElementById("country").value = '.$_GET['country'].";\n";
+        // }
       ?>
 
       // initialize the dropdown boxes.
@@ -157,19 +178,6 @@
 
     // highlight the current page in the toolbar
     $('li#'+currentPage+"Link").addClass("active");
-
-    // binding materialize's event listeners to the chips (tags)
-    // $('.chips:not(.searchChips)').on('chip.add', function(e, chip){ addTag(e.target.dataset.clipid, chip.tag); });
-    // $('.chips:not(.searchChips)').on('chip.delete', function(e, chip){ removeTag(e.target.dataset.clipid, chip.tag); });
-
-    // $('.chips').on('chip.select', function(e, chip){
-    //   // you have the selected chip here
-    //   // console.log('e: ',e);
-    //   // console.log('chip: ',chip);
-
-    //   // nothing, this is for if a chip is selected. don't use for now.
-    // });
-
 
   });
 </script>
