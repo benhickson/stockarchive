@@ -431,10 +431,10 @@
       searchString = searchString.slice(0, -1);
       windowLocationString = '?s='+searchString;
       
-      var countryvalue = document.getElementById("country").value;
-      if (countryvalue > 0){
-        windowLocationString = windowLocationString+'&country='+countryvalue;
-      }
+      // var countryvalue = document.getElementById("country").value;
+      // if (countryvalue > 0){
+        // windowLocationString = windowLocationString+'&country='+countryvalue;
+      // }
       
       var projectvalue = projectId || <?php echo isset($_GET['project']) && $_GET['project'].length > 0 ? $_GET['project'] : -1; ?>;
       if (projectvalue > 0) {
@@ -711,7 +711,7 @@
     <!-- Should put this in a "more filters" hidden area -->
     <!-- <div class="input-field searchstuff"> -->
       <!-- <select id="country"> -->
-        <!-- <option value="0" selected>All Countriesf</option> -->
+        <!-- <option value="0" selected>All Countries</option> -->
         <?php
         // $cols = array("id, countryname");
         // $db->orderBy("countryname","asc");

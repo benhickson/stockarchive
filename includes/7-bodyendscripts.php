@@ -164,10 +164,11 @@
       $('.searchstuff').animate({'opacity':1},300);
 
       // update the country dropdown if it was set
+      // disabled because country is disabled
       <?php
-        if (isset($_GET['country'])){
-          echo 'document.getElementById("country").value = '.$_GET['country'].";\n";
-        }
+        // if (isset($_GET['country'])){
+        //   echo 'document.getElementById("country").value = '.$_GET['country'].";\n";
+        // }
       ?>
 
       // initialize the dropdown boxes.
