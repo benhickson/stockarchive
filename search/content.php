@@ -241,12 +241,6 @@
     padding-left: 0;
   }
 
-/*  .hoverFade{
-    transition: opacity 300ms ease !important;
-  }
-  .searchResult:not(:hover) .hoverFade{
-    opacity: 0.4;
-  }*/
 </style>
 <script type="text/javascript">
   var lastClipExpandMove = false;
@@ -709,9 +703,6 @@
       <input id="keywordEntry" type="text">
       <label for="keywordEntry">Keywords</label>
     </div>    
-<!--     <div id="search" class="searchChips searchstuff">
-    	<input id="searchInput" type="text" class="validate">
-  	</div> -->
     <div class="input-field searchstuff">
       <input id="clipIdSearch" type="text" class="validate" pattern="\d+">
       <label for="clipIdSearch">Clip Number</label>
