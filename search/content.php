@@ -126,6 +126,33 @@
     opacity: 0;
     width: calc(100% - 14px);
   }
+
+  /* Shitty alignment for searchstuff */
+  .searchstuff input {
+    height: 23px !important;
+    padding-top: 9px !important;
+  }
+  .searchstuff label {
+    line-height: 15px;
+  }    
+  .searchstuff label.active {
+    padding-top: 5px;
+  }  
+  #search.searchstuff label {
+    padding-top: 18px;
+  }
+  input#searchInput {
+    margin-top: 26px;
+    color: black;
+  }  
+  .searchstuff:not(#searchButton){
+    height: 52px;
+  }
+  div#search{
+    margin-bottom: 30px;
+  }
+  /* end shitty alignment */
+
   #clipExpandFullQualityReveal{
     padding: 19px;
     white-space: nowrap;
@@ -674,7 +701,6 @@
     <div id="search" class="searchChips searchstuff">
     	<input id="searchInput" type="text" class="validate">
   	</div>
-    <!-- <div id="search" class="searchstuff chips chips-placeholder"></div> -->
     <div class="input-field searchstuff">
       <input id="clipIdSearch" type="text" class="validate" pattern="\d+">
       <label for="clipIdSearch">Clip Number</label>
