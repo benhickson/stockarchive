@@ -39,7 +39,7 @@ if ($_SESSION['logged_in']){
 		// verify that this is my clip
 		if (isOwner()) {
 			if (ableToPublish($clipid)){
-				$db->rawQuery('UPDATE clips SET published=1 WHERE id=?',array($clipid));
+				$db->rawQuery('UPDATE clips SET published=1, editor=NULL WHERE id=?', array($clipid));
 				$published = true;
 				$message = 'clip '.$clipid.' published!';
 				echo json_encode(array($published,$message));

@@ -333,11 +333,13 @@
         $(this).off('loadedmetadata');
       });
 
-      $('#clipUnpublish').text('Unpublish/Edit Clip')
-      //if the last clp was unpublished, it'll have an href that needs to be removed
-      $('#clipUnpublish').removeAttr("href");
-      $('#clipUnpublish').attr('onClick','unpublish('+clipid+');');
-      $('#clipUnpublishCancel').text('');
+      <?php
+      $able_unpublish = $db->rawQuery('SELECT able_unpublish FROM users WHERE id=?', array($_SESSION['userid']));
+
+      if($able_unpublish === 1) {
+        echo 'showUnpublishButton(clipid);';
+      }
+      ?>
 
     } else {
       console.log('responseObject is invalid');
@@ -374,6 +376,14 @@
         });
       }
     }
+  }
+
+  function showUnpublishButton(clipid) {
+    $('#clipUnpublish').text('Unpublish/Edit Clip')
+    //if the last clp was unpublished, it'll have an href that needs to be removed
+    $('#clipUnpublish').removeAttr("href");
+    $('#clipUnpublish').attr('onClick','unpublish('+clipid+');');
+    $('#clipUnpublishCancel').text('');
   }
 
   function getPublishStatus(clipid, callback) {

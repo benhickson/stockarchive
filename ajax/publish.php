@@ -7,6 +7,8 @@ if ($_SESSION['logged_in']){
   // add the userid from session
   $userid = $_SESSION['userid'];
 
+  $able_unpublish = $db->rawQuery('SELECT able_unpublish FROM users WHERE id=?', array($userid)) === 1;
+
   // check if all necessary fields set
   if (isset($_POST['clipid']) && $_POST['clipid'].length > 0) {
 
@@ -26,7 +28,7 @@ if ($_SESSION['logged_in']){
         echo json_encode(array('success' => true, 'published' => 'status get failed: '.json_encode($status)));
       }
     }
-    else if(isset($_POST['unpublish'])) {
+    else if(isset($_POST['unpublish']) && $able_unpublish) {
       $db->where('id', $_POST['clipid']);
 
       $hist = $db->get('clips', null, 'clips.edithistory');
@@ -52,7 +54,7 @@ if ($_SESSION['logged_in']){
         echo 'update failed: '.$db->getLastError();  
       }
     } else {
-      exit(json_encode(array('success' => false, 'message' => 'Only unpublishing is implemented.')));
+      exit(json_encode(array('success' => false, 'message' => 'Improper credentials or post parameters.')));
     }
   } else {
     // postfields not set correctly
