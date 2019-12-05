@@ -671,12 +671,8 @@
     echo $paginationstring ? $paginationstring : '<li class="active"><a href="?'.$searchterms.'page=1">1</a></li>';
     ?>
     </ul>
-<!--     <div id="search" class="input-field searchstuff search">
-      <input id="searchInput" type="text" class="">
-      <label for="searchInput">Keywords</label>
-    </div> -->
-    <div id="search" class="searchChips searchstuff input-field">
-    	<input class="custom-class">
+    <div id="search" class="searchChips searchstuff">
+    	<input id="searchInput" type="text">
   	</div>
     <!-- <div id="search" class="searchstuff chips chips-placeholder"></div> -->
     <div class="input-field searchstuff">
@@ -706,7 +702,7 @@
           echo $db->get("projects", null, $cols)[0]['name'];
         }
       ?>">
-      <label for="clipIdSearch">Project</label>
+      <label for="project">Project</label>
     </div>
     <button id="searchButton" type="submit" class="btn searchstuff" onclick="newSearch();">Search</button>
     <!-- <p>Included Tags</p> -->

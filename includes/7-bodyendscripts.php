@@ -133,14 +133,16 @@
           }
 
           $datastring = substr($datastring, 0, -1); // trim that last comma
-          $datastring = $datastring.']';
+          $datastring = $datastring.'],';
           echo $datastring;
         }
       ?>
-      // ,
       // placeholder: 'Keywords',
       // secondaryPlaceholder: "+ Add'l Keywords"
       });
+
+      // hack to add the label for Keywords search input.
+      $('#search').append('<label for="searchInput">Keywords</label>');
 
       $('.searchstuff').animate({'opacity':1},300);
 
