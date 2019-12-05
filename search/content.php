@@ -395,7 +395,7 @@
     $.ajax('../ajax/publish.php', {
       type: 'POST',
       data: {clipid: clipid, unpublish: ''},
-      success: function(res){
+      success: function(res) {
         res = JSON.parse(res);
 
         var msg = res['message'];

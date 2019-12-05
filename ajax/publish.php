@@ -27,20 +27,21 @@ if ($_SESSION['logged_in']){
       }
     }
     else if(isset($_POST['unpublish'])) {
-
       $db->where('id', $_POST['clipid']);
 
-      // $hist = $db->get('clips', null, 'clips.edithistory');
-      // $hist = json_decode($hist);
+      $hist = $db->get('clips', null, 'clips.edithistory');
+      $hist = json_decode($hist[0]['edithistory'], true);
 
-      /* if(count($array) > 10) {
-        $_ = array_shift($array);
-      } */
+      if(count($hist) >= 25) {
+        $_ = array_shift($hist);
+      }
+
+      $hist[] = array($userid, time());
 
       $data = array(
         'published' => 0,
-        'editor' => $userid // ,
-        // 'edithistory' => $userid.''.$db->now()
+        'editor' => $userid,
+        'edithistory' => json_encode($hist)
       );
 
       $db->where('id', $_POST['clipid']);
