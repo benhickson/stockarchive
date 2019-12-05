@@ -38,7 +38,7 @@ if (isset($_SESSION['logged_in'])){
         <ul class="row list">
     <?php
 
-    $buildCard(-1, '', 'All Projects', '', 'Search through all projects', 'All clips');
+    $buildCard(-1, '', 'All Projects', '', 'Show Search Results from All Projects', 'Show All Clips');
 
     $rowYear = '';
     foreach($projects as $p) {
