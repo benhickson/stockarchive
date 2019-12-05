@@ -709,9 +709,9 @@
     </div>
     <!-- Country Search Field Disabled -->
     <!-- Should put this in a "more filters" hidden area -->
-    <div class="input-field searchstuff hide">
-      <select id="country">
-        <option value="0" selected>All Countries</option>
+    <!-- <div class="input-field searchstuff"> -->
+      <!-- <select id="country"> -->
+        <!-- <option value="0" selected>All Countriesf</option> -->
         <?php
         // $cols = array("id, countryname");
         // $db->orderBy("countryname","asc");
@@ -720,8 +720,8 @@
         //   echo '<option value="'.$country['id'].'">'.$country['countryname'].'</option>'."\n";
         // }
         ?>
-      </select>
-    </div>
+      <!-- </select> -->
+    <!-- </div> -->
     <div class="input-field searchstuff" onclick="openPopup();">
       <input id="project" type="text" class="" value="<?php
         if(isset($_GET['project']) && $_GET['project'].length > 0) {
