@@ -133,7 +133,7 @@
     padding-top: 9px !important;
   }
   .searchstuff label {
-    line-height: 15px;
+    line-height: 13px;
   }    
   .searchstuff label.active {
     padding-top: 5px;
@@ -321,6 +321,11 @@
       $('#clipExpandCamera').text(responseData.camera);
       $('#clipExpandResolution').text(responseData.resolution);
       $('#clipExpandOriginalFilename').text(responseData.originalfilename.substring(0, responseData.originalfilename.length-4));
+      if (responseData.restrictedtoclient) {
+        $('#clipExpandRestrictions').removeClass('hide').text(responseData.restrictedtoclient + ' Only');
+      } else {
+        $('#clipExpandRestrictions').addClass('hide').text('');
+      }
       
       // hide the section of full quality stuff
       $('#clipExpandFullQuality').hide();
@@ -370,7 +375,7 @@
   function getClipData(clipid){
     var data = new Object();
     data.clipid = clipid;
-    data.fields = '["description","project","tags","date","resolution","camera","location","originalfilename","rawfootageurl"]';
+    data.fields = '["description","project","tags","date","resolution","camera","location","originalfilename","rawfootageurl","restrictedtoclient"]';
     $.ajax('../ajax/clipdata.php',{
       type: 'POST',
       data: data,
@@ -412,6 +417,13 @@
 
     }
   }
+  function clientSwitchToggled(checkbox){
+    if (checkbox.checked) {
+      $('.client').not(checkbox).prop('checked',false);
+    }
+    // small delay so the switch can finish moving
+    setTimeout(newSearch, 250);
+  }
   function newSearch(projectId = null){
     if (document.querySelector('#keywordEntry').value != ''){
       addChip(document.querySelector('#keywordEntry').value);
@@ -431,6 +443,7 @@
       searchString = searchString.slice(0, -1);
       windowLocationString = '?s='+searchString;
       
+      // NOTE country filter disabled
       // var countryvalue = document.getElementById("country").value;
       // if (countryvalue > 0){
         // windowLocationString = windowLocationString+'&country='+countryvalue;
@@ -439,7 +452,12 @@
       var projectvalue = projectId || <?php echo isset($_GET['project']) && $_GET['project'].length > 0 ? $_GET['project'] : -1; ?>;
       if (projectvalue > 0) {
         windowLocationString = windowLocationString+'&project='+projectvalue;
-      } 
+      }
+
+      if ($('.client:checked').length == 1) {
+        windowLocationString = windowLocationString+'&client='+$('.client:checked').data('clientid');;
+      }
+
     }
 
     window.location = windowLocationString;
@@ -575,15 +593,21 @@
 
   if (isset($_GET['clip']) && $_GET['clip'].length > 0) {
     $table = 'clips c'; // table to search
-    $db->where('c.id = '.$_GET['clip']);
+    $db->where('c.id', $_GET['clip']);
     $cols[] = 'NULL AS score';
   } else {
     if (isset($_GET['country']) && $_GET['country'].length > 0) {
-      $db->where('c.country = '.$_GET['country']);
+      $db->where('c.country', $_GET['country']);
     }
 
     if (isset($_GET['project']) && $_GET['project'].length > 0) {
-      $db->where('c.project = '.$_GET['project']);
+      $db->where('c.project', $_GET['project']);
+    }
+
+    if (isset($_GET['client']) && $_GET['client'].length > 0) {
+      $db->where('(c.restrictedtoclient IS NULL OR c.restrictedtoclient = ?)', array($_GET['client']));
+    } else {
+      $db->where('c.restrictedtoclient IS NULL');
     }
 
     if (isset($_GET['page']) && $_GET['page'].length > 0) {
@@ -754,6 +778,20 @@
         <input type="range" id="thumbnailSizeSlider" min="2" max="6" style="direction:rtl;" value="<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>" />
       </p>
     </form>
+    <?php 
+    foreach ($db->get('clients') as $client) { ?>
+    <div class="switch right">
+      <label>
+      Include <?php echo $client['name']; ?>-only Results
+      <!-- Off -->
+      <input <?php if (isset($_GET['client']) && $_GET['client'] == $client['id']) { echo 'checked'; } ?> 
+        type="checkbox" class="client" data-clientid="<?php echo $client['id']; ?>"
+        onclick="clientSwitchToggled(this);">
+      <span class="lever"></span>
+      <!-- On -->
+      </label>
+    </div>
+    <?php } ?>    
   </div>
   <div id="resultContainer" class="row hidden flex-parent">
     <?php
@@ -798,6 +836,7 @@
           </div>
           <div class="panes" id="rightpane">
             <h5 id="clipExpandDescription">Description</h5>
+            <span id="clipExpandRestrictions" class="new badge red darken-4" data-badge-caption="" style="text-transform: uppercase;"></span>
             <p>Clip # <span id="clipExpandId">Clip Id</span> <?php 
               if($_SESSION['userid'] == 1){
                   echo '<a id="clipExpandRetranscode" href="../upload/transcode.php?retranscode=clipid" target="_blank">RT</a>';

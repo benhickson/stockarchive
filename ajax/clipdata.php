@@ -71,6 +71,10 @@ if (isset($_SESSION['logged_in'])){
 						$cols[] = 'prj.rawfootageurl';
 						$db->join('projects prj','c.project=prj.id','LEFT');
 						break;
+					case 'restrictedtoclient':
+						$cols[] = 'clt.name AS restrictedtoclient';
+						$db->join('clients clt','c.restrictedtoclient=clt.id','LEFT');
+						break;
 					default:
 						$success = false;
 						$message = 'Invalid fields requested.';
