@@ -72,7 +72,8 @@ if ($_SESSION['logged_in']){
 				case 'rawresolution':
 				case 'country':
 				case 'project':
-				case 'camera':	
+				case 'restrictedtoclient':	
+				case 'camera':
 					$specsfield = true;				
 					$column = $field;
 					$datatype = 'integer';
@@ -139,7 +140,9 @@ if ($_SESSION['logged_in']){
 								exit(json_encode(array('invalid date',$thisquickoutput,false)));
 							}
 						}
-					}
+					} else if ($value === '') {
+						$value = null;
+					} 
 				} else {
 					exit('value needs to be an integer. invalid.');
 				}
