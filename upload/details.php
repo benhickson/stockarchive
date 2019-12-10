@@ -72,7 +72,8 @@ if ($_SESSION['logged_in']){
 				case 'rawresolution':
 				case 'country':
 				case 'project':
-				case 'camera':	
+				case 'camera':
+				case 'restrictedtoclient':
 					$specsfield = true;				
 					$column = $field;
 					$datatype = 'integer';

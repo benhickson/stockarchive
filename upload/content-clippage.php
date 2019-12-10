@@ -27,6 +27,16 @@ if (isset($_POST['projectname']) && isset($_POST['rawlocation'])) {
   $db->rawQuery('UPDATE clips SET project=? WHERE id=?',array($id, $clipid));
 }
 
+if (isset($_POST['client'])) {
+  // add new client option
+  $data = array(
+    'name' => $_POST['client']
+  );
+  $id = $db->insert('clients', $data);
+  // update the current row to that option
+  $db->rawQuery('UPDATE clips SET restrictedtoclient=? WHERE id=?', array($id, $clipid));
+}
+
 if (isset($_POST['model'])) {
   // add new camera option
   $data = array(
@@ -49,7 +59,7 @@ if (isset($_POST['countryname'])) {
   $db->rawQuery('UPDATE clips SET country=? WHERE id=?',array($id, $clipid));
 }
 
-$clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camera, c.uploadfilename, c.transcodesready, c.year, c.month, c.day, c.country, c.region, c.city, p.rawlocation FROM clips c LEFT JOIN projects p ON c.project=p.id WHERE c.id=?', array($clipid))[0];
+$clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camera, c.uploadfilename, c.transcodesready, c.year, c.month, c.day, c.country, c.region, c.city, p.rawlocation, c.restrictedtoclient FROM clips c LEFT JOIN projects p ON c.project=p.id WHERE c.id=?', array($clipid))[0];
 
 ?>
 
@@ -197,7 +207,7 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
     }
   }  
 
-  function sendData(obj){
+  function sendData(obj) {
     var data = new Object();
     data.clipid = clipid;
     data.name = obj.name;
@@ -205,7 +215,7 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
     $.ajax('details.php',{
       type: 'POST',
       data: data,
-      success: function(response){
+      success: function(response) {
         console.log(response);
         var parse = JSON.parse(response);
         lastSpecs = parse[1];
@@ -487,6 +497,45 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
     </div>    
   </div> 
   <div class="input-field col s6 l3">
+    <select id="restrictedtoclient" name="restrictedtoclient" onchange="sendData(this)" class="trigger">
+      <?php 
+      echo '<option value="" disabled';
+      if ($clip['restrictedtoclient'] == '') {
+        echo ' selected';
+      }
+      echo '>Please Select</option>';
+      echo '<option value="0">None</option>';
+
+      $restrictions = $db->rawQuery('SELECT id, name FROM clients');
+         
+      foreach ($restrictions as $res) {
+        echo '<option value="'.$res['id'].'"';
+        if ($res['id'] == $clip['restrictedtoclient']) {
+          echo ' selected';
+        }
+        echo '>'.$res['name'].'</option>';
+        echo "\n";
+      }
+      ?>
+    </select>
+    <label>Client Restriction | <a class="modal-trigger" href="#newRestriction" tabindex="-1">Add New</a></label>
+    <div id="newRestriction" class="modal">
+      <form autocomplete="off" method="post" action="?clip=<?php echo $clipid; ?>">
+      <div class="modal-content row">
+        <h4>Add a new restriction</h4>
+        <div class="input-field col s6">
+          <input id="client" name="client" type="text" class="validate" required>
+          <label for="client">Restircted to:</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a class="modal-action modal-close waves-effect waves-teal btn-flat ">Cancel</a>
+        <input type="submit" class="modal-action btn-flat" value="Add Restriction">
+      </div>
+      </form>
+    </div>
+  </div>
+  <div class="input-field col s6 l3">
     <select id="camera" name="camera" onchange="sendData(this)" class="trigger">
       <?php 
       echo '<option value="" disabled';
@@ -505,7 +554,7 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
       }
       ?>
     </select>
-    <label>Camera | <a class="modal-trigger" href="#newCamera" tabindex="-1">Add New</a></label>
+  <label>Camera | <a class="modal-trigger" href="#newCamera" tabindex="-1">Add New</a></label>
     <div id="newCamera" class="modal">
       <form autocomplete="off" method="post" action="?clip=<?php echo $clipid; ?>">
       <div class="modal-content row">
@@ -522,7 +571,6 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
       </form>
     </div>
   </div>
-
   <div class="input-field col s2 l1">
     <input autocomplete="off" value="<?php echo $clip['year']; ?>" id="year" name="year" type="number" class="trigger datecheck" onchange="sendData(this)" data-length="4" step="1" min="1800" max="2030">
     <label for="year">Year</label>
