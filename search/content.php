@@ -575,15 +575,21 @@
 
   if (isset($_GET['clip']) && $_GET['clip'].length > 0) {
     $table = 'clips c'; // table to search
-    $db->where('c.id = '.$_GET['clip']);
+    $db->where('c.id', $_GET['clip']);
     $cols[] = 'NULL AS score';
   } else {
     if (isset($_GET['country']) && $_GET['country'].length > 0) {
-      $db->where('c.country = '.$_GET['country']);
+      $db->where('c.country', $_GET['country']);
     }
 
     if (isset($_GET['project']) && $_GET['project'].length > 0) {
-      $db->where('c.project = '.$_GET['project']);
+      $db->where('c.project', $_GET['project']);
+    }
+
+    if (isset($_GET['client']) && $_GET['client'].length > 0) {
+      $db->where('(c.restrictedtoclient = 0 OR c.restrictedtoclient IS NULL OR c.restrictedtoclient = ?)', array($_GET['client']));
+    } else {
+      $db->where('(c.restrictedtoclient = 0 OR c.restrictedtoclient IS NULL)');
     }
 
     if (isset($_GET['page']) && $_GET['page'].length > 0) {
