@@ -59,8 +59,14 @@ if (isset($_POST['countryname'])) {
   $db->rawQuery('UPDATE clips SET country=? WHERE id=?',array($id, $clipid));
 }
 
-$clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camera, c.uploadfilename, c.transcodesready, c.year, c.month, c.day, c.country, c.region, c.city, p.rawlocation, c.restrictedtoclient FROM clips c LEFT JOIN projects p ON c.project=p.id WHERE c.id=?', array($clipid))[0];
-
+$clip = $db->rawQuery(
+  'SELECT c.description, c.project, c.rawresolution, c.camera, c.uploadfilename, c.transcodesready, 
+  c.year, c.month, c.day, c.country, c.region, c.city, p.rawlocation, c.restrictedtoclient 
+  FROM clips c 
+  LEFT JOIN projects p 
+  ON c.project=p.id 
+  WHERE c.id=?'
+  , array($clipid))[0];
 ?>
 
 <style type="text/css">
@@ -517,11 +523,18 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
       }
       ?>
     </select>
-    <label>Client Restrictions | <a class="modal-trigger" href="#newRestriction" tabindex="-1">Add New</a></label>
+    <label>
+      Client Restrictions | <a class="modal-trigger" href="#newRestriction" tabindex="-1">Add New</a>
+    </label>
     <div id="newRestriction" class="modal">
       <form autocomplete="off" method="post" action="?clip=<?php echo $clipid; ?>">
       <div class="modal-content row">
-        <h4>Add a new restriction</h4>
+        <h4>Add a new client restriction</h4>
+        <p>
+          This is for frequent clients like Google, where clips that are obviously from a project 
+          with said client may still be archived for use in future projects with them. 
+          Please only add recurring clients to this list.
+        <p>
         <div class="input-field col s6">
           <input id="client" name="client" type="text" class="validate" required>
           <label for="client">Restircted to:</label>
