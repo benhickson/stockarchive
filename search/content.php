@@ -835,8 +835,8 @@
             <video id="clipExpandVideo" src="//creative.lonelyleap.com/archive/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
           </div>
           <div class="panes" id="rightpane">
-            <span id="clipExpandRestrictions" class="new badge" data-badge-caption=""></span>
             <h5 id="clipExpandDescription">Description</h5>
+            <span id="clipExpandRestrictions" class="new badge red darken-4" data-badge-caption="" style="text-transform: uppercase;"></span>
             <p>Clip # <span id="clipExpandId">Clip Id</span> <?php 
               if($_SESSION['userid'] == 1){
                   echo '<a id="clipExpandRetranscode" href="../upload/transcode.php?retranscode=clipid" target="_blank">RT</a>';
