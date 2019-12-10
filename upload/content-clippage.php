@@ -499,14 +499,8 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
   <div class="input-field col s6 l3">
     <select id="restrictedtoclient" name="restrictedtoclient" onchange="sendData(this)" class="trigger">
       <?php
-      echo '<option value="" disabled';
+      echo '<option value=""';
       if ($clip['restrictedtoclient'] === null) {
-        echo ' selected';
-      }
-      echo '>Please Select</option>';
-
-      echo '<option value="0"';
-      if ($clip['restrictedtoclient'] === 0) {
         echo ' selected';
       }
       echo '>None</option>';

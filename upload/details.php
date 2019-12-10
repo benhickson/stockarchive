@@ -140,7 +140,9 @@ if ($_SESSION['logged_in']){
 								exit(json_encode(array('invalid date',$thisquickoutput,false)));
 							}
 						}
-					}
+					} else if ($value === '') {
+						$value = null;
+					} 
 				} else {
 					exit('value needs to be an integer. invalid.');
 				}
