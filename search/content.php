@@ -321,6 +321,11 @@
       $('#clipExpandCamera').text(responseData.camera);
       $('#clipExpandResolution').text(responseData.resolution);
       $('#clipExpandOriginalFilename').text(responseData.originalfilename.substring(0, responseData.originalfilename.length-4));
+      if (responseData.restrictedtoclient) {
+        $('#clipExpandRestrictions').removeClass('hide').text(responseData.restrictedtoclient + ' Only');
+      } else {
+        $('#clipExpandRestrictions').addClass('hide').text('');
+      }
       
       // hide the section of full quality stuff
       $('#clipExpandFullQuality').hide();
@@ -370,7 +375,7 @@
   function getClipData(clipid){
     var data = new Object();
     data.clipid = clipid;
-    data.fields = '["description","project","tags","date","resolution","camera","location","originalfilename","rawfootageurl"]';
+    data.fields = '["description","project","tags","date","resolution","camera","location","originalfilename","rawfootageurl","restrictedtoclient"]';
     $.ajax('../ajax/clipdata.php',{
       type: 'POST',
       data: data,
@@ -412,6 +417,13 @@
 
     }
   }
+  function clientSwitchToggled(clientid){
+    if (document.getElementById('client'+clientid).checked) {
+      $('.client:not(#client'+clientid).prop('checked',false);
+    }
+    // small delay so the switch can finish moving
+    setTimeout(newSearch, 250);
+  }
   function newSearch(projectId = null){
     if (document.querySelector('#keywordEntry').value != ''){
       addChip(document.querySelector('#keywordEntry').value);
@@ -431,6 +443,7 @@
       searchString = searchString.slice(0, -1);
       windowLocationString = '?s='+searchString;
       
+      // NOTE country filter disabled
       // var countryvalue = document.getElementById("country").value;
       // if (countryvalue > 0){
         // windowLocationString = windowLocationString+'&country='+countryvalue;
@@ -439,7 +452,12 @@
       var projectvalue = projectId || <?php echo isset($_GET['project']) && $_GET['project'].length > 0 ? $_GET['project'] : -1; ?>;
       if (projectvalue > 0) {
         windowLocationString = windowLocationString+'&project='+projectvalue;
-      } 
+      }
+
+      if ($('.client:checked').length == 1) {
+        windowLocationString = windowLocationString+'&client='+$('.client:checked').data('clientid');;
+      }
+
     }
 
     window.location = windowLocationString;
@@ -587,9 +605,9 @@
     }
 
     if (isset($_GET['client']) && $_GET['client'].length > 0) {
-      $db->where('(c.restrictedtoclient = 0 OR c.restrictedtoclient IS NULL OR c.restrictedtoclient = ?)', array($_GET['client']));
+      $db->where('(c.restrictedtoclient IS NULL OR c.restrictedtoclient = ?)', array($_GET['client']));
     } else {
-      $db->where('(c.restrictedtoclient = 0 OR c.restrictedtoclient IS NULL)');
+      $db->where('c.restrictedtoclient IS NULL');
     }
 
     if (isset($_GET['page']) && $_GET['page'].length > 0) {
@@ -766,7 +784,9 @@
       <label>
       Include <?php echo $client['name']; ?>-only Results
       <!-- Off -->
-      <input type="checkbox" data-clientid="<?php echo $client['id']; ?>" class="client">
+      <input <?php if (isset($_GET['client']) && $_GET['client'] == $client['id']) { echo 'checked'; } ?> 
+        type="checkbox" class="client" id="client<?php echo $client['id']; ?>" data-clientid="<?php echo $client['id']; ?>"
+        onclick="clientSwitchToggled(<?php echo $client['id']; ?>);">
       <span class="lever"></span>
       <!-- On -->
       </label>
@@ -815,6 +835,7 @@
             <video id="clipExpandVideo" src="//creative.lonelyleap.com/archive/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
           </div>
           <div class="panes" id="rightpane">
+            <span id="clipExpandRestrictions" class="new badge" data-badge-caption=""></span>
             <h5 id="clipExpandDescription">Description</h5>
             <p>Clip # <span id="clipExpandId">Clip Id</span> <?php 
               if($_SESSION['userid'] == 1){
