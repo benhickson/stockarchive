@@ -417,9 +417,9 @@
 
     }
   }
-  function clientSwitchToggled(clientid){
-    if (document.getElementById('client'+clientid).checked) {
-      $('.client:not(#client'+clientid).prop('checked',false);
+  function clientSwitchToggled(checkbox){
+    if (checkbox.checked) {
+      $('.client').not(checkbox).prop('checked',false);
     }
     // small delay so the switch can finish moving
     setTimeout(newSearch, 250);
@@ -785,8 +785,8 @@
       Include <?php echo $client['name']; ?>-only Results
       <!-- Off -->
       <input <?php if (isset($_GET['client']) && $_GET['client'] == $client['id']) { echo 'checked'; } ?> 
-        type="checkbox" class="client" id="client<?php echo $client['id']; ?>" data-clientid="<?php echo $client['id']; ?>"
-        onclick="clientSwitchToggled(<?php echo $client['id']; ?>);">
+        type="checkbox" class="client" data-clientid="<?php echo $client['id']; ?>"
+        onclick="clientSwitchToggled(this);">
       <span class="lever"></span>
       <!-- On -->
       </label>
