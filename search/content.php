@@ -133,7 +133,7 @@
     padding-top: 9px !important;
   }
   .searchstuff label {
-    line-height: 15px;
+    line-height: 13px;
   }    
   .searchstuff label.active {
     padding-top: 5px;
@@ -754,6 +754,18 @@
         <input type="range" id="thumbnailSizeSlider" min="2" max="6" style="direction:rtl;" value="<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>" />
       </p>
     </form>
+    <?php 
+    foreach ($db->get('clients') as $client) { ?>
+    <div class="switch right">
+      <label>
+      Include <?php echo $client['name']; ?>-only Results
+      <!-- Off -->
+      <input type="checkbox" data-clientid="<?php echo $client['id']; ?>" class="client">
+      <span class="lever"></span>
+      <!-- On -->
+      </label>
+    </div>
+    <?php } ?>    
   </div>
   <div id="resultContainer" class="row hidden flex-parent">
     <?php
