@@ -498,13 +498,18 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
   </div> 
   <div class="input-field col s6 l3">
     <select id="restrictedtoclient" name="restrictedtoclient" onchange="sendData(this)" class="trigger">
-      <?php 
+      <?php
       echo '<option value="" disabled';
-      if ($clip['restrictedtoclient'] == '') {
+      if ($clip['restrictedtoclient'] === null) {
         echo ' selected';
       }
       echo '>Please Select</option>';
-      echo '<option value="0">None</option>';
+
+      echo '<option value="0"';
+      if ($clip['restrictedtoclient'] === 0) {
+        echo ' selected';
+      }
+      echo '>None</option>';
 
       $restrictions = $db->rawQuery('SELECT id, name FROM clients');
          
@@ -518,7 +523,7 @@ $clip = $db->rawQuery('SELECT c.description, c.project, c.rawresolution, c.camer
       }
       ?>
     </select>
-    <label>Client Restriction | <a class="modal-trigger" href="#newRestriction" tabindex="-1">Add New</a></label>
+    <label>Client Restrictions | <a class="modal-trigger" href="#newRestriction" tabindex="-1">Add New</a></label>
     <div id="newRestriction" class="modal">
       <form autocomplete="off" method="post" action="?clip=<?php echo $clipid; ?>">
       <div class="modal-content row">
