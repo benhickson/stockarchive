@@ -1,6 +1,6 @@
 <head>
 	<meta charset="UTF-8">
-	<title>Archive</title>
+	<title>Archive<?php echo ($_SERVER['HTTP_HOST'] == 'creative.lonelyleap.com' ? '' : ' | '.$_SERVER['HTTP_HOST']); ?></title>
 	<script type="text/javascript">
 	// load the php session prefs
 	var interfaceprefs = <?php 
