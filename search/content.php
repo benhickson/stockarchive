@@ -134,17 +134,17 @@
   }
   .searchstuff label {
     line-height: 13px;
-  }    
+  }
   .searchstuff label.active {
     padding-top: 5px;
-  }  
+  }
   #search.searchstuff label {
     padding-top: 18px;
   }
   input#searchInput {
     margin-top: 26px;
     color: black;
-  }  
+  }
   .searchstuff:not(#searchButton){
     height: 46px;
   }
@@ -152,16 +152,16 @@
     margin-bottom: 30px;
   }
   #chiptarget{
-    margin-bottom: 41px;      
+    margin-bottom: 41px;
   }
   /* end shitty alignment */
 
-  #clipExpandFullQualityReveal{
+  #clipExpandFullQualityReveal, #clipUnpublish, #clipUnpublishCancel {
     padding: 19px;
     white-space: nowrap;
     cursor: pointer;
   }
-  #clipExpandFullQuality, #clipExpandFullQualityReveal{
+  #clipExpandFullQuality, #clipExpandFullQualityReveal, #clipUnpublish, #clipUnpublishCancel {
     font-size: 80%;
   }
   .pagination li.leftbarhidden{
@@ -346,6 +346,7 @@
       $('#clipExpandRawFootageUrl').attr('href',responseData.rawfootageurl);
 
       <?php
+      
       if ($_SESSION['userid'] == 1){
       ?>
 
@@ -362,16 +363,107 @@
         $(this).off('loadedmetadata');
       });
 
+      <?php
+      $result = $db->rawQuery('SELECT able_unpublish FROM users WHERE id=?', array($_SESSION['userid']));
+      
+      if($result[0]['able_unpublish'] === 1) {
+        echo 'showUnpublishButton(clipid);';
+      }
+      ?>
+
     } else {
       console.log('responseObject is invalid');
       // if not successful
       // check if needs to login
-      if (responseObject.data == 'triggerLogin'){
+      if (responseObject.data == 'triggerLogin') {
         triggerLogin();
+      } else {
+        var status = getPublishStatus(clipid, function(status) {
+          if(status['success'] && !status['published']) {
+            $('#clipExpandContent video').attr('src','');
+            $('.panes').animate({'opacity':1},300);
+            $('#clipExpandId').text(clipid);
+            $('#clipExpandDescription').text('Clip has been unpublished.');
+            $('#clipExpandLocation').text('');
+            $('#clipExpandDate').text('');
+            $('#clipExpandProject').text('');
+            $('#clipExpandCamera').text('');
+            $('#clipExpandResolution').text('');
+            $('#clipExpandOriginalFilename').text('');
+            $('#clipExpandTags').text('');
+          }
+
+          if(status['editor']) {
+            $('#clipUnpublish').text('This Clip is in Your Upload Queue');
+            $('#clipUnpublish').attr('href','/archive/upload?clip='+clipid);
+
+            document.getElementById('clipUnpublish').removeAttribute('onclick');
+          } else {
+            $('#clipUnpublish').text('');
+          }
+        });
       }
     }
-
   }
+
+  function showUnpublishButton(clipid) {
+    $('#clipUnpublish').text('Unpublish/Edit Clip')
+
+    //if the last clp was unpublished, it'll have an href that needs to be removed
+    $('#clipUnpublish').removeAttr("href");
+    $('#clipUnpublish').attr('onClick','unpublish('+clipid+');');
+    $('#clipUnpublishCancel').css('display', 'none');
+  }
+
+  function getPublishStatus(clipid, callback) {
+    $.ajax('../ajax/publish.php', {
+      type: 'POST',
+      data: {clipid: clipid, status: ''},
+      success: function(res){
+        res = JSON.parse(res);
+
+        callback(res);
+      },
+      error: function(xhr, status, error) {
+        var err = JSON.parse(xhr.responseText);
+        console.log(err.Message);
+      }      
+    });
+  }
+
+  function unpublish(clipid) {
+    $('#clipUnpublish').text('Confirm Unpublish');
+    $('#clipUnpublishCancel').css('display', 'inline-block');
+
+    $('#clipUnpublish').attr('onclick', 'confirmUnpublish('+clipid+')');
+    $('#clipUnpublishCancel').attr('onclick', 'cancelUnpublish('+clipid+')');
+  }
+
+  function confirmUnpublish(clipid) {
+    $.ajax('../ajax/publish.php', {
+      type: 'POST',
+      data: {clipid: clipid, unpublish: ''},
+      success: function(res) { console.log('@confirmUnpublish 1', res);
+        res = JSON.parse(res);
+
+        var msg = res['message'];
+
+        window.location.href = '/archive/upload?clip='+clipid;
+      },
+      error: function(xhr, status, error) { console.log('@confirmUnpublish 2');
+        var err = JSON.parse(xhr.responseText);
+        console.log(err.Message);
+      }      
+    });
+  };
+
+  function cancelUnpublish(clipid) {
+    $('#clipUnpublish').text('Unpublish/Edit Clip');
+    $('#clipUnpublishCancel').css('display', 'none');
+
+    $('#clipUnpublish').attr('onclick', 'unpublish('+clipid+')');
+  }
+
   function getClipData(clipid){
     var data = new Object();
     data.clipid = clipid;
@@ -726,7 +818,7 @@
     <div class="input-field searchstuff">
       <input id="keywordEntry" type="text">
       <label for="keywordEntry">Keywords</label>
-    </div>    
+    </div>
     <div class="input-field searchstuff">
       <input id="clipIdSearch" type="text" class="validate" pattern="\d+">
       <label for="clipIdSearch">Clip Number</label>
@@ -778,20 +870,20 @@
         <input type="range" id="thumbnailSizeSlider" min="2" max="6" style="direction:rtl;" value="<?php echo $_SESSION['interfaceprefs']['thumbnailSize']; ?>" />
       </p>
     </form>
-    <?php 
+    <?php
     foreach ($db->get('clients') as $client) { ?>
     <div class="switch right">
       <label>
       Include <?php echo $client['name']; ?>-only Results
       <!-- Off -->
-      <input <?php if (isset($_GET['client']) && $_GET['client'] == $client['id']) { echo 'checked'; } ?> 
+      <input <?php if (isset($_GET['client']) && $_GET['client'] == $client['id']) { echo 'checked'; } ?>
         type="checkbox" class="client" data-clientid="<?php echo $client['id']; ?>"
         onclick="clientSwitchToggled(this);">
       <span class="lever"></span>
       <!-- On -->
       </label>
     </div>
-    <?php } ?>    
+    <?php } ?>
   </div>
   <div id="resultContainer" class="row hidden flex-parent">
     <?php
@@ -851,6 +943,8 @@
             <p style="display: none;">Search Relevancy Score: <span id="clipScore"></span></p>
             <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
             <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
+            <a id="clipUnpublish"></a>
+            <a id="clipUnpublishCancel" stlye="display: none;">Cancel</a>
             <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
               Filename: <span id="clipExpandOriginalFilename"></span></p>
           </div>

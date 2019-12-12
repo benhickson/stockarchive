@@ -2,7 +2,7 @@
 
 if (isset($_GET['clip'])){
     if ($_GET['clip'] == 'first'){
-        $result = $db->rawQuery('SELECT id FROM clips WHERE published=0 AND uploader=? AND todelete=0 ORDER BY id ASC LIMIT 1', array($_SESSION['userid']));
+        $result = $db->rawQuery('SELECT id FROM clips WHERE published=0  AND todelete=0 AND editor=? ORDER BY id ASC LIMIT 1', array($_SESSION['userid']));
         if ($db->count == 1){
             $clipid = $result[0]['id'];
             $clippage = true;      
@@ -12,7 +12,7 @@ if (isset($_GET['clip'])){
     } else {
         $clipid = $_GET['clip'];
         // check if access to this clip is correct.
-        $db->rawQuery('SELECT id FROM clips WHERE published=0 AND todelete=0 AND uploader=? AND id=? LIMIT 1', array($_SESSION['userid'], $clipid));
+        $db->rawQuery('SELECT id FROM clips WHERE published=0 AND todelete=0 AND editor=? AND id=? LIMIT 1', array($_SESSION['userid'], $clipid));
         if ($db->count == 1){
             $clippage = true;
             if (isset($_GET['delete'])){
@@ -70,7 +70,7 @@ if (isset($_GET['clip'])){
   <div id="leftbar">
     <p>Unpublished Uploads</p>
     <?php
-    $currentuploads = $db->rawQuery('SELECT id, uploadfilename, description FROM clips WHERE published=0 AND uploader=? AND todelete=0 ORDER BY uploadfilename ASC', array($_SESSION['userid']));
+    $currentuploads = $db->rawQuery('SELECT id, uploadfilename, description FROM clips WHERE published=0 AND editor=? AND todelete=0 ORDER BY uploadfilename ASC', array($_SESSION['userid']));
     foreach ($currentuploads as $clip) {
       if ($clip['description'] == '') {
         $displayname = $clip['uploadfilename'];
