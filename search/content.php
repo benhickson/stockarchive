@@ -377,8 +377,7 @@
       // check if needs to login
       if (responseObject.data == 'triggerLogin') {
         triggerLogin();
-      }
-      else {
+      } else {
         var status = getPublishStatus(clipid, function(status) {
           if(status['success'] && !status['published']) {
             $('#clipExpandContent video').attr('src','');
@@ -399,8 +398,7 @@
             $('#clipUnpublish').attr('href','/archive/upload?clip='+clipid);
 
             document.getElementById('clipUnpublish').removeAttribute('onclick');
-          }
-          else {
+          } else {
             $('#clipUnpublish').text('');
           }
         });
@@ -410,10 +408,11 @@
 
   function showUnpublishButton(clipid) {
     $('#clipUnpublish').text('Unpublish/Edit Clip')
+
     //if the last clp was unpublished, it'll have an href that needs to be removed
     $('#clipUnpublish').removeAttr("href");
     $('#clipUnpublish').attr('onClick','unpublish('+clipid+');');
-    $('#clipUnpublishCancel').text('');
+    $('#clipUnpublishCancel').css('display', 'none');
   }
 
   function getPublishStatus(clipid, callback) {
@@ -434,9 +433,7 @@
 
   function unpublish(clipid) {
     $('#clipUnpublish').text('Confirm Unpublish');
-    $('#clipUnpublishCancel').text('Cancel');
-    // $('#clipUnpublish').attr('href','/archive/upload?clip='+clipid);
-    // document.getElementById('clipUnpublish').removeAttribute('onclick');
+    $('#clipUnpublishCancel').css('display', 'inline-block');
 
     $('#clipUnpublish').attr('onclick', 'confirmUnpublish('+clipid+')');
     $('#clipUnpublishCancel').attr('onclick', 'cancelUnpublish('+clipid+')');
@@ -462,9 +459,7 @@
 
   function cancelUnpublish(clipid) {
     $('#clipUnpublish').text('Unpublish/Edit Clip');
-    $('#clipUnpublishCancel').text('');
-    // $('#clipUnpublish').attr('href','/archive/upload?clip='+clipid);
-    // document.getElementById('clipUnpublish').removeAttribute('onclick');
+    $('#clipUnpublishCancel').css('display', 'none');
 
     $('#clipUnpublish').attr('onclick', 'unpublish('+clipid+')');
   }
@@ -949,7 +944,7 @@
             <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
             <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
             <a id="clipUnpublish"></a>
-            <a id="clipUnpublishCancel"></a>
+            <a id="clipUnpublishCancel" stlye="display: none;">Cancel</a>
             <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
               Filename: <span id="clipExpandOriginalFilename"></span></p>
           </div>
