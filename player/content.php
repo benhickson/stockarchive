@@ -56,11 +56,15 @@ $results_projects = $db->get($table, NULL, $cols);
 <style type="text/css">
 	main .row{
 		padding: 2.5vw;
+		text-align: center;
 	}
 	#playerContainer{
-		height: calc(95vw * 0.5625);		/* 95vw is 100 - 2x the padding (currently 2.5vw), 0.5625 is 9/16 */
-		position: relative;
-		overflow: hidden;				/* necessary for the +2 and -1 hack below */
+		height: calc(60vh);
+	    width: calc(60vh * 1.77777778);
+	    position: relative;
+	    overflow: hidden;				/* necessary for the +2 and -1 hack below */
+	    text-align: initial;
+	    display: inline-block;
 	}
 	#playerContainer video{
 		width: 100%;
@@ -89,6 +93,8 @@ $results_projects = $db->get($table, NULL, $cols);
 	}
 	#buttonRow{
 		text-align: center;
+		padding-bottom: 0.2vw;
+    	padding-top: 1.9vw;
 	}
 /*	#playerLogoOverlay{
 		background-image: url(../cssjs/logo-1-20190131.png);

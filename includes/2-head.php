@@ -52,7 +52,7 @@
 		    margin-top: -18px;
 		}*/
 		#leftbar{
-			position: absolute;
+			position: fixed;
 			height: 100%;
 			width: inherit;
 			border-top: white;
