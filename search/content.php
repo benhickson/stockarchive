@@ -346,6 +346,7 @@
       $('#clipExpandRawFootageUrl').attr('href',responseData.rawfootageurl);
 
       <?php
+      
       if ($_SESSION['userid'] == 1){
       ?>
 
@@ -363,9 +364,9 @@
       });
 
       <?php
-      $able_unpublish = $db->rawQuery('SELECT able_unpublish FROM users WHERE id=?', array($_SESSION['userid']));
-
-      if($able_unpublish === 1) {
+      $result = $db->rawQuery('SELECT able_unpublish FROM users WHERE id=?', array($_SESSION['userid']));
+      
+      if($result[0]['able_unpublish'] === 1) {
         echo 'showUnpublishButton(clipid);';
       }
       ?>
@@ -445,14 +446,14 @@
     $.ajax('../ajax/publish.php', {
       type: 'POST',
       data: {clipid: clipid, unpublish: ''},
-      success: function(res) {
+      success: function(res) { console.log('@confirmUnpublish 1', res);
         res = JSON.parse(res);
 
         var msg = res['message'];
 
         window.location.href = '/archive/upload?clip='+clipid;
       },
-      error: function(xhr, status, error) {
+      error: function(xhr, status, error) { console.log('@confirmUnpublish 2');
         var err = JSON.parse(xhr.responseText);
         console.log(err.Message);
       }      

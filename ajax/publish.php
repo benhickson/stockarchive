@@ -7,7 +7,8 @@ if ($_SESSION['logged_in']){
   // add the userid from session
   $userid = $_SESSION['userid'];
 
-  $able_unpublish = $db->rawQuery('SELECT able_unpublish FROM users WHERE id=?', array($userid)) === 1;
+  $query = 'SELECT able_unpublish FROM users WHERE id=?';
+  $able_unpublish = $db->rawQuery($query, array($userid))[0]['able_unpublish'] === 1;
 
   // check if all necessary fields set
   if (isset($_POST['clipid']) && $_POST['clipid'].length > 0) {
@@ -23,9 +24,16 @@ if ($_SESSION['logged_in']){
         $status = $db->get('clips', null, 'clips.editor');
         $editor = $status[0]['editor'] == $userid;
 
-        echo json_encode(array('success' => true, 'published' => $published, 'editor' => $editor));
+        echo json_encode(array(
+          'success' => true, 
+          'published' => $published, 
+          'editor' => $editor
+        ));
       } else {
-        echo json_encode(array('success' => true, 'published' => 'status get failed: '.json_encode($status)));
+        echo json_encode(array(
+          'success' => false, 
+          'published' => 'status get failed: '.json_encode($status)
+        ));
       }
     }
     else if(isset($_POST['unpublish']) && $able_unpublish) {
@@ -49,18 +57,30 @@ if ($_SESSION['logged_in']){
       $db->where('id', $_POST['clipid']);
 
       if($db->update('clips', $data)) {
-        echo json_encode(array('success' => true, 'message' => 'Clip in Upload Queue (click to see page)'));
+        echo json_encode(array(
+          'success' => true, 
+          'message' => 'Clip in Upload Queue (click to see page)'
+        ));
       } else {
         echo 'update failed: '.$db->getLastError();  
       }
     } else {
-      exit(json_encode(array('success' => false, 'message' => 'Improper credentials or post parameters.')));
+      exit(json_encode(array(
+        'success' => false, 
+        'message' => 'Improper credentials or post parameters.'
+      )));
     }
   } else {
     // postfields not set correctly
-    exit(json_encode(array('success' => false, 'message' => 'This page has been modified to edit the postfields. Please reload normally.')));
+    exit(json_encode(array(
+      'success' => false, 
+      'message' => 'This page has been modified to edit the postfields. Please reload normally.'
+    )));
   }
 } else {
   // not logged in
-  exit(json_encode(array('success' => false, 'message' => 'Not logged in.')));
+  exit(json_encode(array(
+    'success' => false, 
+    'message' => 'Not logged in.'
+  )));
 }
