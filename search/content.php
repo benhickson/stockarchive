@@ -284,6 +284,7 @@
     $('.searchResult').removeClass('expanded');
     getElement(clipid).addClass('expanded'); 
   }
+
   function clipExpandOpen(clipid){
     clipExpandHeight('400px');
     clipExpandCurrentlyOpen = true;
@@ -302,32 +303,17 @@
           ?>
         }
       },
-      onChipAdd: function(e, chip){ addTag(clipid, chip.firstChild.textContent); },
-      onChipDelete: function(e, chip){ removeTag(clipid, chip.firstChild.textContent); },
+      onChipAdd: function(e, chip){ }, // addTag(clipid, chip.firstChild.textContent); },
+      onChipDelete: function(e, chip){ }, // removeTag(clipid, chip.firstChild.textContent); },
       placeholder: 'Tags',
       secondaryPlaceholder: '+ Tag'
     });
-
-    // set that tagField
-    tagField = $('#tags input');
   }
 
-  // set up a var to set in doc ready
-  var tagField = null;
-  
-  // set up an event to trigger
-  var myEvent = jQuery.Event("keypress");
-  myEvent.which = 13; //choose the one you want
-  myEvent.keyCode = 13;  
-
-  function addTagToField(tagtext){
-    console.log(tagField, tagtext);
-    tagField.val(tagtext).focus().trigger(myEvent);
-  }
-
-  function clipExpandClose(){
-    clipExpandHeight('0px');
-    clipExpandCurrentlyOpen = false;
+  function getAndAddTags() {
+    $(M.Chips.getInstance($(".chips")).chipsData).each(function (chipData) {
+      addTag(clipid, chipData);
+    })
   }
 
   function continueUpdate(clipid, ajaxresponse){
@@ -382,6 +368,13 @@
       // update download link and full quality link
       $('#clipExpandDownloadUrl').attr('href','//creative.lonelyleap.com/archive/media/?clip='+clipid+'&q=f&download');
       $('#clipExpandRawFootageUrl').attr('href',responseData.rawfootageurl);
+
+      
+
+      $('#tagsSubmitBtn').attr(
+        'onclick'
+        ,'getAndAddTags(); location.reload();'
+      );
 
       <?php
 
@@ -970,7 +963,7 @@
               if($_SESSION['userid'] == 1){
                   echo '<a id="clipExpandRetranscode" href="../upload/transcode.php?retranscode=clipid" target="_blank">RT</a>';
               }
-            ?><br />
+              ?><br />
               Tags: <span id="clipExpandTags">Tags</span>
               <a id="tagAddFieldReveal" onclick="
                 console.log('clicked');
@@ -980,10 +973,18 @@
                   }
                 );"
               >[+]</a>
-            <div id="tagsExpand" class="input-field col s12" hidden>
-              <div id="tags" class="chips chips-placeholder" data-clipid="<?php echo $clipid; ?>">
+              <div id="tagsExpand" class="row" hidden>
+                <div class="input-field col s8">
+                  <div id="tags" class="chips chips-placeholder" data-clipid="<?php echo $clipid; ?>">
+                  </div>
+                </div>
+                <div class="col s1">
+                  <br />
+                  <a class="btn waves-effect waves-light btn-floating s1" id="tagsSubmitBtn" href="#">
+                    <i class="material-icons left">publish</i>
+                  </a>
+                </div>
               </div>
-            </div>
             </p>
             <p>Date: <span id="clipExpandDate">Date</span><br />
                Project: <span id="clipExpandProject">Project</span><br />
