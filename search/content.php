@@ -156,7 +156,7 @@
   }
   /* end shitty alignment */
 
-  #clipExpandFullQualityReveal, #clipUnpublish, #clipUnpublishCancel {
+  #clipExpandFullQualityReveal, #clipUnpublish, #clipUnpublishCancel, #tagAddFieldReveal {
     padding: 19px;
     white-space: nowrap;
     cursor: pointer;
@@ -366,6 +366,7 @@
       
       // hide the section of full quality stuff
       $('#clipExpandFullQuality').hide();
+      $('#tagsExpand').hide();
 
       // from search result
       $('#clipScore').text($('.searchResult[data-clipid='+clipid+']').data('score'));
@@ -480,14 +481,14 @@
     $.ajax('../ajax/publish.php', {
       type: 'POST',
       data: {clipid: clipid, unpublish: ''},
-      success: function(res) { console.log('@confirmUnpublish 1', res);
+      success: function(res) {
         res = JSON.parse(res);
 
         var msg = res['message'];
 
         window.location.href = '/archive/upload?clip='+clipid;
       },
-      error: function(xhr, status, error) { console.log('@confirmUnpublish 2');
+      error: function(xhr, status, error) {
         var err = JSON.parse(xhr.responseText);
         console.log(err.Message);
       }
@@ -970,8 +971,16 @@
                   echo '<a id="clipExpandRetranscode" href="../upload/transcode.php?retranscode=clipid" target="_blank">RT</a>';
               }
             ?><br />
-               Tags: <span id="clipExpandTags">Tags</span>
-            <div class="input-field col s12">
+              Tags: <span id="clipExpandTags">Tags</span>
+              <a id="tagAddFieldReveal" onclick="
+                console.log('clicked');
+                $('#tagsExpand').hide(1, function() {
+                  $('#tagsExpand').show(400);
+                    console.log('shown');
+                  }
+                );"
+              >[+]</a>
+            <div id="tagsExpand" class="input-field col s12" hidden>
               <div id="tags" class="chips chips-placeholder" data-clipid="<?php echo $clipid; ?>">
               </div>
             </div>
