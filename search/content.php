@@ -288,11 +288,48 @@
     clipExpandHeight('400px');
     clipExpandCurrentlyOpen = true;
     setActiveSearchResult(clipid);
+
+    // enable the tag field
+    $('.chips').chips({
+      data: [],
+      autocompleteOptions: {
+        data: {
+          <?php 
+            $tags = $db->rawQuery('SELECT tagname FROM tags WHERE deleted!=1');
+            foreach ($tags as $tag) {
+              echo '"'.$tag['tagname'].'": null,';
+            }
+          ?>
+        }
+      },
+      onChipAdd: function(e, chip){ addTag(clipid, chip.firstChild.textContent); },
+      onChipDelete: function(e, chip){ removeTag(clipid, chip.firstChild.textContent); },
+      placeholder: 'Tags',
+      secondaryPlaceholder: '+ Tag'
+    });
+
+    // set that tagField
+    tagField = $('#tags input');
   }
+
+  // set up a var to set in doc ready
+  var tagField = null;
+  
+  // set up an event to trigger
+  var myEvent = jQuery.Event("keypress");
+  myEvent.which = 13; //choose the one you want
+  myEvent.keyCode = 13;  
+
+  function addTagToField(tagtext){
+    console.log(tagField, tagtext);
+    tagField.val(tagtext).focus().trigger(myEvent);
+  }
+
   function clipExpandClose(){
     clipExpandHeight('0px');
     clipExpandCurrentlyOpen = false;
   }
+
   function continueUpdate(clipid, ajaxresponse){
     // organize response
     var responseObject = JSON.parse(ajaxresponse);
@@ -370,7 +407,6 @@
         triggerLogin();
       }
     }
-
   }
   function getClipData(clipid){
     var data = new Object();
@@ -583,7 +619,6 @@
   
     return $encodedParams;
   }
-
 
   $page = 1;  // default
   $cols = array('c.id', 'c.description', 'c.project'); // columns/fields to request
@@ -842,7 +877,12 @@
                   echo '<a id="clipExpandRetranscode" href="../upload/transcode.php?retranscode=clipid" target="_blank">RT</a>';
               }
             ?><br />
-               Tags: <span id="clipExpandTags">Tags</span></p>
+               Tags: <span id="clipExpandTags">Tags</span>
+            <div class="input-field col s12">
+              <div id="tags" class="chips chips-placeholder" data-clipid="<?php echo $clipid; ?>">
+              </div>
+            </div>
+            </p>
             <p>Date: <span id="clipExpandDate">Date</span><br />
                Project: <span id="clipExpandProject">Project</span><br />
                Location: <span id="clipExpandLocation">Location</span></p>
