@@ -36,9 +36,16 @@ if ($_SESSION['logged_in']) {
 				// add to recenttags variable
 				if (!in_array($tagtext, $_SESSION['recenttags'])) {
 					array_push($_SESSION['recenttags'], $tagtext);
-					if (count($_SESSION['recenttags']) > 20) { 
+					if (count($_SESSION['recenttags']) > 20) {
 						array_shift($_SESSION['recenttags']);
 					}
+				}
+
+				if(!$clipInfo['published'] && $userid != $clipInfo['editor']) {
+					exit(json_encode(array(
+						'tagsuccess' => false
+						, 'message' => $clipid.' is unpublished and you are not the editor.'
+					)));
 				}
 
 				if ($tagCount >= 1) {

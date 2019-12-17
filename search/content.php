@@ -434,6 +434,9 @@
             $('#clipExpandResolution').text('');
             $('#clipExpandOriginalFilename').text('');
             $('#clipExpandTags').text('');
+
+            $('#rightpane *:not(#clipExpandDescription)').hide();
+            $('#clipUnpublish').show();
           }
 
           if(status['editor']) {
@@ -985,9 +988,9 @@
                 console.log('clicked');
                 $('#tagsExpand').hide(1, function() {
                   $('#tagsExpand').show(400);
-                    console.log('shown');
-                  }
-                );"
+                  console.log('shown');
+                  setTimeout(function() {$('#tags input')[0].focus();}, 500);
+                });"
               >[+]</a>
               <div id="tagsExpand" class="row" hidden>
                 <div class="input-field col s8">
