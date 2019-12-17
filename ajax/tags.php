@@ -23,6 +23,14 @@ if ($_SESSION['logged_in']) {
 			// remove whitespace from beginning/end of tagtext
 			$tagtext = trim($tagtext);
 
+			// get the tag id, if not, error
+			$taglookup = $db->rawQuery(
+				'SELECT id FROM tags WHERE tagname=? AND deleted!=1'
+				, array($tagtext)
+			);
+
+			$tagCount = $db->count;
+
 			// check if action is add or remove
 			if ($action == 'add') {
 				// add to recenttags variable
@@ -33,12 +41,7 @@ if ($_SESSION['logged_in']) {
 					}
 				}
 
-				$taglookup = $db->rawQuery(
-					'SELECT id FROM tags WHERE tagname=? AND deleted!=1'
-					, array($tagtext)
-				);
-
-				if ($db->count >= 1) {
+				if ($tagCount >= 1) {
 					$clipTags = $db->rawQuery(
 						'SELECT cxt.id FROM clips_x_tags cxt 
 
@@ -57,7 +60,7 @@ if ($_SESSION['logged_in']) {
 					}
 
 					$tagid = $taglookup[0]['id'];
-					
+
 				} else {
 					$data = array(
 						'tagname' => $tagtext,
@@ -87,16 +90,8 @@ if ($_SESSION['logged_in']) {
 						, 'message' => 'Tag "'.$tagtext.'" could not be added to clip '.$clipid.'.'
 					)));
 				}
-			} elseif ($action == 'remove'
-			&& !$clipInfo['published']
-			&& $userid === $clipInfo['editor']) {
-				// get the tag id, if not, error
-				$taglookup = $db->rawQuery(
-					'SELECT id FROM tags WHERE tagname=? AND deleted!=1'
-					, array($tagtext)
-				);
-
-				if ($db->count == 1) {
+			} elseif ($action == 'remove' && !$clipInfo['published'] && $userid === $clipInfo['editor']) {
+				if ($tagCount >= 1) {
 					$tagid = $taglookup[0]['id'];
 
 					// remove all links between the clip and tag
