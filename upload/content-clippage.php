@@ -213,7 +213,7 @@ $clip = $db->rawQuery(
     }
   }  
 
-  function sendData(obj) {
+  function sendData(obj) { console.log(clipid, obj.name, obj.value);
     var data = new Object();
     data.clipid = clipid;
     data.name = obj.name;

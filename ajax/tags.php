@@ -127,7 +127,7 @@ if ($_SESSION['logged_in']) {
 				// incorrect action set.
 				exit(json_encode(array(
 					'tagsuccess' => false
-					, 'message' => 'This page has been modified to edit the postfields. Please reload normally.'
+					, 'message' => 'Denied action, this clip cannot be modified in this way.'
 				)));
 			}
 		} else {

@@ -303,8 +303,8 @@
           ?>
         }
       },
-      onChipAdd: function(e, chip){ }, // addTag(clipid, chip.firstChild.textContent); },
-      onChipDelete: function(e, chip){ }, // removeTag(clipid, chip.firstChild.textContent); },
+      // onChipAdd: function(e, chip){ }, // addTag(clipid, chip.firstChild.textContent); },
+      // onChipDelete: function(e, chip){ }, // removeTag(clipid, chip.firstChild.textContent); },
       placeholder: 'Tags',
       secondaryPlaceholder: '+ Tag'
     });
@@ -376,9 +376,7 @@
       $('#clipExpandDownloadUrl').attr('href','//creative.lonelyleap.com/archive/media/?clip='+clipid+'&q=f&download');
       $('#clipExpandRawFootageUrl').attr('href',responseData.rawfootageurl);
 
-      
-
-      $('#tagsSubmitBtn').attr('onclick', 'getAndAddTags();'); // location.reload();');
+      $('#tagsSubmitBtn').attr('onclick', 'getAndAddTags(); location.reload();'); //@
       $('#tagsSubmitBtn').data('clipid', clipid);
 
       <?php
