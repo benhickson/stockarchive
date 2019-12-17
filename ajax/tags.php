@@ -137,7 +137,7 @@ if ($_SESSION['logged_in']) {
 			// clip not taggable
 			exit(json_encode(array(
 				'tagsuccess' => false
-				, 'message' => 'Current user is not allowed to tag this clip.'
+				, 'message' => 'Clip does not exist.'
 			)));
 		}
 	} else {
