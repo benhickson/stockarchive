@@ -25,6 +25,14 @@ if ($_SESSION['logged_in']) {
 
 			// check if action is add or remove
 			if ($action == 'add') {
+				// add to recenttags variable
+				if (!in_array($tagtext, $_SESSION['recenttags'])) {
+					array_push($_SESSION['recenttags'], $tagtext);
+					if (count($_SESSION['recenttags']) > 20) { 
+						array_shift($_SESSION['recenttags']);
+					}
+				}
+
 				$taglookup = $db->rawQuery(
 					'SELECT id FROM tags WHERE tagname=? AND deleted!=1'
 					, array($tagtext)
@@ -47,19 +55,9 @@ if ($_SESSION['logged_in']) {
 							, 'message' => 'Tag "'.$tagtext.'" is already on clip '.$clipid.'.'
 						)));
 					}
-				}
 
-				// add to recenttags variable
-				if (!in_array($tagtext, $_SESSION['recenttags'])) {
-					array_push($_SESSION['recenttags'], $tagtext);
-					if (count($_SESSION['recenttags']) > 20) { 
-						array_shift($_SESSION['recenttags']);
-					}
-				}
-
-				// if tag does not exist, create it
-				if ($db->count == 1) {
 					$tagid = $taglookup[0]['id'];
+					
 				} else {
 					$data = array(
 						'tagname' => $tagtext,
