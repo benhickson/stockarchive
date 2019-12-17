@@ -378,7 +378,7 @@
 
       
 
-      $('#tagsSubmitBtn').attr('onclick', 'getAndAddTags(); location.reload();');
+      $('#tagsSubmitBtn').attr('onclick', 'getAndAddTags();'); // location.reload();');
       $('#tagsSubmitBtn').data('clipid', clipid);
 
       <?php

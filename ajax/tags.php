@@ -31,10 +31,19 @@ if ($_SESSION['logged_in']) {
 				);
 
 				if ($db->count >= 1) {
-					exit(json_encode(array(
-						'tagsuccess' => false
-						, 'message' => 'Tag "'.$tagtext.'" is already on clip '.$clipid.'.'
-					)));
+					$tagid = $taglookup[0]['id'];
+
+					$db->rawQuery(
+						'SELECT id FROM clips_x_tags WHERE clipid=? AND tagid=?'
+						, array($clipid, $tagid)
+					);
+
+					if ($db->count >= 1) {
+						exit(json_encode(array(
+							'tagsuccess' => false
+							, 'message' => 'Tag "'.$tagtext.'" is already on clip '.$clipid.'.'
+						)));
+					}
 				}
 
 				// add to recenttags variable
@@ -45,12 +54,7 @@ if ($_SESSION['logged_in']) {
 					}
 				}
 
-				// check if tag exists, if not, create it
-				$taglookup = $db->rawQuery(
-					'SELECT id FROM tags WHERE tagname=? AND deleted!=1'
-					, array($tagtext)
-				);
-
+				// if tag does not exist, create it
 				if ($db->count == 1) {
 					$tagid = $taglookup[0]['id'];
 				} else {
