@@ -32,18 +32,16 @@ if ($_SESSION['logged_in']) {
 
 				if ($db->count >= 1) {
 					$clipTags = $db->rawQuery(
-						'SELECT tagid FROM clips_x_tags WHERE clipid=?'
-						, array($clipid)
-					);
-					
-					// flattened arrays
-					$t = new RecursiveIteratorIterator(new RecursiveArrayIterator($taglookup));
-					$t = iterator_to_array($t, false);
-					$c = new RecursiveIteratorIterator(new RecursiveArrayIterator($clipTags));
-					$c = iterator_to_array($c, false);
-					$intersect = array_intersect($c, $t);
+						'SELECT cxt.id FROM clips_x_tags cxt 
 
-					if (count($intersect) >= 1) {
+						LEFT JOIN tags t
+						ON cxt.tagid=t.id
+
+						WHERE cxt.clipid=? AND t.tagname=?'
+						, array($clipid, $tagtext)
+					);
+
+					if (count($clipTags) >= 1) {
 						exit(json_encode(array(
 							'tagsuccess' => false
 							, 'message' => 'Tag "'.$tagtext.'" is already on clip '.$clipid.'.'

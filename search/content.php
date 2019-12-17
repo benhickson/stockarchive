@@ -167,8 +167,12 @@
   .pagination li.leftbarhidden{
     display: none;
   }
-  #afterResultContainer .pagination li.leftbarhidden{
+  #afterResultContainer .pagination li.leftbarhidden {
     display: inline-block;
+  }
+
+  #tags .autocomplete-content.dropdown-content {
+    max-height: 150px;
   }
 
   /*
@@ -303,8 +307,6 @@
           ?>
         }
       },
-      // onChipAdd: function(e, chip){ }, // addTag(clipid, chip.firstChild.textContent); },
-      // onChipDelete: function(e, chip){ }, // removeTag(clipid, chip.firstChild.textContent); },
       placeholder: 'Tags',
       secondaryPlaceholder: '+ Tag'
     });
@@ -316,7 +318,13 @@
   }
 
   function getAndAddTags() {
-    $(M.Chips.getInstance($(".chips")).chipsData).each(function (chipIndex, chipData) {
+    var instance = M.Chips.getInstance($(".chips"));
+    
+    if (document.querySelector('#tags input').value != ''){
+      instance.addChip({tag: document.querySelector('#tags input').value});
+    }
+
+    $(instance.chipsData).each(function (chipIndex, chipData) {
       var clipid = $('#tagsSubmitBtn').data('clipid');
 
       addTag(clipid, chipData['tag']);
@@ -378,7 +386,7 @@
 
       $('#tagsSubmitBtn').attr(
         'onclick'
-        , 'getAndAddTags(); updateClipExpandContent('+clipid+');'); //@
+        , 'getAndAddTags(); updateClipExpandContent('+clipid+');');
       $('#tagsSubmitBtn').data('clipid', clipid);
 
       <?php
@@ -520,12 +528,7 @@
     $('.panes').css('opacity', 0);
     getClipData(clipid);
 
-    var chipInstance = M.Chips.getInstance($(".chips"));
-    if ($(chipInstance).length > 0) {
-      $(chipInstance.chipsData).each(function (chipIndex) {
-        chipInstance.deleteChip(chipIndex);
-      });
-    }
+    $('#tags .chip').remove();
   }
 
   function toggleClipExpand(clipid){

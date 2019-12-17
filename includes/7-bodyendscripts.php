@@ -58,7 +58,7 @@
 
 
   function tagUpdate(tagclipid, tag, action){
-    console.log(action, tag, 'to/from', tagclipid); // return; //@
+    console.log(action, tag, 'to/from', tagclipid);
     $.ajax({
       type: 'POST',
       url: '/archive/ajax/tags.php',
