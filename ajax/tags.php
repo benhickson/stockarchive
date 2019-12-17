@@ -31,14 +31,19 @@ if ($_SESSION['logged_in']) {
 				);
 
 				if ($db->count >= 1) {
-					$tagid = $taglookup[0]['id'];
-
-					$db->rawQuery(
-						'SELECT id FROM clips_x_tags WHERE clipid=? AND tagid=?'
-						, array($clipid, $tagid)
+					$clipTags = $db->rawQuery(
+						'SELECT tagid FROM clips_x_tags WHERE clipid=?'
+						, array($clipid)
 					);
+					
+					// flattened arrays
+					$t = new RecursiveIteratorIterator(new RecursiveArrayIterator($taglookup));
+					$t = iterator_to_array($t, false);
+					$c = new RecursiveIteratorIterator(new RecursiveArrayIterator($clipTags));
+					$c = iterator_to_array($c, false);
+					$intersect = array_intersect($c, $t);
 
-					if ($db->count >= 1) {
+					if (count($intersect) >= 1) {
 						exit(json_encode(array(
 							'tagsuccess' => false
 							, 'message' => 'Tag "'.$tagtext.'" is already on clip '.$clipid.'.'
@@ -47,7 +52,7 @@ if ($_SESSION['logged_in']) {
 				}
 
 				// add to recenttags variable
-				if (!in_array($tagtext, $_SESSION['recenttags'])){
+				if (!in_array($tagtext, $_SESSION['recenttags'])) {
 					array_push($_SESSION['recenttags'], $tagtext);
 					if (count($_SESSION['recenttags']) > 20) { 
 						array_shift($_SESSION['recenttags']);

@@ -12,7 +12,6 @@ if ($_SESSION['logged_in']){
 
   // check if all necessary fields set
   if (isset($_POST['clipid']) && $_POST['clipid'].length > 0) {
-
     if (isset($_POST['status'])) {
     $db->where('id', $_POST['clipid']);
     $status = $db->get('clips', null, 'clips.published');

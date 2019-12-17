@@ -320,7 +320,7 @@
       var clipid = $('#tagsSubmitBtn').data('clipid');
 
       addTag(clipid, chipData['tag']);
-    })
+    });
   }
 
   function continueUpdate(clipid, ajaxresponse){
@@ -376,7 +376,9 @@
       $('#clipExpandDownloadUrl').attr('href','//creative.lonelyleap.com/archive/media/?clip='+clipid+'&q=f&download');
       $('#clipExpandRawFootageUrl').attr('href',responseData.rawfootageurl);
 
-      $('#tagsSubmitBtn').attr('onclick', 'getAndAddTags(); location.reload();'); //@
+      $('#tagsSubmitBtn').attr(
+        'onclick'
+        , 'getAndAddTags(); updateClipExpandContent('+clipid+');'); //@
       $('#tagsSubmitBtn').data('clipid', clipid);
 
       <?php
@@ -513,10 +515,19 @@
       }      
     });
   }
-  function updateClipExpandContent(clipid){
-    $('.panes').css('opacity',0);
+
+  function updateClipExpandContent(clipid) {
+    $('.panes').css('opacity', 0);
     getClipData(clipid);
+
+    var chipInstance = M.Chips.getInstance($(".chips"));
+    if ($(chipInstance).length > 0) {
+      $(chipInstance.chipsData).each(function (chipIndex) {
+        chipInstance.deleteChip(chipIndex);
+      });
+    }
   }
+
   function toggleClipExpand(clipid){
     if (!clipExpandCurrentlyOpen) {
       // clipExpand not open, user is opening
@@ -967,7 +978,7 @@
               }
               ?><br />
               Tags: <span id="clipExpandTags">Tags</span>
-              <a id="tagAddFieldReveal" onclick="
+              <a id="tagAddFieldReveal" class="tooltipped" data-position="right" data-margin="0" data-tooltip="Add Tags" onclick="
                 console.log('clicked');
                 $('#tagsExpand').hide(1, function() {
                   $('#tagsExpand').show(400);

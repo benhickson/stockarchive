@@ -24,7 +24,7 @@ function isEditor(){
 
 	$db->rawQuery('SELECT id FROM clips WHERE id=? AND editor=?',array($clipid, $userid));
 
-	if ($db->count == 1){
+	if ($db->count == 1) {
 		return true;
 	} else {
 		return false;
