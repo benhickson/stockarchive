@@ -310,9 +310,16 @@
     });
   }
 
+  function clipExpandClose() {
+    clipExpandHeight('0px');
+    clipExpandCurrentlyOpen = false;
+  }
+
   function getAndAddTags() {
-    $(M.Chips.getInstance($(".chips")).chipsData).each(function (chipData) {
-      addTag(clipid, chipData);
+    $(M.Chips.getInstance($(".chips")).chipsData).each(function (chipIndex, chipData) {
+      var clipid = $('#tagsSubmitBtn').data('clipid');
+
+      addTag(clipid, chipData['tag']);
     })
   }
 
@@ -371,13 +378,10 @@
 
       
 
-      $('#tagsSubmitBtn').attr(
-        'onclick'
-        ,'getAndAddTags(); location.reload();'
-      );
+      $('#tagsSubmitBtn').attr('onclick', 'getAndAddTags(); location.reload();');
+      $('#tagsSubmitBtn').data('clipid', clipid);
 
       <?php
-
       if ($_SESSION['userid'] == 1){
       ?>
 
