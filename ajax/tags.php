@@ -1,6 +1,5 @@
 <?php
 
-// require '/var/www/html/creative.lonelyleap.com/archive/includes/0-base.php';
 require __DIR__.'/../includes/0-base.php';
 
 if ($_SESSION['logged_in']) {
@@ -14,16 +13,19 @@ if ($_SESSION['logged_in']) {
 		$clipid = $_POST['clipid'];
 		$tagtext = $_POST['tagtext'];
 
+		// get info about the clip
 		$clipInfo = $db->rawQuery(
 			'SELECT id, published, editor FROM clips WHERE id=?'
 			, array($clipid)
 		)[0];
 
+		// if the requested clip exists
 		if ($db->count == 1) {
+
 			// remove whitespace from beginning/end of tagtext
 			$tagtext = trim($tagtext);
 
-			// get the tag id, if not, error
+			// get the tag id if it already exists
 			$taglookup = $db->rawQuery(
 				'SELECT id FROM tags WHERE tagname=? AND deleted!=1'
 				, array($tagtext)
@@ -33,7 +35,8 @@ if ($_SESSION['logged_in']) {
 
 			// check if action is add or remove
 			if ($action == 'add') {
-				// add to recenttags variable
+
+				// add it to the recenttags Session variable
 				if (!in_array($tagtext, $_SESSION['recenttags'])) {
 					array_push($_SESSION['recenttags'], $tagtext);
 					if (count($_SESSION['recenttags']) > 20) {
@@ -41,13 +44,16 @@ if ($_SESSION['logged_in']) {
 					}
 				}
 
+				// if it's not published and the person is not the editor, reject the tag addition
 				if(!$clipInfo['published'] && $userid != $clipInfo['editor']) {
 					exit(json_encode(array(
 						'tagsuccess' => false
-						, 'message' => $clipid.' is unpublished and you are not the editor.'
+						, 'message' => $clipid.' is not published and you are not the editor.'
 					)));
 				}
 
+				// if the tag already exists
+				// TODO: this should possibly be "==" because there should only ever be one instance of a tag
 				if ($tagCount >= 1) {
 					$clipTags = $db->rawQuery(
 						'SELECT cxt.id FROM clips_x_tags cxt 
@@ -97,7 +103,9 @@ if ($_SESSION['logged_in']) {
 						, 'message' => 'Tag "'.$tagtext.'" could not be added to clip '.$clipid.'.'
 					)));
 				}
-			} elseif ($action == 'remove' && !$clipInfo['published'] && $userid === $clipInfo['editor']) {
+
+			// if the request is "remove" it must also be unpublished and the current user must be the editor.
+			} elseif ($action == 'remove' && !$clipInfo['published'] && $userid == $clipInfo['editor']) {
 				if ($tagCount >= 1) {
 					$tagid = $taglookup[0]['id'];
 
@@ -127,14 +135,14 @@ if ($_SESSION['logged_in']) {
 					)));
 				}
 			} else {
-				// incorrect action set.
+				// it was either not "add" or "remove", or a "remove" was attempted on a clip that wasn't unpublished and/or the user wasn't the editor.
 				exit(json_encode(array(
 					'tagsuccess' => false
 					, 'message' => 'Denied action, this clip cannot be modified in this way.'
 				)));
 			}
 		} else {
-			// clip not taggable
+			// clip does not exist
 			exit(json_encode(array(
 				'tagsuccess' => false
 				, 'message' => 'Clip does not exist.'
@@ -144,7 +152,7 @@ if ($_SESSION['logged_in']) {
 		// postfields not set correctly
 		exit(json_encode(array(
 			'tagsuccess' => false
-			, 'message' => 'This page has been modified to edit the postfields. Please reload normally.'
+			, 'message' => 'Incorrect postfields set.'
 		)));
 	}
 } else {
