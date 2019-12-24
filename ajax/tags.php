@@ -31,7 +31,7 @@ if ($_SESSION['logged_in']) {
 				, array($tagtext)
 			);
 
-			$tagCount = $db->count;
+			$countOfTagsMatchingTagtext = $db->count;
 
 			// check if action is add or remove
 			if ($action == 'add') {
@@ -54,36 +54,42 @@ if ($_SESSION['logged_in']) {
 
 				// if the tag already exists
 				// TODO: this should possibly be "==" because there should only ever be one instance of a tag
-				if ($tagCount >= 1) {
-					$clipTags = $db->rawQuery(
-						'SELECT cxt.id FROM clips_x_tags cxt 
+				if ($countOfTagsMatchingTagtext >= 1) {
 
-						LEFT JOIN tags t
-						ON cxt.tagid=t.id
+					$tagid = $taglookup[0]['id'];
 
-						WHERE cxt.clipid=? AND t.tagname=?'
-						, array($clipid, $tagtext)
+					// check if the clip is already tagged with this tag
+					$db->rawQuery(
+						'SELECT id FROM clips_x_tags 
+						WHERE clipid=? AND tagid=?'
+						, array($clipid, $tagid)
 					);
 
-					if (count($clipTags) >= 1) {
+					// if the tag is already tagged, then exit
+					if ($db->count == 1) {
 						exit(json_encode(array(
 							'tagsuccess' => false
 							, 'message' => 'Tag "'.$tagtext.'" is already on clip '.$clipid.'.'
 						)));
 					}
 
-					$tagid = $taglookup[0]['id'];
+					// else, simply continue
 
 				} else {
+					// tag not created, so create the tag
 					$data = array(
 						'tagname' => $tagtext,
 						'addedby' => $userid
 					);
 
 					$tagid = $db->insert('tags', $data);
+
+					// continue with this new tag id
+
 				}
 
 				// tag the clip
+
 				$data = array(
 					'clipid' => $clipid,
 					'tagid' => $tagid,
@@ -100,16 +106,21 @@ if ($_SESSION['logged_in']) {
 				} else {
 					exit(json_encode(array(
 						'tagsuccess' => false
-						, 'message' => 'Tag "'.$tagtext.'" could not be added to clip '.$clipid.'.'
+						, 'message' => 'Tag "'.$tagtext.'" could not be added to clip '.$clipid.'. Unexpected error.'
 					)));
 				}
 
 			// if the request is "remove" it must also be unpublished and the current user must be the editor.
 			} elseif ($action == 'remove' && !$clipInfo['published'] && $userid == $clipInfo['editor']) {
-				if ($tagCount >= 1) {
+				
+				// if the tag definitely exists
+				// TODO: this should possibly be "==" because there should only ever be one instance of a tag
+				if ($countOfTagsMatchingTagtext >= 1) {
+
+					// grab the tagid
 					$tagid = $taglookup[0]['id'];
 
-					// remove all links between the clip and tag
+					// remove the (all) links between the clip and tag
 					$db->rawQuery(
 						'DELETE FROM clips_x_tags WHERE clipid=? AND tagid=?'
 						, array($clipid, $tagid)
