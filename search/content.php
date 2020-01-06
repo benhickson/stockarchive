@@ -156,6 +156,9 @@
   }
   /* end shitty alignment */
 
+  #clipUnpublishCancel {
+    display: none;
+  }
   #clipExpandFullQualityReveal, #clipUnpublish, #clipUnpublishCancel, #tagAddFieldReveal {
     padding: 19px;
     white-space: nowrap;
@@ -343,6 +346,7 @@
       console.log(responseData);
 
       // update the text fields
+      $('#clipInfo').show();
       $('#clipExpandId').text(responseData.id);
       $('#clipExpandDescription').text(responseData.description);
       var locationString = '';
@@ -364,7 +368,8 @@
       } else {
         $('#clipExpandRestrictions').addClass('hide').text('');
       }
-      
+      $('#clipUnpublishCancel').css('display', 'none');
+
       // hide the section of full quality stuff
       $('#clipExpandFullQuality').hide();
       $('#tagsExpand').hide();
@@ -384,9 +389,7 @@
       $('#clipExpandDownloadUrl').attr('href','//creative.lonelyleap.com/archive/media/?clip='+clipid+'&q=f&download');
       $('#clipExpandRawFootageUrl').attr('href',responseData.rawfootageurl);
 
-      $('#tagsSubmitBtn').attr(
-        'onclick'
-        , 'getAndAddTags(); updateClipExpandContent('+clipid+');');
+      $('#tagsSubmitBtn').attr('onclick', 'getAndAddTags(); updateClipExpandContent('+clipid+');');
       $('#tagsSubmitBtn').data('clipid', clipid);
 
       <?php
@@ -435,7 +438,9 @@
             $('#clipExpandOriginalFilename').text('');
             $('#clipExpandTags').text('');
 
-            $('#rightpane *:not(#clipExpandDescription)').hide();
+            // $('#rightpane *:not(#clipExpandDescription)').hide();
+            $('#clipInfo').hide();
+            $('#clipExpandDescription').show();
             $('#clipUnpublish').show();
           }
 
@@ -951,32 +956,33 @@
       <?php
     }
     ?>
-      <!-- 5 spacers to fill the last row up to 6, when necessary -->
-      <div class="endSpacer searchResult flex-child" data-clipid="0a"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0b"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0c"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0d"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0e"></div>
+    <!-- 5 spacers to fill the last row up to 6, when necessary -->
+    <div class="endSpacer searchResult flex-child" data-clipid="0a"></div>
+    <div class="endSpacer searchResult flex-child" data-clipid="0b"></div>
+    <div class="endSpacer searchResult flex-child" data-clipid="0c"></div>
+    <div class="endSpacer searchResult flex-child" data-clipid="0d"></div>
+    <div class="endSpacer searchResult flex-child" data-clipid="0e"></div>
 
-      <script type="text/javascript">
-        function playPause(){
-          var player = document.getElementById('clipExpandVideo');
-          if (player.paused) {
-            player.play();
-          } else {
-            player.pause();
-          }
+    <script type="text/javascript">
+      function playPause(){
+        var player = document.getElementById('clipExpandVideo');
+        if (player.paused) {
+          player.play();
+        } else {
+          player.pause();
         }
-      </script>
+      }
+    </script>
 
-      <!-- The div for the expanded content -->
-      <div id="clipExpand" class="flex-child">
-        <div id="clipExpandContent">
-          <div class="panes" id="leftpane">
-            <video id="clipExpandVideo" src="//creative.lonelyleap.com/archive/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
-          </div>
-          <div class="panes" id="rightpane">
-            <h5 id="clipExpandDescription">Description</h5>
+    <!-- The div for the expanded content -->
+    <div id="clipExpand" class="flex-child">
+      <div id="clipExpandContent">
+        <div class="panes" id="leftpane">
+          <video id="clipExpandVideo" src="//creative.lonelyleap.com/archive/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
+        </div>
+        <div class="panes" id="rightpane">
+          <h5 id="clipExpandDescription">Description</h5>
+          <div id="clipInfo">
             <span id="clipExpandRestrictions" class="new badge red darken-4" data-badge-caption="" style="text-transform: uppercase;"></span>
             <p>Clip # <span id="clipExpandId">Clip Id</span> <?php 
               if($_SESSION['userid'] == 1){
@@ -1006,25 +1012,28 @@
               </div>
             </p>
             <p>Date: <span id="clipExpandDate">Date</span><br />
-               Project: <span id="clipExpandProject">Project</span><br />
-               Location: <span id="clipExpandLocation">Location</span></p>
+              Project: <span id="clipExpandProject">Project</span><br />
+              Location: <span id="clipExpandLocation">Location</span></p>
             <p>Camera: <span id="clipExpandCamera">Camera</span><br />
-               Resolution: <span id="clipExpandResolution">Resolution</span></p>
+              Resolution: <span id="clipExpandResolution">Resolution</span></p>
             <p style="display: none;">Search Relevancy Score: <span id="clipScore"></span></p>
             <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
             <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
-            <a id="clipUnpublish"></a>
-            <a id="clipUnpublishCancel" stlye="display: none;">Cancel</a>
             <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
               Filename: <span id="clipExpandOriginalFilename"></span></p>
           </div>
+          <div>
+            <a id="clipUnpublish"></a>
+            <a id="clipUnpublishCancel" stlye="display: none;">Cancel</a>
+          </div>
         </div>
-      </div>      
+      </div>
+    </div>
   </div>
   <div class="row" id="afterResultContainer">
     <ul class="pagination">
-      <?php 
-        echo $paginationstring; 
+      <?php
+        echo $paginationstring;
       ?>
     </ul>
   </div>

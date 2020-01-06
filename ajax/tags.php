@@ -150,6 +150,8 @@ if ($_SESSION['logged_in']) {
 				exit(json_encode(array(
 					'tagsuccess' => false
 					, 'message' => 'Denied action, this clip cannot be modified in this way.'
+					, 'clip is unpublished' => $clipInfo['published'] === 0
+					, 'you are clip editor' => $userid === $clipInfo['editor']
 				)));
 			}
 		} else {
