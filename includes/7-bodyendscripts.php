@@ -2,6 +2,11 @@
 <div class="responsive teal lighten-2" id="notChrome">This runs on Chrome only.</div>
 <iframe id="loginFrame" allowtransparency="true" style="position: fixed; z-index: 1000; width: 100%; height: 100%; border: none; display: none;">Error</iframe>
 <script type="text/javascript">
+  $(document).ready(function(){
+    $('.tooltipped').tooltip({
+      enterDelay: 250     // Delay after user hovers before tooltip shows
+    });
+  });
 
   // hide for browsers other than chrome
   function isNotChrome(){
@@ -53,7 +58,7 @@
 
 
   function tagUpdate(tagclipid, tag, action){
-    console.log(action, tag, 'to/from', tagclipid)
+    console.log(action, tag, 'to/from', tagclipid);
     $.ajax({
       type: 'POST',
       url: '/archive/ajax/tags.php',

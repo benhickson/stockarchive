@@ -53,7 +53,8 @@ if ($_SESSION['logged_in']){
 				$data = array(
 					'uploadfilename' => $fileName,
 					'linkfull' => $fileid,
-					'uploader' => $_SESSION['userid']
+					'uploader' => $_SESSION['userid'],
+					'editor' => $_SESSION['userid']
 				);
 				if ($clipid = $db->insert('clips',$data)) {
 					// transcode speed, from manual testing / sql audits

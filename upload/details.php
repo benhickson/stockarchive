@@ -17,14 +17,14 @@ function ableToPublish(){
 	}
 }
 
-function isOwner(){
+function isEditor(){
 	// bring in the variables needed
 	// $userid must be set before calling!
 	global $db, $clipid, $userid;
 
-	$db->rawQuery('SELECT id FROM clips WHERE id=? AND uploader=?',array($clipid, $userid));
+	$db->rawQuery('SELECT id FROM clips WHERE id=? AND editor=?',array($clipid, $userid));
 
-	if ($db->count == 1){
+	if ($db->count == 1) {
 		return true;
 	} else {
 		return false;
@@ -37,9 +37,9 @@ if ($_SESSION['logged_in']){
 		$userid = $_SESSION['userid'];		
 		$clipid = $_POST['clipid'];
 		// verify that this is my clip
-		if (isOwner()) {
+		if (isEditor()) {
 			if (ableToPublish($clipid)){
-				$db->rawQuery('UPDATE clips SET published=1 WHERE id=?',array($clipid));
+				$db->rawQuery('UPDATE clips SET published=1, editor=NULL WHERE id=?', array($clipid));
 				$published = true;
 				$message = 'clip '.$clipid.' published!';
 				echo json_encode(array($published,$message));
@@ -50,7 +50,7 @@ if ($_SESSION['logged_in']){
 			}
 		} else {
 			$published = false;
-			$message = 'not the clip owner';
+			$message = 'not the clip Editor';
 			exit(json_encode(array($published,$message)));
 		}
 	} else if (isset($_POST['name']) && isset($_POST['value']) && isset($_POST['clipid'])){
@@ -59,7 +59,7 @@ if ($_SESSION['logged_in']){
 		$clipid = $_POST['clipid'];
 		$userid = $_SESSION['userid'];
 		// verify that current user owns the clip
-		if (isOwner()) {
+		if (isEditor()) {
 			$datetest = false;
 			$specsfield = false;
 			// verify that the field is valid
