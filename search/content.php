@@ -438,7 +438,6 @@
             $('#clipExpandOriginalFilename').text('');
             $('#clipExpandTags').text('');
 
-            // $('#rightpane *:not(#clipExpandDescription)').hide();
             $('#clipInfo').hide();
             $('#clipExpandDescription').show();
             $('#clipUnpublish').show();
@@ -1022,10 +1021,8 @@
             <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
               Filename: <span id="clipExpandOriginalFilename"></span></p>
           </div>
-          <div>
-            <a id="clipUnpublish"></a>
-            <a id="clipUnpublishCancel" stlye="display: none;">Cancel</a>
-          </div>
+          <a id="clipUnpublish"></a>
+          <a id="clipUnpublishCancel" stlye="display: none;">Cancel</a>
         </div>
       </div>
     </div>
