@@ -156,7 +156,10 @@
   }
   /* end shitty alignment */
 
-  #clipExpandFullQualityReveal, #clipUnpublish, #clipUnpublishCancel {
+  #clipUnpublishCancel {
+    display: none;
+  }
+  #clipExpandFullQualityReveal, #clipUnpublish, #clipUnpublishCancel, #tagAddFieldReveal {
     padding: 19px;
     white-space: nowrap;
     cursor: pointer;
@@ -167,8 +170,12 @@
   .pagination li.leftbarhidden{
     display: none;
   }
-  #afterResultContainer .pagination li.leftbarhidden{
+  #afterResultContainer .pagination li.leftbarhidden {
     display: inline-block;
+  }
+
+  #tags .autocomplete-content.dropdown-content {
+    max-height: 150px;
   }
 
   /*
@@ -284,15 +291,49 @@
     $('.searchResult').removeClass('expanded');
     getElement(clipid).addClass('expanded'); 
   }
+
   function clipExpandOpen(clipid){
     clipExpandHeight('400px');
     clipExpandCurrentlyOpen = true;
     setActiveSearchResult(clipid);
+
+    // enable the tag field
+    $('.chips').chips({
+      data: [],
+      autocompleteOptions: {
+        data: {
+          <?php 
+            $tags = $db->rawQuery('SELECT tagname FROM tags WHERE deleted!=1');
+            foreach ($tags as $tag) {
+              echo '"'.$tag['tagname'].'": null,';
+            }
+          ?>
+        }
+      },
+      placeholder: 'Tags',
+      secondaryPlaceholder: '+ Tag'
+    });
   }
-  function clipExpandClose(){
+
+  function clipExpandClose() {
     clipExpandHeight('0px');
     clipExpandCurrentlyOpen = false;
   }
+
+  function getAndAddTags() {
+    var instance = M.Chips.getInstance($(".chips"));
+    
+    if (document.querySelector('#tags input').value != ''){
+      instance.addChip({tag: document.querySelector('#tags input').value});
+    }
+
+    $(instance.chipsData).each(function (chipIndex, chipData) {
+      var clipid = $('#tagsSubmitBtn').data('clipid');
+
+      addTag(clipid, chipData['tag']);
+    });
+  }
+
   function continueUpdate(clipid, ajaxresponse){
     // organize response
     var responseObject = JSON.parse(ajaxresponse);
@@ -305,6 +346,7 @@
       console.log(responseData);
 
       // update the text fields
+      $('#clipInfo').show();
       $('#clipExpandId').text(responseData.id);
       $('#clipExpandDescription').text(responseData.description);
       var locationString = '';
@@ -326,9 +368,11 @@
       } else {
         $('#clipExpandRestrictions').addClass('hide').text('');
       }
-      
+      $('#clipUnpublishCancel').css('display', 'none');
+
       // hide the section of full quality stuff
       $('#clipExpandFullQuality').hide();
+      $('#tagsExpand').hide();
 
       // from search result
       $('#clipScore').text($('.searchResult[data-clipid='+clipid+']').data('score'));
@@ -345,8 +389,10 @@
       $('#clipExpandDownloadUrl').attr('href','//creative.lonelyleap.com/archive/media/?clip='+clipid+'&q=f&download');
       $('#clipExpandRawFootageUrl').attr('href',responseData.rawfootageurl);
 
+      $('#tagsSubmitBtn').attr('onclick', 'getAndAddTags(); updateClipExpandContent('+clipid+');');
+      $('#tagsSubmitBtn').data('clipid', clipid);
+
       <?php
-      
       if ($_SESSION['userid'] == 1){
       ?>
 
@@ -365,7 +411,7 @@
 
       <?php
       $result = $db->rawQuery('SELECT able_unpublish FROM users WHERE id=?', array($_SESSION['userid']));
-      
+
       if($result[0]['able_unpublish'] === 1) {
         echo 'showUnpublishButton(clipid);';
       }
@@ -391,6 +437,10 @@
             $('#clipExpandResolution').text('');
             $('#clipExpandOriginalFilename').text('');
             $('#clipExpandTags').text('');
+
+            $('#clipInfo').hide();
+            $('#clipExpandDescription').show();
+            $('#clipUnpublish').show();
           }
 
           if(status['editor']) {
@@ -427,7 +477,7 @@
       error: function(xhr, status, error) {
         var err = JSON.parse(xhr.responseText);
         console.log(err.Message);
-      }      
+      }
     });
   }
 
@@ -443,17 +493,17 @@
     $.ajax('../ajax/publish.php', {
       type: 'POST',
       data: {clipid: clipid, unpublish: ''},
-      success: function(res) { console.log('@confirmUnpublish 1', res);
+      success: function(res) {
         res = JSON.parse(res);
 
         var msg = res['message'];
 
         window.location.href = '/archive/upload?clip='+clipid;
       },
-      error: function(xhr, status, error) { console.log('@confirmUnpublish 2');
+      error: function(xhr, status, error) {
         var err = JSON.parse(xhr.responseText);
         console.log(err.Message);
-      }      
+      }
     });
   };
 
@@ -480,10 +530,14 @@
       }      
     });
   }
-  function updateClipExpandContent(clipid){
-    $('.panes').css('opacity',0);
+
+  function updateClipExpandContent(clipid) {
+    $('.panes').css('opacity', 0);
     getClipData(clipid);
+
+    $('#tags .chip').remove();
   }
+
   function toggleClipExpand(clipid){
     if (!clipExpandCurrentlyOpen) {
       // clipExpand not open, user is opening
@@ -675,7 +729,6 @@
   
     return $encodedParams;
   }
-
 
   $page = 1;  // default
   $cols = array('c.id', 'c.description', 'c.project'); // columns/fields to request
@@ -902,59 +955,82 @@
       <?php
     }
     ?>
-      <!-- 5 spacers to fill the last row up to 6, when necessary -->
-      <div class="endSpacer searchResult flex-child" data-clipid="0a"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0b"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0c"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0d"></div>
-      <div class="endSpacer searchResult flex-child" data-clipid="0e"></div>
+    <!-- 5 spacers to fill the last row up to 6, when necessary -->
+    <div class="endSpacer searchResult flex-child" data-clipid="0a"></div>
+    <div class="endSpacer searchResult flex-child" data-clipid="0b"></div>
+    <div class="endSpacer searchResult flex-child" data-clipid="0c"></div>
+    <div class="endSpacer searchResult flex-child" data-clipid="0d"></div>
+    <div class="endSpacer searchResult flex-child" data-clipid="0e"></div>
 
-      <script type="text/javascript">
-        function playPause(){
-          var player = document.getElementById('clipExpandVideo');
-          if (player.paused) {
-            player.play();
-          } else {
-            player.pause();
-          }
+    <script type="text/javascript">
+      function playPause(){
+        var player = document.getElementById('clipExpandVideo');
+        if (player.paused) {
+          player.play();
+        } else {
+          player.pause();
         }
-      </script>
+      }
+    </script>
 
-      <!-- The div for the expanded content -->
-      <div id="clipExpand" class="flex-child">
-        <div id="clipExpandContent">
-          <div class="panes" id="leftpane">
-            <video id="clipExpandVideo" src="//creative.lonelyleap.com/archive/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
-          </div>
-          <div class="panes" id="rightpane">
-            <h5 id="clipExpandDescription">Description</h5>
+    <!-- The div for the expanded content -->
+    <div id="clipExpand" class="flex-child">
+      <div id="clipExpandContent">
+        <div class="panes" id="leftpane">
+          <video id="clipExpandVideo" src="//creative.lonelyleap.com/archive/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
+        </div>
+        <div class="panes" id="rightpane">
+          <h5 id="clipExpandDescription">Description</h5>
+          <div id="clipInfo">
             <span id="clipExpandRestrictions" class="new badge red darken-4" data-badge-caption="" style="text-transform: uppercase;"></span>
             <p>Clip # <span id="clipExpandId">Clip Id</span> <?php 
               if($_SESSION['userid'] == 1){
                   echo '<a id="clipExpandRetranscode" href="../upload/transcode.php?retranscode=clipid" target="_blank">RT</a>';
               }
-            ?><br />
-               Tags: <span id="clipExpandTags">Tags</span></p>
+              ?><br />
+              Tags: <span id="clipExpandTags">Tags</span>
+              <a id="tagAddFieldReveal" class="tooltipped" data-position="right" data-margin="0" data-tooltip="Add Tags" onclick="
+                console.log('clicked');
+                $('#tagsExpand').hide(1, function() {
+                  $('#tagsExpand').show(400);
+                  console.log('shown');
+                  setTimeout(function() {$('#tags input')[0].focus();}, 500);
+                });"
+              >[+]</a>
+              <div id="tagsExpand" class="row" hidden>
+                <div class="input-field col s8">
+                  <div id="tags" class="chips chips-placeholder" data-clipid="<?php echo $clipid; ?>">
+                  </div>
+                </div>
+                <div class="col s1">
+                  <br />
+                  <a class="btn waves-effect waves-light btn-floating s1" id="tagsSubmitBtn" href="#">
+                    <i class="material-icons left">publish</i>
+                  </a>
+                </div>
+              </div>
+            </p>
             <p>Date: <span id="clipExpandDate">Date</span><br />
-               Project: <span id="clipExpandProject">Project</span><br />
-               Location: <span id="clipExpandLocation">Location</span></p>
+              Project: <span id="clipExpandProject">Project</span><br />
+              Location: <span id="clipExpandLocation">Location</span></p>
             <p>Camera: <span id="clipExpandCamera">Camera</span><br />
-               Resolution: <span id="clipExpandResolution">Resolution</span></p>
+              Resolution: <span id="clipExpandResolution">Resolution</span></p>
             <p style="display: none;">Search Relevancy Score: <span id="clipScore"></span></p>
             <a class="btn waves-effect waves-light" id="clipExpandDownloadUrl" href="#"><i class="material-icons left">cloud_download</i>Download Proxy Clip</a>
             <a id="clipExpandFullQualityReveal" onclick="console.log('clicked');$('#clipExpandFullQuality').hide(1,function(){$('#clipExpandFullQuality').show(400);console.log('shown');});">Download Full Quality</a>
-            <a id="clipUnpublish"></a>
-            <a id="clipUnpublishCancel" stlye="display: none;">Cancel</a>
             <p id="clipExpandFullQuality">Raw Footage Folder: <a id="clipExpandRawFootageUrl" target="_blank" href="#">link</a><br />
               Filename: <span id="clipExpandOriginalFilename"></span></p>
           </div>
+          <a id="clipUnpublish"></a>
+          <a id="clipUnpublishCancel" stlye="display: none;">Cancel</a>
         </div>
-      </div>      
+      </div>
+    </div>
   </div>
   <div class="row" id="afterResultContainer">
     <ul class="pagination">
-      <?php 
-        echo $paginationstring; 
+      <?php
+        echo $paginationstring;
       ?>
     </ul>
   </div>
