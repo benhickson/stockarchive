@@ -71,7 +71,8 @@ if (isset($_GET['iframe'])){
 	</div>
 	<div class="card-content">
 		<span class="card-title grey-text text-darken-4">Log in to continue</span>
-		<form id="loginform" action="<?php echo addParams('login','true'); ?>" method="post">
+		<form id="loginform" action="?" method="post">
+			<input type="hidden" name="action" value="login" />
 			<div class="input-field">
 				<input id="logemail" type="email" name="email" class="validate" required>
 				<label for="logemail">Email</label>
@@ -146,7 +147,8 @@ if (isset($_GET['iframe'])){
 				var data = new Object();
 				data.email = $('#logemail').val();
 				data.password = $('#logpassword').val();
-				$.ajax("<?php echo addParams('login','true'); ?>",{
+				data.action = 'login';
+				$.ajax('?',{ 
 				  type: 'POST',
 				  data: data,
 				  success: function(response){

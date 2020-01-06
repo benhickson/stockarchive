@@ -7,7 +7,8 @@ if (isset($_GET['logout'])) {
 	activitylog('logout', $_SESSION['nickname'] . ' logged out.');
 	session_destroy();
 	unset($_SESSION);
-} else if (isset($_GET['login'])) {
+} else if (isset($_POST['action']) && $_POST['action'] == 'login') {
+	// make sure all variables are set
 	if (!(isset($_POST['email']) && isset($_POST['password']))) {
 		echoError('This page has been modified.');
 		activitylog('loginfail', 'Someone at '.$_SERVER['REMOTE_ADDR'].' has modified the login page to submit without having both fields set.');
