@@ -260,13 +260,11 @@
   }
 
   function distanceToRightEdge(clipid){
-    var theElement = getElement(clipid); 
-    console.log('@ theElement = ', theElement); console.log('- @ theElement.offset() = ', theElement.offset());
+    var theElement = getElement(clipid);
     return $(window).width() - (theElement.offset().left + theElement.width());
   }
 
   function clipAtEndOfRow(clipid){
-    console.log('@clipid = ', clipid);
     var thisClip = getElement(clipid);
     var nextClipId = thisClip.next().data('clipid');
 
@@ -293,7 +291,7 @@
     // re-attach it after the clip at end of row of the clipid
     clipAtEndOfRow(clipid).after(clipExpand);
   }
-  
+
   function clipExpandHeight(height){
     window.setTimeout(function(){
       document.getElementById('clipExpand').style.height = height;
