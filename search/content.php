@@ -789,7 +789,7 @@
       }
       $search = substr($search, 1);
 
-      $table = 'clips c, clips_x_tags cxt, tags t, projects p'; // table to search
+      $table = 'clips c, clips_x_tags cxt, tags t, projects p, opt_countries ct'; // table to search
       // $cols[] = "
       // SUM(
       //   CASE WHEN c.description REGEXP '$pipe' THEN 1 ELSE 0 END
@@ -814,12 +814,14 @@
       $db->where('c.id = cxt.clipid');
       $db->where('cxt.tagid = t.id');
       $db->where('c.project = p.id');
+      $db->where('c.country = ct.id');
       $db->where(
         "(
           c.description REGEXP '$search'
           OR t.tagname REGEXP '$search' 
           OR c.city REGEXP '^$search$' 
           OR c.region REGEXP '^$search$'
+          OR ct.countryname REGEXP '^$search$'
           OR p.name REGEXP '$search'
         )");
       $db->groupBy('c.id');
