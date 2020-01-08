@@ -258,23 +258,32 @@
     var theElement = $('.searchResult[data-clipid="'+clipid+'"]');
     return theElement;
   }
+
   function distanceToRightEdge(clipid){
     var theElement = getElement(clipid);
     return $(window).width() - (theElement.offset().left + theElement.width());
   }
+
   function clipAtEndOfRow(clipid){
     var thisClip = getElement(clipid);
-      var currentDistance = distanceToRightEdge(clipid);
-      var nextClipId = thisClip.next().data('clipid');
-      var nextDistance = distanceToRightEdge(nextClipId);
-      if (nextDistance > currentDistance){
-        // then this is the correct clip 
-        return thisClip;
-      } else {
-        // run again, with the next clip
-        return clipAtEndOfRow(nextClipId);
-      }
+    var nextClipId = thisClip.next().data('clipid');
+
+    if(typeof nextClipId === 'undefined') {
+      return thisClip;
+    }
+
+    var currentDistance = distanceToRightEdge(clipid);
+    var nextDistance = distanceToRightEdge(nextClipId);
+
+    if (nextDistance > currentDistance){
+      // then this is the correct clip 
+      return thisClip;
+    } else {
+      // run again, with the next clip
+      return clipAtEndOfRow(nextClipId);
+    }
   }
+
   function moveClipExpand(clipid){
     lastClipExpandMove = clipid;
     // detach it and save in a variable
@@ -282,11 +291,13 @@
     // re-attach it after the clip at end of row of the clipid
     clipAtEndOfRow(clipid).after(clipExpand);
   }
+
   function clipExpandHeight(height){
     window.setTimeout(function(){
       document.getElementById('clipExpand').style.height = height;
     }, 100);
   }
+
   function setActiveSearchResult(clipid){
     $('.searchResult').removeClass('expanded');
     getElement(clipid).addClass('expanded'); 
