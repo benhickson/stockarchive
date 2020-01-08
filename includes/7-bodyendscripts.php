@@ -31,12 +31,20 @@
   }
 
   function hoverStart() {  
-    this.play();
+    this.play().catch(function(e) {
+      if (e.code === DOMException.ABORT_ERR) {
+        return; // play() was aborted, which is fine
+      }
+
+      throw e; // Unexpected exception - rethrow
+    });
+
     this.nextElementSibling.classList.add('hovered');
   }
 
   function hoverEnd() {
     this.pause();
+    
     this.nextElementSibling.classList.remove('hovered');
   }
 
