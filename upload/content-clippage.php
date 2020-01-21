@@ -655,7 +655,7 @@ $clip = $db->rawQuery(
 <div class="row">
   <p>&nbsp;</p>
   <div class="col s9" id="databox">
-    <p>Original Filename: <?php echo substr($clip['uploadfilename'],0,strpos($clip['uploadfilename'], '.mp4')); ?><br />
+    <p>Original Filename: <?php echo substr($clip['uploadfilename'],0,strlen($clip['uploadfilename']) - 4); ?><br />
        Raw File Location: <span id="rawlocationSpan"><?php echo $clip['rawlocation']; ?></span></p>
   </div>
   <div class="col s3">
