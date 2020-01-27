@@ -82,11 +82,6 @@ if (isset($_GET['clip'])){
         $displayname = $clip['description'];
       }
 
-      if($_GET['clip'] == $clip['id']) {
-        $prevClip = $currentuploads[$i-1]['id'] ?: 0;
-        $nextClip = $currentuploads[$i+1]['id'] ?: 0;
-      }
-
       echo '<p class="truncate" data-clipid="'.$clip['id'].'"><a href="?clip='.$clip['id'].'">'.$displayname.'</a></p>';
     }
     ?>
@@ -111,23 +106,12 @@ if ($clippage) {
     window.addEventListener('load', function () {
         var lb = document.querySelector('div#leftbar');
         var h = lb.scrollHeight;
-        var scroll = $('.currentclip').position().top; console.log('##',lb,h,scroll);
+        var scroll = $('.currentclip').position().top;
 
         if(scroll > h/2) {
           lb.scrollTop = scroll - (h/2)
         }
     });
-
-    function makeButton(name, id) {
-        if(id === 0) {
-            return '<a class="waves-effect waves-light btn-small disabled">'+name+'</a>\n';
-        } 
-
-        return '<a href="?clip='+id+'" class="waves-effect waves-light btn-small">'+name+'</a>\n';
-    }
-
-    $('#clip-buttons').append(makeButton('Previous Clip', <?php echo $prevClip; ?>));
-    $('#clip-buttons').append(makeButton('Next Clip', <?php echo $nextClip; ?>));
 
     var progressBars = new Array(); // reference array
 
