@@ -70,13 +70,18 @@ if (isset($_GET['clip'])){
   <div id="leftbar">
     <p>Unpublished Uploads</p>
     <?php
-    $currentuploads = $db->rawQuery('SELECT id, uploadfilename, description FROM clips WHERE published=0 AND editor=? AND todelete=0 ORDER BY uploadfilename ASC', array($_SESSION['userid']));
-    foreach ($currentuploads as $clip) {
+    $currentuploads = $db->rawQuery(
+      'SELECT id, uploadfilename, description FROM clips WHERE published=0 AND editor=? AND todelete=0 ORDER BY uploadfilename ASC'
+      , array($_SESSION['userid'])
+    );
+    
+    foreach($currentuploads as $clip) {
       if ($clip['description'] == '') {
         $displayname = $clip['uploadfilename'];
       } else {
         $displayname = $clip['description'];
       }
+
       echo '<p class="truncate" data-clipid="'.$clip['id'].'"><a href="?clip='.$clip['id'].'">'.$displayname.'</a></p>';
     }
     ?>
@@ -98,6 +103,15 @@ if ($clippage) {
 
 <script src="/archive/cssjs/progressbar.min.js"></script>
 <script type="text/javascript"> // progressbar stuff
+    window.addEventListener('load', function () {
+        var lb = document.querySelector('div#leftbar');
+        var h = lb.scrollHeight;
+        var scroll = $('.currentclip').position().top;
+
+        if(scroll > h/2) {
+          lb.scrollTop = scroll - (h/2)
+        }
+    });
 
     var progressBars = new Array(); // reference array
 
@@ -142,5 +156,5 @@ if ($clippage) {
             duration: 400,
             easing: 'easeInOut'
         });
-    }    
+    }
 </script>
