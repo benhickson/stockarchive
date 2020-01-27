@@ -339,6 +339,7 @@ $clip = $db->rawQuery(
 
 <div class="row">
   <h3 class="col s12">Clip Details</h3>
+  <div id="clip-buttons"></div>
 </div>
 <div class="row">
   <div class="col s9">
