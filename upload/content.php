@@ -69,14 +69,27 @@ if (isset($_GET['clip'])){
 <div class="col m4 l3 xl2">
   <div id="leftbar">
     <p>Unpublished Uploads</p>
+    <div id="clip-buttons">
+    </div>
     <?php
-    $currentuploads = $db->rawQuery('SELECT id, uploadfilename, description FROM clips WHERE published=0 AND editor=? AND todelete=0 ORDER BY uploadfilename ASC', array($_SESSION['userid']));
-    foreach ($currentuploads as $clip) {
+    $currentuploads = $db->rawQuery(
+      'SELECT id, uploadfilename, description FROM clips WHERE published=0 AND editor=? AND todelete=0 ORDER BY uploadfilename ASC'
+      , array($_SESSION['userid'])
+    );
+    
+    foreach ($currentuploads as $i=>$clip) {
+      echo '##get '.$_GET['clip']; echo ' ##clip '.$clip['id']; echo ' ##equals '.($_GET['clip'] == $clip['id']);
       if ($clip['description'] == '') {
         $displayname = $clip['uploadfilename'];
       } else {
         $displayname = $clip['description'];
       }
+
+      if($_GET['clip'] == $clip['id']) {
+        $pastClip = $currentuploads[$i-1]['id'];
+        $nextClip = $currentuploads[$i+1]['id'];
+      }
+
       echo '<p class="truncate" data-clipid="'.$clip['id'].'"><a href="?clip='.$clip['id'].'">'.$displayname.'</a></p>';
     }
     ?>
@@ -98,6 +111,17 @@ if ($clippage) {
 
 <script src="/archive/cssjs/progressbar.min.js"></script>
 <script type="text/javascript"> // progressbar stuff
+
+    function makeButton(name, id) {
+      if(id > 0) {
+        return '<a class="waves-effect waves-light btn-small">'+name+'</a>';
+      } 
+
+      return '<a href="?clip='+id+'" class="waves-effect waves-light btn-small">'+name+'</a>';
+    }
+
+    $('#clip-buttons').append(makeButton('Past Clip', <?php echo $pastClip; ?>));
+    $('#clip-buttons').append(makeButton('Next Clip', <?php echo $nextClip; ?>));
 
     var progressBars = new Array(); // reference array
 
