@@ -34,14 +34,19 @@ if ($_SESSION['logged_in']) {
 			$countOfTagsMatchingTagtext = $db->count;
 
 			// check if action is add or remove
-			if ($action == 'add') {
+			if($action == 'add') {
 
-				// add it to the recenttags Session variable
-				if (!in_array($tagtext, $_SESSION['recenttags'])) {
-					array_push($_SESSION['recenttags'], $tagtext);
-					if (count($_SESSION['recenttags']) > 20) {
-						array_shift($_SESSION['recenttags']);
+				// check if the tag is in the recent tags
+				// if the tag is not in the array, add it, else, move the tag to the back
+				if(array_search($tagtext, $_SESSION['recenttags']) === false) {
+					array_unshift($_SESSION['recenttags'], $tagtext);
+
+					if(count($_SESSION['recenttags']) > 60) {
+						array_pop($_SESSION['recenttags']);
 					}
+				} else {
+					array_values(array_diff($_SESSION['recenttags'], [$tagtext]));
+					array_unshift($_SESSION['recenttags'], $tagtext);
 				}
 
 				// if it's not published and the person is not the editor, reject the tag addition
