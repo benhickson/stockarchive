@@ -75,7 +75,7 @@ if (isset($_GET['clip'])){
       , array($_SESSION['userid'])
     );
     
-    foreach ($currentuploads as $i=>$clip) {
+    foreach($currentuploads as $clip) {
       if ($clip['description'] == '') {
         $displayname = $clip['uploadfilename'];
       } else {
