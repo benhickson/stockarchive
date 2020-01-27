@@ -37,19 +37,16 @@ if ($_SESSION['logged_in']) {
 			if($action == 'add') {
 
 				// check if the tag is in the recent tags
-				$i = array_search($tagtext, $_SESSION['recenttags']);
-
 				// if the tag is not in the array, add it, else, move the tag to the back
-				if($i === false) {
-					array_push($_SESSION['recenttags'], $tagtext);
+				if(array_search($tagtext, $_SESSION['recenttags']) === false) {
+					array_unshift($_SESSION['recenttags'], $tagtext);
+
 					if(count($_SESSION['recenttags']) > 60) {
-						array_shift($_SESSION['recenttags']);
+						array_pop($_SESSION['recenttags']);
 					}
-				}
-				else {
-					$tag = $_SESSION['recenttags'][$i];
-					unset($_SESSION['recenttags'][$i]);
-					array_push($_SESSION['recenttags'], $tag);
+				} else {
+					array_values(array_diff($_SESSION['recenttags'], [$tagtext]));
+					array_unshift($_SESSION['recenttags'], $tagtext);
 				}
 
 				// if it's not published and the person is not the editor, reject the tag addition
