@@ -197,7 +197,7 @@ $clip = $db->rawQuery(
         var message = JSON.parse(response)[1];
         if (published) {
           // redirect to next clip
-          window.location = "?clip="+nextclip;
+          window.location = nextclip ? "?clip="+nextclip : "?clip=first";
         } else {
           alert(message);
         }
