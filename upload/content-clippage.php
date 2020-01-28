@@ -652,7 +652,6 @@ $clip = $db->rawQuery(
     $tag = str_replace('"', '\\"', $tag);
     $tag = "'".$tag."'";
 
-
     echo '<a onclick="addTagToField('.$tag.');">'.$tag.'</a>';
   } ?></div>
 </div>
