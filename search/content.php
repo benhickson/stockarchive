@@ -316,7 +316,7 @@
           <?php 
             $tags = $db->rawQuery('SELECT tagname FROM tags WHERE deleted!=1');
             foreach ($tags as $tag) {
-              echo '"'.$tag['tagname'].'": null,';
+              echo json_encode($tag['tagname']).': null,';
             }
           ?>
         }
