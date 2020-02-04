@@ -649,10 +649,14 @@ $clip = $db->rawQuery(
     <!-- <label for="tags">Tags</label> -->
   </div>
   <div class="col s12" id="recenttags">Recent tags:<?php foreach ($_SESSION['recenttags'] as $tag) {
-    $tag = str_replace('"', '\\"', $tag);
-    $tag = "'".$tag."'";
+    $jsTag = str_replace('\\', '\\\\', $tag);
+    $jsTag = str_replace("'", "\'", $jsTag);
 
-    echo '<a onclick="addTagToField('.$tag.');">'.$tag.'</a>';
+    echo '<a onclick="addTagToField(\'';
+    echo htmlspecialchars($jsTag);
+    echo '\');">';
+    echo htmlspecialchars($tag);
+    echo '</a>';
   } ?></div>
 </div>
 <div class="row">
