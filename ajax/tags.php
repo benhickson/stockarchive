@@ -21,7 +21,6 @@ if ($_SESSION['logged_in']) {
 
 		// if the requested clip exists
 		if ($db->count == 1) {
-
 			// remove whitespace from beginning/end of tagtext
 			$tagtext = trim($tagtext);
 
@@ -35,7 +34,6 @@ if ($_SESSION['logged_in']) {
 
 			// check if action is add or remove
 			if($action == 'add') {
-
 				// check if the tag is in the recent tags
 				$i = array_search($tagtext, $_SESSION['recenttags']);
 
@@ -48,9 +46,8 @@ if ($_SESSION['logged_in']) {
 					}
 				}
 				else {
-					$tag = $_SESSION['recenttags'][$i];
 					unset($_SESSION['recenttags'][$i]);
-					array_unshift($_SESSION['recenttags'], $tag);
+					array_unshift($_SESSION['recenttags'], $tagtext);
 				}
 
 				// if it's not published and the person is not the editor, reject the tag addition
