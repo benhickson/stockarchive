@@ -21,7 +21,6 @@ if ($_SESSION['logged_in']) {
 
 		// if the requested clip exists
 		if ($db->count == 1) {
-
 			// remove whitespace from beginning/end of tagtext
 			$tagtext = trim($tagtext);
 
@@ -35,17 +34,19 @@ if ($_SESSION['logged_in']) {
 
 			// check if action is add or remove
 			if($action == 'add') {
-
 				// check if the tag is in the recent tags
+				$i = array_search($tagtext, $_SESSION['recenttags']);
+
 				// if the tag is not in the array, add it, else, move the tag to the back
-				if(array_search($tagtext, $_SESSION['recenttags']) === false) {
+				if($i === false) {
 					array_unshift($_SESSION['recenttags'], $tagtext);
 
 					if(count($_SESSION['recenttags']) > 60) {
 						array_pop($_SESSION['recenttags']);
 					}
-				} else {
-					array_values(array_diff($_SESSION['recenttags'], [$tagtext]));
+				}
+				else {
+					unset($_SESSION['recenttags'][$i]);
 					array_unshift($_SESSION['recenttags'], $tagtext);
 				}
 

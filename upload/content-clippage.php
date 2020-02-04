@@ -301,7 +301,7 @@ $clip = $db->rawQuery(
         <?php
           $tags = $db->rawQuery('SELECT t.id, t.tagname FROM clips_x_tags cxt LEFT JOIN tags t ON cxt.tagid=t.id WHERE cxt.clipid=?',array($clipid));
           foreach ($tags as $tag) {
-            echo '{tag: "'.$tag['tagname'].'",id: "'.$tag['id'].'"},';
+            echo '{tag: '.json_encode($tag['tagname']).',id: "'.$tag['id'].'"},';
           }
         ?>
       ],
@@ -310,7 +310,7 @@ $clip = $db->rawQuery(
           <?php 
             $tags = $db->rawQuery('SELECT tagname FROM tags WHERE deleted!=1');
             foreach ($tags as $tag) {
-              echo '"'.$tag['tagname'].'": null,';
+              echo json_encode($tag['tagname']).': null,';
             }
           ?>
         }
@@ -649,7 +649,16 @@ $clip = $db->rawQuery(
     <!-- <label for="tags">Tags</label> -->
   </div>
   <div class="col s12" id="recenttags">Recent tags:<?php foreach ($_SESSION['recenttags'] as $tag) {
-    echo '<a onclick="addTagToField(\''.$tag.'\');">'.$tag.'</a>';
+    // the tag string passed to addTagToField has to be encoded for both JS and HTML 
+    // this does the JS formatting
+    $jsTag = str_replace('\\', '\\\\', $tag);
+    $jsTag = str_replace("'", "\'", $jsTag);
+
+    echo '<a onclick="addTagToField(\'';
+    echo htmlspecialchars($jsTag);
+    echo '\');">';
+    echo htmlspecialchars($tag);
+    echo '</a>';
   } ?></div>
 </div>
 <div class="row">
