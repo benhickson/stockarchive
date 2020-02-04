@@ -42,7 +42,7 @@ if ($_SESSION['logged_in']) {
 				// if the tag is not in the array, add it, else, move the tag to the back
 				if($i === false) {
 					array_unshift($_SESSION['recenttags'], $tagtext);
-					
+
 					if(count($_SESSION['recenttags']) > 60) {
 						array_pop($_SESSION['recenttags']);
 					}
