@@ -649,6 +649,8 @@ $clip = $db->rawQuery(
     <!-- <label for="tags">Tags</label> -->
   </div>
   <div class="col s12" id="recenttags">Recent tags:<?php foreach ($_SESSION['recenttags'] as $tag) {
+    // the tag string passed to addTagToField has to be encoded for both JS and HTML 
+    // this does the JS formatting
     $jsTag = str_replace('\\', '\\\\', $tag);
     $jsTag = str_replace("'", "\'", $jsTag);
 
