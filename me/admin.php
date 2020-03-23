@@ -23,9 +23,14 @@
   <div id="userInfoPanel" style="width: 500px">
     <form action="/action_page.php">
       <select id="userDataSelect">
-        <option value="0" selected>Data</option>
+        <option value="0" selected disabled>Data</option>
       </select>
+      <form>
+        <label for="editField">Edit:</label><br>
+        <input type="text" id="editField" name="editField"><br>
+      </form>
       <input type="submit" value="Submit">
+      <div>int(11) [Integer], varchar(255) [Alphanumberic Characters], tinyint(1) [1 for true, 0 for false], char(2) [2 Letters]</div>
     </form> 
   </div>
 </div>
@@ -35,8 +40,15 @@
     console.log('add');
   }
 
-  function openUserInfoPanel(userInfo) {
+  function openUserInfoPanel(userInfo, cols) {
+    var select = document.getElementById("userDataSelect");
 
+    cols.forEach(function(col) { console.log('@@', col);
+      var name = col['Field'];
+      var type = col['Type'];
+
+      select.options[select.options.length] = new Option(name + " // " + type, name);
+    });
   }
 
   function editUser() {
@@ -47,10 +59,22 @@
     $.ajax('../ajax/users.php', {
       type: 'POST',
       data: {userId: userId},
-      success: function(res) {
+      success: function(res) { console.log('@@', res);
         var userInfo = JSON.parse(res);
 
-        openUserInfoPanel(userInfo);
+        $.ajax('../ajax/users.php', {
+          type: 'POST',
+          data: {get_columns: "get_columns"},
+          success: function(res) {
+            var cols = JSON.parse(res)[0];
+
+            openUserInfoPanel(userInfo, cols);
+          },
+          error: function(xhr, status, error) {
+            var err = JSON.parse(xhr.responseText);
+            console.log(err.Message);
+          }
+        });
       },
       error: function(xhr, status, error) {
         var err = JSON.parse(xhr.responseText);

@@ -2,12 +2,12 @@
 
 require __DIR__.'/../includes/0-base.php';
 
-if ($_SESSION['logged_in']) {
+if($_SESSION['logged_in']) {
 	// add the userid from session
 	$userid = $_SESSION['userid'];
 
 	// check if all necessary fields set
-	if (isset($_POST['userId'])) {
+	if(isset($_POST['userId'])) {
 		$id = $_POST['userId'];
 
 		$cols = array(
@@ -29,13 +29,20 @@ if ($_SESSION['logged_in']) {
 
     exit(json_encode($userData[0]));
 
+  } else if(isset($_POST['get_columns'])) {
+    $sql = 'SHOW COLUMNS FROM users';
+    $res = $db->query($sql);
+
+    exit(json_encode(array(
+			$res
+    )));
 	} else {
 		// postfields not set correctly
 		exit(json_encode(array(
 			'tagsuccess' => false
 			, 'message' => 'Incorrect postfields set.'
 		)));
-	}
+  }  
 } else {
 	// not logged in
 	exit(json_encode(array(
