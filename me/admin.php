@@ -40,15 +40,25 @@
     console.log('add');
   }
 
-  function openUserInfoPanel(userInfo, cols) {
+  function openUserInfoPanel(userInfo, cols) { console.log('@@ouip', userInfo);
     var select = document.getElementById("userDataSelect");
 
-    cols.forEach(function(col) { console.log('@@', col);
+    cols.forEach(function(col) {
       var name = col['Field'];
       var type = col['Type'];
 
       select.options[select.options.length] = new Option(name + " // " + type, name);
     });
+
+    select.onchange = function() {
+      var i = select.selectedIndex;
+      console.log('@@so', select.options[i].value);
+      console.log('@@ui', userInfo[select.options[i].value]);
+
+      var e = document.getElementById("editField");
+
+      e.value = userInfo[select.options[i].value];
+    };
   }
 
   function editUser() {
