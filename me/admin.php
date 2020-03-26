@@ -44,7 +44,7 @@
 
     var i = select.selectedIndex;
     var field = select.options[i].value;
-    var userId = user.options[i].value; console.log("@@", userId, field, newFieldValue);
+    var userId = user.options[user.selectedIndex].value; console.log("@@", userId, field, newFieldValue);
     
     $.ajax('../ajax/users.php', {
       type: 'POST',

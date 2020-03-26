@@ -44,20 +44,21 @@ if($_SESSION['logged_in']) {
   && isset($_POST['field'])
   ) { // exit(json_encode($_POST)); //@@
     $id = $_POST['user_id'];
+    $data = array($_POST['field'] => $_POST['value']);
 
     $db->where('id', $id);
-    $res = $db->update($_POST['field'], $_POST['value']);
+    $res = $db->update('users', $data);
 
     if($res) {
       echo json_encode(array(
         'tagsuccess' => true
-        , 'message' => 'User "'.$edit_field.'" editted to be ``'.edit_info.'``'
+        , 'message' => 'User '.$_POST['field'].' editted to be ``'.$_POST['value'].'``'
       ));
     }
     else {
       echo json_encode(array(
         'tagsuccess' => false
-        , 'message' => 'Failed to edit user "'.$edit_field.'" editted to be ``'.edit_info.'``.'
+        , 'message' => 'Failed to edit user '.$_POST['field'].' to be ``'.$_POST['value'].'``.'.$res
       ));
     }
   } 
