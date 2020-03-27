@@ -3,6 +3,10 @@
     display: inline;
     max-width: 500px;
   }
+
+  #submitResponse {
+    display: inline;
+  }
 </style>
 
 <div class="input-field searchstuff">
@@ -26,9 +30,10 @@
     </select>
     <form>
       <label for="editField">Edit:</label><br>
-      <input type="text" id="editField" name="editField"><br>
+      <input type="text" id="editField" name="editField">
     </form>
     <input type="submit" value="Submit" onclick="submitUserEdit()">
+    <div id="submitResponse"></div>
   </div>
 </div>
 
@@ -50,7 +55,9 @@
       type: 'POST',
       data: {user_id: userId, field: field, value: newFieldValue},
       success: function(res) { 
-        console.log('@@edit user', res);
+        res = JSON.parse(res);
+        console.log('@@edit user', res.length, res);
+        document.getElementById("submitResponse").innerHTML = res['message'];
       },
       error: function(xhr, status, error) {
         var err = JSON.parse(xhr.responseText);
