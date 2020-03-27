@@ -42,7 +42,7 @@
     console.log('@@add');
   }
 
-  function submitUserEdit() {
+  function submitUserEdit() { //@@TODO: Enter should trigger submit
     var user = document.getElementById("user");
     var select = document.getElementById("userDataSelect");
     var newFieldValue = document.getElementById("editField").value;

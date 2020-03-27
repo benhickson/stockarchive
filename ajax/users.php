@@ -44,21 +44,29 @@ if($_SESSION['logged_in']) {
   && isset($_POST['field'])
   ) { // exit(json_encode($_POST)); //@@
     $id = $_POST['user_id'];
-    $data = array($_POST['field'] => $_POST['value']);
+    $field = $_POST['field'];
+    $value = $_POST['value'];
+
+    if($field === 'password') {
+      $value = password_hash($value, PASSWORD_DEFAULT);
+    }
+
+    $data = array($field => $value);
 
     $db->where('id', $id);
     $res = $db->update('users', $data);
 
+    // response should not send back the hashed $value when password is being set
     if($res) {
       echo json_encode(array(
         'tagsuccess' => true
-        , 'message' => 'User '.$_POST['field'].' editted to be ``'.$_POST['value'].'``'
+        , 'message' => 'User '.$field.' editted to be ``'.$_POST['value'].'``'
       ));
     }
     else {
       echo json_encode(array(
         'tagsuccess' => false
-        , 'message' => 'Failed to edit user '.$_POST['field'].' to be ``'.$_POST['value'].'``.'.$res
+        , 'message' => 'Failed to edit user '.$field.' to be ``'.$_POST['value'].'``.'
       ));
     }
   } 
