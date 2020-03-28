@@ -28,11 +28,9 @@
     <select id="userDataSelect">
       <option value="0" selected disabled>Data</option>
     </select>
-    <form>
-      <label for="editField">Edit:</label><br>
-      <input type="text" id="editField" name="editField">
-    </form>
-    <input type="submit" value="Submit" onclick="submitUserEdit()">
+    <label for="editField">Edit:</label><br>
+    <input type="text" id="editField" name="editField">
+    <input id="submitBtn" type="submit" value="Submit" onclick="submitUserEdit()">
     <div id="submitResponse"></div>
   </div>
 </div>
@@ -42,10 +40,14 @@
     console.log('@@add');
   }
 
-  function submitUserEdit() { //@@TODO: Enter should trigger submit
+  function submitUserEdit() {
     var user = document.getElementById("user");
     var select = document.getElementById("userDataSelect");
     var newFieldValue = document.getElementById("editField").value;
+
+    if(newFieldValue.length < 1) {
+      return;
+    }
 
     var i = select.selectedIndex;
     var field = select.options[i].value;
@@ -81,7 +83,17 @@
       console.log('@@so', select.options[i].value);
       console.log('@@ui', userInfo[select.options[i].value]);
 
-      var e = document.getElementById("editField");
+      var editField = document.getElementById("editField");
+      console.log("@@pre enter");
+      editField.addEventListener("keyup", function(event) { console.log("@@in enter");
+        // Number 13 is the "Enter" key on the keyboard
+        if(event.keyCode === 13) {
+          event.preventDefault(); console.log("@@enter");
+          
+          document.getElementById("submitBtn").click();
+        }
+      }); 
+      
       var value = select.options[i].value;
       var curr = userInfo[value];
       var placeholder = "";
@@ -116,8 +128,8 @@
         typeDetails = "Enter 2 letters.";
       }
 
-      e.value = curr;
-      e.placeholder = placeholder + typeDetails;
+      editField.value = curr;
+      editField.placeholder = placeholder + typeDetails;
     };
   }
 
