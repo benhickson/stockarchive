@@ -140,7 +140,7 @@
 
     $.ajax('../ajax/users.php', {
       type: 'POST',
-      data: {userId: userId},
+      data: {user_id: userId, get_user_data: ""},
       success: function(res) { console.log('@@', res);
         var userInfo = JSON.parse(res);
 
@@ -149,6 +149,9 @@
           data: {get_columns: "get_columns"},
           success: function(res) {
             var cols = JSON.parse(res)[0];
+
+            // remove ID
+            cols.splice(0, 1); console.log("@@cols splice", cols);
 
             openUserInfoPanel(userInfo, cols);
           },

@@ -9,12 +9,11 @@ if($_SESSION['logged_in']) {
   $userid = $_SESSION['userid'];
 
   // check if all necessary fields set
-  if(isset($_POST['userId'])) {
-    $id = $_POST['userId'];
+  if(isset($_POST['user_id']) && isset($_POST['get_user_data'])) {
+    $id = $_POST['user_id'];
 
     $cols = array(
-      " id
-      , email
+      " email
       , firstname
       , lastname
       , registration_open
@@ -35,9 +34,7 @@ if($_SESSION['logged_in']) {
     $sql = 'SHOW COLUMNS FROM users';
     $res = $db->query($sql);
 
-    exit(json_encode(array(
-      $res
-    )));
+    exit(json_encode(array($res)));
   } 
   else if(isset($_POST['user_id'])
   && isset($_POST['value'])
