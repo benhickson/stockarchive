@@ -24,7 +24,7 @@
   </select>
   <button type="button" onclick="editUser()">edit</button>
   <button type="button" onclick="addUser()">new user</button>
-  <div id="userInfoPanel" style="width: 500px">
+  <div id="userInfoPanel" style="width: 500px; visibility: hidden;">
     <select id="userDataSelect">
       <option value="0" selected disabled>Data</option>
     </select>
@@ -36,11 +36,46 @@
 </div>
 
 <script type="text/javascript">
-  function addUser() {
-    console.log('@@add');
+  function editUser() {
+    var e = document.getElementById("user");
+    var userId = e.options[e.selectedIndex].value;
+    console.log(userId);
+
+    $.ajax('../ajax/users.php', {
+      type: 'POST',
+      data: {user_id: userId, get_user_data: ""},
+      success: function(res) { console.log('@@', res);
+        var userInfo = JSON.parse(res);
+
+        $.ajax('../ajax/users.php', {
+          type: 'POST',
+          data: {get_columns: "get_columns"},
+          success: function(res) {
+            var cols = JSON.parse(res)[0];
+
+            // remove ID
+            cols.splice(0, 1); console.log("@@cols splice", cols);
+
+            openUserInfoPanel(userInfo, cols);
+          },
+          error: function(xhr, status, error) {
+            var err = JSON.parse(xhr.responseText);
+            console.log(err.Message);
+          }
+        });
+      },
+      error: function(xhr, status, error) {
+        var err = JSON.parse(xhr.responseText);
+        console.log(err.Message);
+      }
+    });
   }
 
-  function submitUserEdit() {
+  function addUser() { //TODO
+    console.log('Add user features to be implemented');
+  }
+
+  function submitUserEdit() { console.log("@@v");
     var user = document.getElementById("user");
     var select = document.getElementById("userDataSelect");
     var newFieldValue = document.getElementById("editField").value;
@@ -69,6 +104,8 @@
   }
 
   function openUserInfoPanel(userInfo, cols) { console.log('@@ouip', cols);
+    document.getElementById("userInfoPanel").style.visibility = 'visible';
+
     var select = document.getElementById("userDataSelect");
 
     cols.forEach(function(col) {
@@ -131,40 +168,5 @@
       editField.value = curr;
       editField.placeholder = placeholder + typeDetails;
     };
-  }
-
-  function editUser() {
-    var e = document.getElementById("user");
-    var userId = e.options[e.selectedIndex].value;
-    console.log(userId);
-
-    $.ajax('../ajax/users.php', {
-      type: 'POST',
-      data: {user_id: userId, get_user_data: ""},
-      success: function(res) { console.log('@@', res);
-        var userInfo = JSON.parse(res);
-
-        $.ajax('../ajax/users.php', {
-          type: 'POST',
-          data: {get_columns: "get_columns"},
-          success: function(res) {
-            var cols = JSON.parse(res)[0];
-
-            // remove ID
-            cols.splice(0, 1); console.log("@@cols splice", cols);
-
-            openUserInfoPanel(userInfo, cols);
-          },
-          error: function(xhr, status, error) {
-            var err = JSON.parse(xhr.responseText);
-            console.log(err.Message);
-          }
-        });
-      },
-      error: function(xhr, status, error) {
-        var err = JSON.parse(xhr.responseText);
-        console.log(err.Message);
-      }
-    });
   }
 </script>
