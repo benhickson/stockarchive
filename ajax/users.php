@@ -39,7 +39,7 @@ if($_SESSION['logged_in']) {
   else if(isset($_POST['user_id'])
   && isset($_POST['value'])
   && isset($_POST['field'])
-  ) { // exit(json_encode($_POST)); //@@
+  ) {
     $id = $_POST['user_id'];
     $field = $_POST['field'];
     $value = $_POST['value'];

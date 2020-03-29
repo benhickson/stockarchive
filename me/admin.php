@@ -11,7 +11,7 @@
 
 <div class="input-field searchstuff">
   <select id="user">
-    <option value="0" selected>Select User</option>
+    <option value="0" selected>Select user to edit</option>
     <?php
       $cols = array("id, email, firstname, lastname");
       $db->orderBy("firstname","asc");
@@ -23,7 +23,7 @@
     ?>
   </select>
   <button type="button" onclick="editUser()">edit</button>
-  <button type="button" onclick="addUser()">new user</button>
+  <button type="button" onclick="addUser()" hidden>new user</button>
   <div id="userInfoPanel" style="width: 500px; visibility: hidden;">
     <select id="userDataSelect">
       <option value="0" selected disabled>Data</option>
@@ -44,7 +44,7 @@
     $.ajax('../ajax/users.php', {
       type: 'POST',
       data: {user_id: userId, get_user_data: ""},
-      success: function(res) { console.log('@@', res);
+      success: function(res) {
         var userInfo = JSON.parse(res);
 
         $.ajax('../ajax/users.php', {
@@ -54,7 +54,7 @@
             var cols = JSON.parse(res)[0];
 
             // remove ID
-            cols.splice(0, 1); console.log("@@cols splice", cols);
+            cols.splice(0, 1);
 
             openUserInfoPanel(userInfo, cols);
           },
@@ -71,39 +71,11 @@
     });
   }
 
-  function addUser() { //TODO
+  function addUser() { // TODO
     console.log('Add user features to be implemented');
   }
 
-  function submitUserEdit() { console.log("@@v");
-    var user = document.getElementById("user");
-    var select = document.getElementById("userDataSelect");
-    var newFieldValue = document.getElementById("editField").value;
-
-    if(newFieldValue.length < 1) {
-      return;
-    }
-
-    var i = select.selectedIndex;
-    var field = select.options[i].value;
-    var userId = user.options[user.selectedIndex].value; console.log("@@", userId, field, newFieldValue);
-    
-    $.ajax('../ajax/users.php', {
-      type: 'POST',
-      data: {user_id: userId, field: field, value: newFieldValue},
-      success: function(res) { 
-        res = JSON.parse(res);
-        console.log('@@edit user', res.length, res);
-        document.getElementById("submitResponse").innerHTML = res['message'];
-      },
-      error: function(xhr, status, error) {
-        var err = JSON.parse(xhr.responseText);
-        console.log(err.Message);
-      }
-    });
-  }
-
-  function openUserInfoPanel(userInfo, cols) { console.log('@@ouip', cols);
+  function openUserInfoPanel(userInfo, cols) {
     document.getElementById("userInfoPanel").style.visibility = 'visible';
 
     var select = document.getElementById("userDataSelect");
@@ -117,15 +89,13 @@
 
     select.onchange = function() {
       var i = select.selectedIndex;
-      console.log('@@so', select.options[i].value);
-      console.log('@@ui', userInfo[select.options[i].value]);
 
       var editField = document.getElementById("editField");
-      console.log("@@pre enter");
-      editField.addEventListener("keyup", function(event) { console.log("@@in enter");
+      
+      editField.addEventListener("keyup", function(event) {
         // Number 13 is the "Enter" key on the keyboard
         if(event.keyCode === 13) {
-          event.preventDefault(); console.log("@@enter");
+          event.preventDefault();
           
           document.getElementById("submitBtn").click();
         }
@@ -147,7 +117,7 @@
 
       var col = cols.find(function(elem) { 
         return elem['Field'] == value;
-      }); console.log("@@col ", col);
+      });
 
       var type = col["Type"];
       var typeDetails = "";
@@ -168,5 +138,33 @@
       editField.value = curr;
       editField.placeholder = placeholder + typeDetails;
     };
+  }
+
+  function submitUserEdit() {
+    var user = document.getElementById("user");
+    var select = document.getElementById("userDataSelect");
+    var newFieldValue = document.getElementById("editField").value;
+
+    if(newFieldValue.length < 1) {
+      return;
+    }
+
+    var i = select.selectedIndex;
+    var field = select.options[i].value;
+    var userId = user.options[user.selectedIndex].value;
+    
+    $.ajax('../ajax/users.php', {
+      type: 'POST',
+      data: {user_id: userId, field: field, value: newFieldValue},
+      success: function(res) { 
+        res = JSON.parse(res);
+        
+        document.getElementById("submitResponse").innerHTML = res['message'];
+      },
+      error: function(xhr, status, error) {
+        var err = JSON.parse(xhr.responseText);
+        console.log(err.Message);
+      }
+    });
   }
 </script>
