@@ -11,7 +11,7 @@
 
 <div class="input-field searchstuff">
   <select id="user">
-    <option value="0" selected>Select user to edit</option>
+    <option value="0" selected disabled>Select user to edit</option>
     <?php
       $cols = array("id, email, firstname, lastname");
       $db->orderBy("firstname","asc");
@@ -155,10 +155,6 @@
     var user = document.getElementById("user");
     var select = document.getElementById("userDataSelect");
     var newFieldValue = document.getElementById("editField").value;
-
-    if(newFieldValue.length < 1) {
-      return;
-    }
 
     var i = select.selectedIndex;
     var field = select.options[i].value;
