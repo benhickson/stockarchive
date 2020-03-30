@@ -43,14 +43,14 @@
 
     $.ajax('../ajax/users.php', {
       type: 'POST',
-      data: {user_id: userId, get_user_data: ""},
-      success: function(res) {
+      data: {edit_id: userId, get_user_data: ""},
+      success: function(res) { console.log("@@res", res)
         var userInfo = JSON.parse(res);
 
         $.ajax('../ajax/users.php', {
           type: 'POST',
           data: {get_columns: "get_columns"},
-          success: function(res) {
+          success: function(res) { 
             var cols = JSON.parse(res)[0];
 
             // remove ID
@@ -80,6 +80,25 @@
 
     var select = document.getElementById("userDataSelect");
 
+    var user = document.getElementById("user");
+    user.onchange = function() {
+      select.options[0].selected = true;
+
+      editField.value = '';
+      editField.placeholder = '';
+      document.getElementById("submitResponse").innerHTML = '';
+    };     
+
+    var editField = document.getElementById("editField");
+    editField.addEventListener("keyup", function(event) {
+      // Number 13 is the "Enter" key on the keyboard
+      if(event.keyCode === 13) {
+        event.preventDefault();
+        
+        document.getElementById("submitBtn").click();
+      }
+    }); 
+
     cols.forEach(function(col) {
       var name = col['Field'];
       var type = col['Type'];
@@ -88,19 +107,10 @@
     });
 
     select.onchange = function() {
+      document.getElementById("submitResponse").innerHTML = '';
+      
       var i = select.selectedIndex;
 
-      var editField = document.getElementById("editField");
-      
-      editField.addEventListener("keyup", function(event) {
-        // Number 13 is the "Enter" key on the keyboard
-        if(event.keyCode === 13) {
-          event.preventDefault();
-          
-          document.getElementById("submitBtn").click();
-        }
-      }); 
-      
       var value = select.options[i].value;
       var curr = userInfo[value];
       var placeholder = "";
@@ -155,7 +165,7 @@
     
     $.ajax('../ajax/users.php', {
       type: 'POST',
-      data: {user_id: userId, field: field, value: newFieldValue},
+      data: {edit_id: userId, field: field, value: newFieldValue},
       success: function(res) { 
         res = JSON.parse(res);
         

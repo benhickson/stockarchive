@@ -8,9 +8,20 @@ if($_SESSION['logged_in']) {
   // add the userid from session
   $userid = $_SESSION['userid'];
 
+  $cols = array("able_unpublish");
+  $db->where('id', $userid);
+  $userData = $db->get("users", null, $cols);
+
+  if(!isset($userData[0]) || $userData[0]["able_unpublish"] !== 1) {
+    exit(json_encode(array(
+      'tagsuccess' => false
+      , 'message' => 'Improper permission.'
+    )));
+  }
+
   // check if all necessary fields set
-  if(isset($_POST['user_id']) && isset($_POST['get_user_data'])) {
-    $id = $_POST['user_id'];
+  if(isset($_POST['edit_id']) && isset($_POST['get_user_data'])) {
+    $id = $_POST['edit_id'];
 
     $cols = array(
       " email
@@ -36,11 +47,11 @@ if($_SESSION['logged_in']) {
 
     exit(json_encode(array($res)));
   } 
-  else if(isset($_POST['user_id'])
+  else if(isset($_POST['edit_id'])
   && isset($_POST['value'])
   && isset($_POST['field'])
   ) {
-    $id = $_POST['user_id'];
+    $id = $_POST['edit_id'];
     $field = $_POST['field'];
     $value = $_POST['value'];
 
