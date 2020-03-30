@@ -44,7 +44,7 @@
     $.ajax('../ajax/users.php', {
       type: 'POST',
       data: {edit_id: userId, get_user_data: ""},
-      success: function(res) { console.log("@@res", res)
+      success: function(res) {
         var userInfo = JSON.parse(res);
 
         $.ajax('../ajax/users.php', {
@@ -87,6 +87,8 @@
       editField.value = '';
       editField.placeholder = '';
       document.getElementById("submitResponse").innerHTML = '';
+
+      editUser();
     };     
 
     var editField = document.getElementById("editField");
@@ -99,16 +101,15 @@
       }
     }); 
 
-    cols.forEach(function(col) {
+    cols.forEach(function(col, i) {
       var name = col['Field'];
-      var type = col['Type'];
 
-      select.options[select.options.length] = new Option(name + " // " + type, name);
+      select.options[i + 1] = new Option(name, name);
     });
 
     select.onchange = function() {
       document.getElementById("submitResponse").innerHTML = '';
-      
+
       var i = select.selectedIndex;
 
       var value = select.options[i].value;

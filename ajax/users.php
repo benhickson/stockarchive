@@ -2,8 +2,6 @@
 
 require __DIR__.'/../includes/0-base.php';
 
-// @@TODO: kick off those that aren't able_unpublish
-
 if($_SESSION['logged_in']) {
   // add the userid from session
   $userid = $_SESSION['userid'];
@@ -25,8 +23,11 @@ if($_SESSION['logged_in']) {
 
     $cols = array(
       " email
+      , nickname
       , firstname
       , lastname
+      , location
+      , interfaceprefs
       , registration_open
       , registration_code
       , picture
