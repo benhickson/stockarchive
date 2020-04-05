@@ -3,6 +3,12 @@ echo '<h5>Logged in as ';
 echo $_SESSION['nickname'].'</h5>';
 echo '.<br><a href="?logout">Click to log out.</a>';
 // print_r($_SESSION);
+
+$result = $db->rawQuery('SELECT able_unpublish FROM users WHERE id=?', array($_SESSION['userid']));
+
+if($result[0]['able_unpublish'] === 1) {
+	require '../me/admin.php';
+}
 ?>
 
 <style>
