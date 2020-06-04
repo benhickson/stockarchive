@@ -3,7 +3,7 @@
 // important for this long-running script
 set_time_limit(0);
 
-require '/var/www/html/creative.lonelyleap.com/archive/includes/0-base.php';
+require __DIR__.'/../includes/0-base.php';
 
 
 
@@ -88,7 +88,7 @@ while ($db->count == 0){
 		$db->rawQuery('UPDATE transcodequeue SET status=1 WHERE id=?',array($transcodeid));
 
 		// base path of the files, before the volume (mountname) links
-		$basepath = '/var/www/html/creative.lonelyleap.com/archive/media/';
+		$basepath = __DIR__.'/../media/';
 
 		$fileids = array();
 
