@@ -397,7 +397,7 @@
       $('#clipExpandTags').text(tagstemp);
 
       // update download link and full quality link
-      $('#clipExpandDownloadUrl').attr('href','//creative.lonelyleap.com/archive/media/?clip='+clipid+'&q=f&download');
+      $('#clipExpandDownloadUrl').attr('href','//<?= $baseURL ?>/media/?clip='+clipid+'&q=f&download');
       $('#clipExpandRawFootageUrl').attr('href',responseData.rawfootageurl);
 
       $('#tagsSubmitBtn').attr('onclick', 'getAndAddTags(); updateClipExpandContent('+clipid+');');
@@ -415,7 +415,7 @@
       ?>
 
       // update video src and button actions
-      $('#clipExpandContent video').attr('src','//creative.lonelyleap.com/archive/media/?clip='+clipid+'&q=h').on('loadedmetadata', function(){
+      $('#clipExpandContent video').attr('src','//<?= $baseURL ?>/media/?clip='+clipid+'&q=h').on('loadedmetadata', function(){
         $('.panes').animate({'opacity':1},300);
         $(this).off('loadedmetadata');
       });
@@ -958,8 +958,8 @@
       <div class="searchResult flex-child" data-clipid="<?php echo $clip['id']; ?>" data-score="<?php echo $clip['score']; ?>">
         <div class="expandedCover"></div>
         <video loading="eager" class="hoverToPlay" muted loop preload="none" 
-        src="//creative.lonelyleap.com/archive/media/?clip=<?php echo $clip['id']; ?>&q=q"
-        poster="//creative.lonelyleap.com/archive/media/?clip=<?php echo $clip['id']; ?>&q=t">
+        src="//<?= $baseURL ?>/media/?clip=<?php echo $clip['id']; ?>&q=q"
+        poster="//<?= $baseURL ?>/media/?clip=<?php echo $clip['id']; ?>&q=t">
         </video>
         <div class="hoverContent">
           <span class="description truncate"><?php echo $clip['description']; ?></span>
@@ -990,7 +990,7 @@
     <div id="clipExpand" class="flex-child">
       <div id="clipExpandContent">
         <div class="panes" id="leftpane">
-          <video id="clipExpandVideo" src="//creative.lonelyleap.com/archive/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
+          <video id="clipExpandVideo" src="//<?= $baseURL ?>/media/?clip=134&q=h" muted controls controlsList="nodownload nofullscreen" autoplay loop onclick="playPause();"></video>
         </div>
         <div class="panes" id="rightpane">
           <h5 id="clipExpandDescription">Description</h5>
