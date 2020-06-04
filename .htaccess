@@ -1,5 +1,5 @@
 php_flag  log_errors on
-php_value error_log  /var/www/creative.lonelyleap.traversal.ist/archive/temp/log.txt
+php_value error_log  /var/www/creative.lonelyleap.com/archive/temp/log.txt
 
 
 
