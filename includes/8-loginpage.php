@@ -66,7 +66,7 @@ if (isset($_GET['iframe'])){
 <div class="row loginrow">
 <div id="logincard" class="card">
 	<div class="card-image">
-		<video id="loginVideo" muted autoplay loop src="//creative.lonelyleap.com/archive/media/?clip=32&q=h"> </video>
+		<video id="loginVideo" muted autoplay loop src="//<?= $baseURL ?>/media/?clip=32&q=h"> </video>
         <span class="card-title">Archive</span>
 	</div>
 	<div class="card-content">
