@@ -1,6 +1,6 @@
 <?php 
 
-require __DIR__.'../includes/0-base.php';
+require __DIR__.'/../includes/0-base.php';
 
 
 // check that variables are set
