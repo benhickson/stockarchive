@@ -1,6 +1,6 @@
 <?php
 
-require '/var/www/html/creative.lonelyleap.com/archive/includes/0-base.php';
+require __DIR__.'/../includes/0-base.php';
 
 if ($_SESSION['logged_in']){
 	if (isset($_FILES['file'])){
@@ -21,13 +21,13 @@ if ($_SESSION['logged_in']){
 		}
 		
 		// figure out a destination folder path
-		$basepath = '/var/www/html/creative.lonelyleap.com/archive/media/';
+		$basepath = __DIR__.'/../media/';
 		$volumeid = 1; // 1 is arc01
 		$volume = $db->rawQuery('SELECT mountname FROM volumes WHERE id=?',array($volumeid))[0]['mountname'];
 		$datestring = date('Y-md'); // today's date (UTC) - the FOLDER name
 		$directorypath = $basepath.$volume.'/'.$datestring;
 
-		// creat the folder if it doesn't exit
+		// create the folder if it doesn't exit
 		if (!file_exists($directorypath)) {
 			mkdir($directorypath, 0777, true);
 		} else {
