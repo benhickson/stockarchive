@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__,'/../includes/0-base.php';
+require __DIR__.'/../includes/0-base.php';
 
 if (isset($_SESSION['logged_in'])){
 	if (isset($_GET['clip'])){
