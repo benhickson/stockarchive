@@ -6,7 +6,7 @@ Description.
 - Apache/2.4.18 (Ubuntu)
 - ffmpeg version 3.4.4-1~16.04.york0
 - MySQL 5.7.27
-- PHP Version 7.3.10-1+ubuntu16.04.1+deb.sury.org+1 (loaded as apache module)
+- PHP Version 7.4
 
 
 # Setup:
